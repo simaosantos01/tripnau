@@ -49,17 +49,15 @@
 
 #### 1.2.2.2 Rank and determination of threats
 
-##### 1.2.2.2.1 Threat Categorization
+##### 1.2.2.2.1 Threat Categorization (STRIDE)
 
-##### 1.2.2.2.2 Qualitative Risk Model
-
-##### 1.2.2.2.3 Threat Analysis
+##### 1.2.2.2.2 Threat Analysis
 
 - Attack Trees
 - Abuse cases
 
-##### 1.2.2.2.4 Ranking of Threats
+##### 1.2.2.2.3 Ranking of Threats
 
-##### 1.2.2.2.5 Qualitative Risk Model
+##### 1.2.2.2.4 Qualitative Risk Model
 
 #### 1.2.2.3 Countermeasures and Mitigation
