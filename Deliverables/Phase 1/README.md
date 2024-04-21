@@ -554,9 +554,19 @@ The action of leaving a review can be used by both normal users as a way to show
 
 ![Review - Use and Abuse Case Graph](./img/use_and_abuse_case_graph_review.png)
 
-![](./img/abuse_cases_2.png)
+Booking a stay involves the input of a lot of sensitive data from the user including his personal information as well as payment details. This information is usually a target for attackers and needs to be properly secured.
+In order to protect it Authentication is required to book stays which includes encryption of the data as well as 2FA, ensuring that, if a user has payment information associated to their account, even if the account login details are compromised, the payment data won't.
+When booking a stay the user will perform the payment through the Stripe API, which in itself offers security measures, abstracting the requests with the data from the application, making it harder for bad actors to steal it.
+2FA also helps in preventing unauthorized bookings in case a user, for example, leaves his account logged on in an unprotected machine.
 
-![](./img/abuse_cases_3.png)
+![Booking a Stay - Use and Abuse Case Graph](./img/abuse_cases_2.png)
+
+Similarly to booking stays, viewing booked stays can expose sensitive data. The same techniques are applied here.
+However, viewing a user's booked stays opens up paths to exploits. 
+If a nefarious user has access to an account they might attempt to cancel a booked stay and divert the refunds to an account they control which is why 2FA is once again used as another layer of confirmation before a user is able to cancel their stay.
+On the other hand, if a malicious actor manages to gain access to an account with special privileges they might try to cancel another user's stay to try and book their own. Therefore the authentication of moderator/admin accounts has layers of protection to try and ensure their use by authorized personell only.
+
+![View Booked Stays - Use and Abuse Case Graph](./img/abuse_cases_3.png)
 
 ##### 1.2.2.2.3 Ranking of Threats
 
