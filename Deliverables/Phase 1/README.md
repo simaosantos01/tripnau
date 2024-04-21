@@ -532,6 +532,16 @@ be able to login and play a role in approving reviews and managing the propertie
     <td>As a malicious user, I will try to upload an image with faulty metadata</td>
     <td>A malicious user might include malicious scripts in the image metadata that can be executed if it isn't properly treated</td>
   </tr>
+  <tr>
+    <td>14</td>
+    <td>As a malicious user, I will try to simulate cancelling a booking to attempt to get a refund</td>
+    <td>This can mean the user will try to get a refund without cancelling the stay.</td>
+  </tr>
+  <tr>
+    <td>15</td>
+    <td>As a malicious user, I will try to book a stay on dates where the property is already booked</td>
+    <td>This can mean the user will try to override another user's stay.</td>
+  </tr>
 </table>
 
 ![](./img/use_and_abuse_case_graph_review.png)
