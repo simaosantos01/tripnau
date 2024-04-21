@@ -544,7 +544,15 @@ be able to login and play a role in approving reviews and managing the propertie
   </tr>
 </table>
 
-![](./img/use_and_abuse_case_graph_review.png)
+###### 1.2.2.2.2.2 Use and Abuse Case Graphs
+
+The action of logging in as a user is prone to several types of attacks and there are many abuse cases associated with it. In order to mitigate these attacks the application should make sure not to show too much information on login failure as well as lock the account after 3 failure attemps. The amount of time locked out should be incremental as a way to mitigate dictionary attacks. As a way to prevent these attacks, 2FA is also in place.
+
+![Login - Use and Abuse Case Graph](./img/use_and_abuse_case_graph_login.png)
+
+The action of leaving a review can be used by both normal users as a way to show their liking on a booking, but it can also be used by malicious users as a way to influence the ratings on a property, giving it a better rating or worse according to their intents. As a counter-measure to this, the system should validate if users actually stayed in the property to be able to leave a review. Another thing users might do is alter reviews after the first moderation process done by a admin, as a way to leave review that don't follow TOS. For this a review versioning should be in place where whenever a review is altered it can go by an automatic reviewal process and eventually if necessary a manual one.
+
+![Review - Use and Abuse Case Graph](./img/use_and_abuse_case_graph_review.png)
 
 ![](./img/abuse_cases_2.png)
 
