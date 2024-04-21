@@ -26,6 +26,10 @@ The following diagram showcases the use cases of the TripNau system.
 
 ![](./img/use_case_diagram.jpg)
 
+### 1.1.2 Security related requirements
+
+[Go to Security related requirements Excel](./Requirements_TripNau.xlsx)
+
 ## 1.2 Design
 
 ### 1.2.1 System architecture
@@ -218,7 +222,7 @@ be able to login and play a role in approving reviews and managing the propertie
   <tr>
     <td>1.3.1</td>
     <td>Signup function</td>
-    <td>The signup function accepts any registration data and guarantee that is a valid account before creating a new user.</td>
+    <td>The Signup function accepts any registration data and guarantee that is a valid account before creating a new user.</td>
     <td>(1) Anonymous Web User</td>
   </tr>
   <tr>
@@ -525,7 +529,7 @@ be able to login and play a role in approving reviews and managing the propertie
   <tr>
     <td>12</td>
     <td>As a malicious user, I will try to upload an image in a review with too big of a size</td>
-    <td>This can lead to a downtime on the server as it proccesses the image data as it is too big</td>
+    <td>This can lead to a downtime on the server as it processes the image data as it is too big</td>
   </tr>
   <tr>
     <td>13</td>
@@ -575,3 +579,13 @@ On the other hand, if a malicious actor manages to gain access to an account wit
 #### 1.2.2.3 Countermeasures and Mitigation
 
 [Go to threat model report](./ThreatDragon/threat-model-report.pdf)
+
+## 1.3 Other artifacts
+
+### 1.3.1 Tests Plan
+
+[Go to Tests Plan Excel](./TestsPlan_TripNau.xlsx)
+
+### 1.3.2 ASVS
+
+[Go to ASVS Excel](./ASVS_TripNau.xlsx)
