@@ -1,6 +1,7 @@
 # DESOFS 2024 M1A Group 2 - Phase 1
 
-### Members:
+### Members
+
 - 1190326 - Afonso Machado
 - 1190535 - Domingos Machado
 - 1230201 - Nuno Ribeiro
@@ -13,12 +14,12 @@
 
 ### 1.1.1 Use cases
 
-TripNau is a web application similar to airbnb and booking that aims to ease the process of booking properties for 
-whatever purpose the customer wants, such as vacations, work, etc. Basically, property owners can easily list their 
-properties on the platform, setting nightly rates for specific time frames and providing detailed information such as 
+TripNau is a web application similar to airbnb and booking that aims to ease the process of booking properties for
+whatever purpose the customer wants, such as vacations, work, etc. Basically, property owners can easily list their
+properties on the platform, setting nightly rates for specific time frames and providing detailed information such as
 location, number of bedrooms, bathrooms, and amenities. Then, costumers will be able to scroll
-through a list of properties and will have the option to perform bookings for specific time  intervals whenever these are 
-available. Moreover, the platform facilitates post-stay reviews, allowing users to provide feedback to property owners and 
+through a list of properties and will have the option to perform bookings for specific time  intervals whenever these are
+available. Moreover, the platform facilitates post-stay reviews, allowing users to provide feedback to property owners and
 offering insights to potential guests before making a booking.
 
 The following diagram showcases the use cases of the TripNau system.
@@ -31,40 +32,38 @@ The following diagram showcases the use cases of the TripNau system.
 
 #### 1.2.1.1 Class diagram
 
-
-The TripNau system employs the Domain-Driven Design (DDD) pattern, which emphasizes the encapsulation of domain logic 
-within distinct aggregates. These aggregates include 'RentalProperty,' 'Review,' 'Booking,' and 'User.' Each aggregate is 
-represented by a specific color in the following diagram. This architectural approach enhances clarity, organization, 
+The TripNau system employs the Domain-Driven Design (DDD) pattern, which emphasizes the encapsulation of domain logic
+within distinct aggregates. These aggregates include 'RentalProperty,' 'Review,' 'Booking,' and 'User.' Each aggregate is
+represented by a specific color in the following diagram. This architectural approach enhances clarity, organization,
 and maintainability within the system by grouping related components together.
 
 ![](./img/class_diagram.jpg)
 
 #### 1.2.1.2 Components diagram
 
-
-This section provides a logical representation of the system architecture for TripNau. The following diagram illustrates 
-how the TripNau system can be divided into various components with a low level of granularity, as well as the interfaces 
+This section provides a logical representation of the system architecture for TripNau. The following diagram illustrates
+how the TripNau system can be divided into various components with a low level of granularity, as well as the interfaces
 provided and required by each component.
 
 ![](./img/components_diagram.png)
 
-The diagram below presents an in-depth view of the backend component of the TripNau system, focusing on its various elements 
+The diagram below presents an in-depth view of the backend component of the TripNau system, focusing on its various elements
 with a higher level of granularity.
 
 ![](./img/components_diagram_backend.jpg)
 
-**SecurityFilterChain**: Spring Security maintains a filter chain internally where each of the filters has a particular responsibility and filters 
+**SecurityFilterChain**: Spring Security maintains a filter chain internally where each of the filters has a particular responsibility and filters
 are added or removed from the configuration depending on which services are required (**Chain of responsibility pattern**).
-Filters can be used for a number of different purposes, like authentication, authorization, exploit protection, and more 
+Filters can be used for a number of different purposes, like authentication, authorization, exploit protection, and more
 [(ref)](https://docs.spring.io/spring-security/reference/servlet/architecture.html).
 
-Security mechanisms must be designed so that a failure will follow the same execution path as disallowing the 
-operation [(ref)](https://owasp.org/www-community/Fail_securely). A security filter chain is designed in such a way that 
-downstream filter instances aren't invoked when there is a failure [(ref)](https://docs.spring.io/spring-security/reference/servlet/architecture.html), 
+Security mechanisms must be designed so that a failure will follow the same execution path as disallowing the
+operation [(ref)](https://owasp.org/www-community/Fail_securely). A security filter chain is designed in such a way that
+downstream filter instances aren't invoked when there is a failure [(ref)](https://docs.spring.io/spring-security/reference/servlet/architecture.html),
 adhering to the **Fail Securely Security Principle**.
 
-**HttpAuthorization**: Spring request authorization components permit the definition of match rules by HTTP method 
-[(ref)](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html). 
+**HttpAuthorization**: Spring request authorization components permit the definition of match rules by HTTP method
+[(ref)](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html).
 This adheres to the **Least Privilege Security Principle**.
 
 **InputSanitizer**: Ensures that an input to a system function does not trigger an unexpected and unauthorized behavior.
@@ -75,20 +74,20 @@ This adheres to the **Least Privilege Security Principle**.
 
 ![](./img/deployment_diagram.png)
 
-Since this is a web application, the client-server architecture was adopted, and in order to relieve the processing load on the 
-Backend, acting as a gateway, a Middleware component was created that is responsible for filtering out requests that should 
-not reach the Backend, e.g. requests for authenticate routes that carry invalid tokens. In addition, the Middleware component 
-is also responsible for sanitizing and validating the payloads of the requests on a technical level, e.g. ensuring that 
-strings meet the minimum size or that requests with excessively large strings do not reach the Backend. 
+Since this is a web application, the client-server architecture was adopted, and in order to relieve the processing load on the
+Backend, acting as a gateway, a Middleware component was created that is responsible for filtering out requests that should
+not reach the Backend, e.g. requests for authenticate routes that carry invalid tokens. In addition, the Middleware component
+is also responsible for sanitizing and validating the payloads of the requests on a technical level, e.g. ensuring that
+strings meet the minimum size or that requests with excessively large strings do not reach the Backend.
 
-The Backend, in turn, will be responsible for carrying out all the validation at business level. This component will only 
-accept requests from Middleware and will therefore ignore all requests from other sources. The database that the Backend 
-communicates with is hidden from the outside world, being on a private network. This component is also responsible for 
-communicating with two external APIs in order to fulfill the necessary business flows, in this case the Stripe API and the 
+The Backend, in turn, will be responsible for carrying out all the validation at business level. This component will only
+accept requests from Middleware and will therefore ignore all requests from other sources. The database that the Backend
+communicates with is hidden from the outside world, being on a private network. This component is also responsible for
+communicating with two external APIs in order to fulfill the necessary business flows, in this case the Stripe API and the
 Twilio API.
 
-Finally, there is the Logs component, which is included in the entire system, as it is responsible for receiving all the 
-actions carried out in the system and thus recording everything according to a standard. In order not to block any part of 
+Finally, there is the Logs component, which is included in the entire system, as it is responsible for receiving all the
+actions carried out in the system and thus recording everything according to a standard. In order not to block any part of
 the system, a message broker was added to the communication, so that actions can be written and read asynchronously.
 
 ### 1.2.2 Threat model (Software-Centric approach)
@@ -99,17 +98,17 @@ the system, a message broker was added to the communication, so that actions can
 
 **Application Version**: 1.0
 
-This website is designed for the travel sector, focusing on facilitating the purchase of stays from customer to customer, 
-emphasizing a peer-to-peer C2C model while excluding commercial entities in this first implementation. The platform supports 
+This website is designed for the travel sector, focusing on facilitating the purchase of stays from customer to customer,
+emphasizing a peer-to-peer C2C model while excluding commercial entities in this first implementation. The platform supports
 three distinct user roles:
 
 - Customer
 - Property Owners
 - System Admins
 
-Property owners will be able to login and have access to features that allows them to register a new property and view 
-the booking history for their listings. Users, on the other hand, can browse through a list of available properties without 
-login, but will be able to login and initiate booking processes, and provide feedback through reviews. System admins will 
+Property owners will be able to login and have access to features that allows them to register a new property and view
+the booking history for their listings. Users, on the other hand, can browse through a list of available properties without
+login, but will be able to login and initiate booking processes, and provide feedback through reviews. System admins will
 be able to login and play a role in approving reviews and managing the properties submitted to the platform.
 
 ##### 1.2.2.1.2 External dependencies
@@ -357,7 +356,7 @@ be able to login and play a role in approving reviews and managing the propertie
 
 ##### 1.2.2.1.5 Assets
 
-| ID    | Name                                                | Description                                                                                                                                                               | Trust Levels                                                                                                                                                                              | 
+| ID    | Name                                                | Description                                                                                                                                                               | Trust Levels                                                                                                                                                                              |
 |-------|-----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1     | User related data                                   | Assets related to user information.                                                                                                                                       |                                                                                                                                                                                           |
 | 1.1   | Auth details for TripNau users                      | The login credentials that a costumer, property owner or a business admin will use to log into the TripNau.                                                               | (2) Customer<br/> (3) Property owner<br/> (4) Business admin<br/> (5) Backend server user process<br/> (6) Middleware server user process<br/> (10) DB read/write user<br/> (11) DB admin |
@@ -460,7 +459,82 @@ be able to login and play a role in approving reviews and managing the propertie
 
 ##### 1.2.2.2.2 Threat Analysis
 
-![](./img/abuse_cases_1.png)
+###### 1.2.2.2.2.1 Abuse Cases
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Abuse Case</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>As a malicious user, I will perform an injection attack on the application</td>
+    <td>This includes injection attacks like XSS, SQL Injection, OS commands, among others.</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>As a malicious user, I will try to access other's accounts.</td>
+    <td>This can include brute force attacks, dictionary tool attacks</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>As a malicious user, I will try to manipulate property ratings</td>
+    <td>This can include removal of negative reviews or usage of bots to add positive/negative reviews on a property</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>As a malicious user, I will try to evade review monitoring</td>
+    <td>This can be done by trying to manipulate reviews after they have been monitored. Another way would be review bombing and flooding the moderators queue.</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>As a malicious user, I will try to access restricted areas without proper permission.</td>
+    <td>This might be done by trying to log into an admin account with default credentials, or simple trying to reach restricted zones directly using a default account.</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>As a malicious user, I will try to register a property without owning it.</td>
+    <td>This can be either registering properties that aren't his or even that don't exist all.</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>As a malicious user, I will try to delete my property without refunding any bookings made to it.</td>
+    <td>This means that a malicious user will try to delete his property's listing without any intention to refund the bookings made to it.</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>As a malicious user, I will try to edit a property's information without owning it</td>
+    <td>This means that the malicious user might try to edit someone else's property from his account or even try to enter the owners account to edit the information.</td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td>As a malicious user, I will try to delete a property without actually owning it.</td>
+    <td>This means that the malicious user might try to delete someone else's property from his account or even try to enter the owners account to delete it.</td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td>As a malicious user, I will try to refund a booking after having already stayed there</td>
+    <td>This can mean he will try to refund the booking during or after the stay.</td>
+  </tr>
+  <tr>
+    <td>11</td>
+    <td>As a malicious user, I will try to view the bookings made by other people</td>
+    <td>This can be mean he will try to access other peoples details/bookings page or even try to forge requests to the API</td>
+  </tr>
+  <tr>
+    <td>12</td>
+    <td>As a malicious user, I will try to upload an image in a review with too big of a size</td>
+    <td>This can lead to a downtime on the server as it proccesses the image data as it is too big</td>
+  </tr>
+  <tr>
+    <td>13</td>
+    <td>As a malicious user, I will try to upload an image with faulty metadata</td>
+    <td>A malicious user might include malicious scripts in the image metadata that can be executed if it isn't properly treated</td>
+  </tr>
+</table>
+
+![](./img/use_and_abuse_case_graph_review.png)
 
 ![](./img/abuse_cases_2.png)
 
