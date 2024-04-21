@@ -460,14 +460,15 @@ be able to login and play a role in approving reviews and managing the propertie
 
 ##### 1.2.2.2.2 Threat Analysis
 
-- Attack Trees
-- Abuse cases
+![](./img/abuse_cases_1.png)
+
+![](./img/abuse_cases_2.png)
+
+![](./img/abuse_cases_3.png)
 
 ##### 1.2.2.2.3 Ranking of Threats
 
 [Go to threat model report](./ThreatDragon/threat-model-report.pdf)
-
-##### 1.2.2.2.4 Qualitative Risk Model
 
 #### 1.2.2.3 Countermeasures and Mitigation
 
