@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: backend
+
+management:
+  endpoint:
+    shutdown:
+      enabled: true
