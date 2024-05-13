@@ -5,7 +5,7 @@ on:
     branches:
       - development
     paths:
-      - '**/tripnau_fe/**'
+      - '**/frontend/**'
 
 jobs:
   build:

@@ -6,6 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "npm" 
-    directory: "/Deliverables/Phase_2/tripnau_fe/"
+    directory: "/Deliverables/Phase_2/frontend/"
     schedule:
       interval: "weekly"
