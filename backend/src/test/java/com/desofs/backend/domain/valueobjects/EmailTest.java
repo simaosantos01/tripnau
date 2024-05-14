@@ -12,7 +12,7 @@ class EmailTest {
     void testCreateValidEmail() {
         Email email = Email.create("test@example.com");
         assertNotNull(email);
-        assertEquals("test@example.com", email.getEmail());
+        assertEquals("test@example.com", email.value());
     }
 
     @Test

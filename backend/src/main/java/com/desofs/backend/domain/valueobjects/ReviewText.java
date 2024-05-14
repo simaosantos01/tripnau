@@ -11,11 +11,16 @@ public class ReviewText {
     }
 
     public static ReviewText create(String text) {
-        isTrue(text != null && !text.trim().isEmpty(), "Review text must not be null or empty.");
-        return new ReviewText(text);
+        isTrue(text != null && !text.trim().isEmpty(),
+                "Review text must not be null or empty.");
+        return new ReviewText(new String(text));
     }
 
-    public String getText() {
+    public ReviewText copy() {
+        return new ReviewText(new String(text));
+    }
+
+    public String value() {
         return new String(text);
     }
 }

@@ -20,7 +20,11 @@ public class Email {
         return new Email(new String(email));
     }
 
-    public String getEmail() {
+    public Email copy() {
+        return new Email(new String(email));
+    }
+
+    public String value() {
         return new String(email);
     }
 }

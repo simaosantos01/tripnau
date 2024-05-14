@@ -18,10 +18,15 @@ public class Location {
     }
 
     public static Location create(double longitude, double latitude) {
-        isTrue(isValidLongitude(longitude), "Invalid longitude value.");
-        isTrue(isValidLatitude(latitude), "Invalid latitude value.");
+        isTrue(isValidLongitude(longitude),
+                "Invalid longitude value.");
+        isTrue(isValidLatitude(latitude),
+                "Invalid latitude value.");
         return new Location(longitude, latitude);
     }
 
+    public Location copy() {
+        return new Location(longitude, latitude);
+    }
 
 }

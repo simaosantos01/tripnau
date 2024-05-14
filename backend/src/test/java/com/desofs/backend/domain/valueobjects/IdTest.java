@@ -11,7 +11,7 @@ class IdTest {
         String validId = "test_id_123";
         Id id = Id.create(validId);
 
-        assertEquals(validId, id.getId());
+        assertEquals(validId, id.value());
     }
 
     @Test
