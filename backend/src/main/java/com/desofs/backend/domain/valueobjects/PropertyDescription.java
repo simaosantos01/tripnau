@@ -7,13 +7,23 @@ public class PropertyDescription {
 
     private final String description;
 
-    public PropertyDescription(String description) {
-        notNull(description, "Property description must not be null.");
-        isTrue(!description.trim().isEmpty(), "Property description must not be empty.");
+    private PropertyDescription(String description) {
         this.description = description;
     }
 
-    public String getDescription() {
+    public static PropertyDescription create(String description) {
+        notNull(description,
+                "Property description must not be null.");
+        isTrue(!description.trim().isEmpty(),
+                "Property description must not be empty.");
+        return new PropertyDescription(new String(description));
+    }
+
+    public PropertyDescription copy() {
+        return new PropertyDescription(new String(description));
+    }
+
+    public String value() {
         return new String(description);
     }
 }

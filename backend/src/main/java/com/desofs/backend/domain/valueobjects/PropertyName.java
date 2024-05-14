@@ -7,13 +7,24 @@ public class PropertyName {
 
     private final String name;
 
-    public PropertyName(String name) {
-        isTrue(name != null && !name.trim().isEmpty(), "Property name must not be null or empty.");
-        matchesPattern(name, "^[a-zA-Z0-9]+$", "Property name must contain only letters and digits.");
+    private PropertyName(String name) {
         this.name = name;
     }
 
-    public String getName() {
+    public static PropertyName create(String name) {
+        isTrue(name != null && !name.trim().isEmpty(),
+                "Property name must not be null or empty.");
+        matchesPattern(name,
+                "^[a-zA-Z0-9]+$",
+                "Property name must contain only letters and digits.");
+        return new PropertyName(new String(name));
+    }
+
+    public PropertyName copy() {
+        return new PropertyName(new String(name));
+    }
+
+    public String value() {
         return new String(name);
     }
 }

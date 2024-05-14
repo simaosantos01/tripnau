@@ -6,12 +6,21 @@ public class PositiveInteger {
 
     private final int value;
 
-    public PositiveInteger(int value) {
-        isTrue(value >= 0, "Value must be a positive integer.");
+    private PositiveInteger(int value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public static PositiveInteger create(int value) {
+        isTrue(value >= 0,
+                "Value must be a positive integer.");
+        return new PositiveInteger(value);
+    }
+
+    public PositiveInteger copy() {
+        return new PositiveInteger(value);
+    }
+
+    public int value() {
         return value;
     }
 }

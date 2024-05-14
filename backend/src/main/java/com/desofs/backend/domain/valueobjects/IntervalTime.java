@@ -15,8 +15,14 @@ public class IntervalTime {
     }
 
     public static IntervalTime create(Date from, Date to) {
-        notNull(from, "From date must not be null.");
-        notNull(to, "To date must not be null.");
+        notNull(from,
+                "From date must not be null.");
+        notNull(to,
+                "To date must not be null.");
+        return new IntervalTime(new Date(from.getTime()), new Date(to.getTime()));
+    }
+
+    public IntervalTime copy() {
         return new IntervalTime(new Date(from.getTime()), new Date(to.getTime()));
     }
 

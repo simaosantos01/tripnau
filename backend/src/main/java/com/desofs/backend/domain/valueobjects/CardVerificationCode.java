@@ -20,7 +20,11 @@ public class CardVerificationCode {
         return new CardVerificationCode(new String(verificationCode));
     }
 
-    public String getVerificationCode() {
+    public CardVerificationCode copy() {
+        return new CardVerificationCode(new String(verificationCode));
+    }
+
+    public String value() {
         return new String(verificationCode);
     }
 }

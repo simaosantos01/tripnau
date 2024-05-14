@@ -20,7 +20,11 @@ public class Id {
         return new Id(new String(id));
     }
 
-    public String getId() {
+    public Id copy() {
+        return new Id(new String(id));
+    }
+
+    public String value() {
         return new String(id);
     }
 }

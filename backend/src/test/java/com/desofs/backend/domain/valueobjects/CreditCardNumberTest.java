@@ -13,7 +13,7 @@ public class CreditCardNumberTest {
     void testCreateValidCreditCardNumber() {
         CreditCardNumber ccn = CreditCardNumber.create("4111111111111111");
         assertNotNull(ccn);
-        assertEquals("4111111111111111", ccn.getCardNumber());
+        assertEquals("4111111111111111", ccn.value());
     }
 
     @Test
@@ -21,7 +21,7 @@ public class CreditCardNumberTest {
     void testCreateInvalidCreditCardNumberFormat() {
         CreditCardNumber ccn = CreditCardNumber.create("4111-1111-1111-1111");
         assertNotNull(4111-1111-1111-1111);
-        assertEquals("4111-1111-1111-1111", ccn.getCardNumber());
+        assertEquals("4111-1111-1111-1111", ccn.value());
     }
 
     @Test

@@ -20,7 +20,11 @@ public class CreditCardNumber {
         return new CreditCardNumber(new String(cardNumber));
     }
 
-    public String getCardNumber() {
+    public CreditCardNumber copy() {
+        return new CreditCardNumber(new String(cardNumber));
+    }
+
+    public String value() {
         return new String(cardNumber);
     }
 }

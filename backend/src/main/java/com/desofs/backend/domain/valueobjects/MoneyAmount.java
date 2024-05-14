@@ -13,9 +13,18 @@ public class MoneyAmount {
         this.value = value;
     }
 
-    public MoneyAmount create(float value) {
-        isTrue(value < 0, "MoneyAmount must be positive.");
+    public static MoneyAmount create(float value) {
+        isTrue(value >= 0,
+                "MoneyAmount must be positive.");
         return new MoneyAmount(value);
+    }
+
+    public MoneyAmount copy() {
+        return new MoneyAmount(value);
+    }
+
+    public float value() {
+        return this.value;
     }
 
 }

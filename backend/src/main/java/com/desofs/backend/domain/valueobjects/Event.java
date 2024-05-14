@@ -21,8 +21,14 @@ public class Event {
     }
 
     public static Event create(LocalDateTime datetime, BookingStatusEnum state) {
-        notNull(datetime, "Datetime must not be null.");
-        notNull(state, "State must not be null.");
+        notNull(datetime,
+                "Datetime must not be null.");
+        notNull(state,
+                "State must not be null.");
+        return new Event(LocalDateTimeUtils.copyLocalDateTime(datetime), state);
+    }
+
+    public Event copy() {
         return new Event(LocalDateTimeUtils.copyLocalDateTime(datetime), state);
     }
 

@@ -14,8 +14,17 @@ public class ReviewStars {
     }
 
     public static ReviewStars create(int stars) {
-        isTrue(stars < 1 || stars > 5, "Stars must be between 1 and 5 inclusive.");
+        isTrue(stars >= 1 && stars <= 5,
+                "Stars must be between 1 and 5 inclusive.");
         return new ReviewStars(stars);
+    }
+
+    public ReviewStars copy() {
+        return new ReviewStars(stars);
+    }
+
+    public int value() {
+        return this.stars;
     }
 
 }

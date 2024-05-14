@@ -8,19 +8,24 @@ public class PriceNightInterval {
     private final MoneyAmount price;
     private final IntervalTime interval;
 
-    public PriceNightInterval(MoneyAmount price, IntervalTime interval) {
-        notNull(price, "Price must not be null.");
-        notNull(interval, "Interval must not be null.");
-        isTrue(price.getValue() >= 0, "Price must be non-negative.");
+    private PriceNightInterval(MoneyAmount price, IntervalTime interval) {
         this.price = price;
         this.interval = interval;
     }
 
-    public MoneyAmount getPrice() {
-        return price;
+    public static PriceNightInterval create(MoneyAmount price, IntervalTime interval) {
+        notNull(price,
+                "Price must not be null.");
+        notNull(interval,
+                "Interval must not be null.");
+        return new PriceNightInterval(price, interval);
     }
 
-    public IntervalTime getInterval() {
-        return interval;
+    public MoneyAmount getPrice() {
+        return price.copy();
+    }
+
+    public IntervalTime value() {
+        return interval.copy();
     }
 }
