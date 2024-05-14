@@ -1,0 +1,60 @@
+on:
+  push:
+    branches:
+      - devSecOps
+
+  workflow_dispatch:
+
+name: Frontend Workflow
+jobs:
+  Checkout:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+  InstallDependenciesAndBuild:
+    runs-on: self-hosted
+    needs: [Checkout]
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.19.0"
+      - working-directory: frontend
+        run: npm install && npm run build
+
+  SonarQubeScan:
+    runs-on: self-hosted
+    needs: [InstallDependenciesAndBuild]
+    steps:
+      - run: touch sonar-project.properties
+      - uses: DamianReeves/write-file-action@master
+        with:
+          path: sonar-project.properties
+          write-mode: overwrite
+          contents: |
+            sonar.projectKey=desofs
+            sonar.sources=frontend/src/
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  DependencyAnalysis:
+    runs-on: self-hosted
+    needs: [SonarQubeScan]
+    steps:
+      - working-directory: frontend
+        run: dependency-check.sh --disableYarnAudit --out ../ --scan .
+
+  UnitTesting:
+    runs-on: self-hosted
+    needs: [DependencyAnalysis]
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.19.0"
+      - working-directory: frontend 
+        run: npm run test 
+
