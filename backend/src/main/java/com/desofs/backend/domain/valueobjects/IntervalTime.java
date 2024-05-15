@@ -2,6 +2,7 @@ package com.desofs.backend.domain.valueobjects;
 
 import java.util.Date;
 
+import static org.apache.commons.lang3.Validate.isTrue;
 import static org.apache.commons.lang3.Validate.notNull;
 
 public class IntervalTime {
@@ -19,6 +20,9 @@ public class IntervalTime {
                 "From date must not be null.");
         notNull(to,
                 "To date must not be null.");
+        isTrue(from.before(to),
+                "The from date must be before.");
+
         return new IntervalTime(new Date(from.getTime()), new Date(to.getTime()));
     }
 

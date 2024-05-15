@@ -2,19 +2,21 @@ package com.desofs.backend.domain.valueobjects;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 import static org.apache.commons.lang3.Validate.isTrue;
 
 @Getter
 public class MoneyAmount {
 
-    private final float value;
+    private final BigDecimal value;
 
-    private MoneyAmount(float value) {
+    private MoneyAmount(BigDecimal value) {
         this.value = value;
     }
 
-    public static MoneyAmount create(float value) {
-        isTrue(value >= 0,
+    public static MoneyAmount create(BigDecimal value) {
+        isTrue(value.compareTo(BigDecimal.valueOf(0)) >= 0,
                 "MoneyAmount must be positive.");
         return new MoneyAmount(value);
     }
@@ -23,8 +25,8 @@ public class MoneyAmount {
         return new MoneyAmount(value);
     }
 
-    public float value() {
-        return this.value;
+    public BigDecimal value() {
+        return BigDecimal.valueOf(value.longValue());
     }
 
 }
