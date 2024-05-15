@@ -1,0 +1,58 @@
+on:
+  push:
+    branches:
+      - devSecOps
+
+  workflow_dispatch:
+
+name: Release Workflow
+jobs:
+  Frontend-BuildDockerImage:
+    runs-on: self-hosted
+    outputs:
+      now: ${{ steps.meta.outputs.NOW }}
+      sha_short: ${{ steps.meta.outputs.SHA_SHORT }}
+    steps:
+      - id: meta
+        run: |
+          NOW=$(date +'%Y-%m-%d_%Hh%Mm%Ss')
+          SHA_SHORT=$(git rev-parse --short HEAD)
+
+          echo "NOW=$NOW" >> $GITHUB_ENV
+          echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_ENV
+
+          echo "NOW=$NOW" >> $GITHUB_OUTPUT
+          echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_OUTPUT
+      - working-directory: frontend
+        run: docker build -t simaosantos1230212/desofs-frontend:${{ env.SHA_SHORT }}_${{ env.NOW }} .
+
+  Frontend-ContainerAnalysis:
+    runs-on: self-hosted
+    outputs:
+      now: ${{ needs.Frontend-BuildDockerImage.outputs.now }}
+      sha_short: ${{ needs.Frontend-BuildDockerImage.outputs.sha_short }}
+    needs: [Frontend-BuildDockerImage]
+    steps:
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "simaosantos1230212/desofs-frontend:${{ needs.Frontend-BuildDockerImage.outputs.sha_short }}_${{ needs.Frontend-BuildDockerImage.outputs.now }}"
+          scan-type: image
+          format: "sarif"
+          output: "trivy-results.sarif"
+          github-pat: ${{ secrets.TOKEN_GITHUB }}
+          scanners: "vuln"
+          severity: "HIGH,CRITICAL"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trivy-results
+          path: "${{ github.workspace }}/trivy-results.sarif"
+
+  Frontend-PushDockerImage:
+    runs-on: self-hosted
+    needs: [Frontend-ContainerAnalysis]
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: docker push simaosantos1230212/desofs-frontend:${{ needs.Frontend-ContainerAnalysis.outputs.sha_short }}_${{ needs.Frontend-ContainerAnalysis.outputs.now }}
