@@ -3,19 +3,20 @@ package com.desofs.backend.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 public class PaymentDto {
 
-    private String id;
-    private float moneyAmount;
-    private String creditCardNumber;
-    private String cardVerificationCode;
-    private LocalDateTime expirationDate;
-    private String email;
-    private String personalName;
-    private LocalDateTime createdAt;
+    private final String id;
+    private final BigDecimal moneyAmount;
+    private final String creditCardNumber;
+    private final String cardVerificationCode;
+    private final LocalDateTime expirationDate;
+    private final String email;
+    private final String personName;
+    private final LocalDateTime createdAt;
 
 }

@@ -4,6 +4,7 @@ import com.desofs.backend.domain.valueobjects.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +15,7 @@ class PaymentEntityTest {
     @DisplayName("Test constructor with valid parameters")
     void testConstructorValidParameters() {
         Id id = Id.create("123456");
-        MoneyAmount moneyAmount = MoneyAmount.create(100.0f);
+        MoneyAmount moneyAmount = MoneyAmount.create(BigDecimal.valueOf(100));
         CreditCardNumber creditCardNumber = CreditCardNumber.create("4111111111111111");
         CardVerificationCode cardVerificationCode = CardVerificationCode.create("123");
         LocalDateTime expirationDate = LocalDateTime.of(2025, 12, 31, 23, 59);

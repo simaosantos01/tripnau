@@ -36,4 +36,11 @@ public class Event {
         return LocalDateTimeUtils.copyLocalDateTime(this.datetime);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        return this.state == ((Event) obj).state;
+    }
+
 }

@@ -7,10 +7,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserDto {
 
-    private String id;
-    private String name;
-    private String email;
-    private String password;
-    private boolean banned;
+    private final String id;
+    private final String name;
+    private final String email;
+    private final String password;
+    private final boolean banned;
 
 }

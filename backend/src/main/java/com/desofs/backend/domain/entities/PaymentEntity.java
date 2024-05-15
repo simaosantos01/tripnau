@@ -1,6 +1,8 @@
 package com.desofs.backend.domain.entities;
 
 import com.desofs.backend.domain.valueobjects.*;
+import com.desofs.backend.dtos.PaymentDto;
+import com.desofs.backend.utils.LocalDateTimeUtils;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -9,16 +11,16 @@ import static org.apache.commons.lang3.Validate.notNull;
 
 public class PaymentEntity {
 
-    private Id id;
-    private MoneyAmount moneyAmount;
-    private CreditCardNumber creditCardNumber;
-    private CardVerificationCode cardVerificationCode;
-    @Getter
-    private LocalDateTime expirationDate;
-    private Email email;
-    private Name name;
-    @Getter
+    private final Id id;
+    private final MoneyAmount moneyAmount;
+    private final CreditCardNumber creditCardNumber;
+    private final CardVerificationCode cardVerificationCode;
+    private final LocalDateTime expirationDate;
+    private final Email email;
+    private final Name name;
     private LocalDateTime createdAt;
+
+    // Constructors ----------------------------------------------------------------------------------------------------
 
     public PaymentEntity(Id id, MoneyAmount moneyAmount, CreditCardNumber creditCardNumber,
                          CardVerificationCode cardVerificationCode, LocalDateTime expirationDate,
@@ -42,18 +44,25 @@ public class PaymentEntity {
         this.createdAt = createdAt;
     }
 
-    public PaymentEntity(String id, float moneyAmount, String creditCardNumber,
-                         String cardVerificationCode, LocalDateTime expirationDate,
-                         String email, String name, LocalDateTime createdAt) {
-        this(Id.create(id),
-                MoneyAmount.create(moneyAmount),
-                CreditCardNumber.create(creditCardNumber),
-                CardVerificationCode.create(cardVerificationCode),
-                expirationDate,
-                Email.create(email),
-                Name.create(name),
-                createdAt);
+    public PaymentEntity(PaymentDto dto) {
+        this(Id.create(dto.getId()),
+                MoneyAmount.create(dto.getMoneyAmount()),
+                CreditCardNumber.create(dto.getCreditCardNumber()),
+                CardVerificationCode.create(dto.getCardVerificationCode()),
+                dto.getExpirationDate(),
+                Email.create(dto.getEmail()),
+                Name.create(dto.getPersonName()),
+                dto.getCreatedAt());
     }
+
+    public PaymentEntity copy() {
+        return new PaymentEntity(id.copy(), moneyAmount.copy(), creditCardNumber.copy(), cardVerificationCode.copy(),
+                LocalDateTimeUtils.copyLocalDateTime(expirationDate), email.copy(), name,
+                LocalDateTimeUtils.copyLocalDateTime(createdAt));
+    }
+
+    // Getter ----------------------------------------------------------------------------------------------------------
+
 
     public Id getId() {
         return id.copy();
@@ -77,6 +86,14 @@ public class PaymentEntity {
 
     public Name getName() {
         return name.copy();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return LocalDateTimeUtils.copyLocalDateTime(createdAt);
+    }
+
+    public LocalDateTime getExpirationDate() {
+        return LocalDateTimeUtils.copyLocalDateTime(expirationDate);
     }
 
 }
