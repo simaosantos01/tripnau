@@ -1,0 +1,27 @@
+<div class="login-card">
+
+    <div class="card-title">
+        <h1>Login</h1>
+        <span>You don't have an account? <a href="/register">Sign up</a></span>
+    </div>
+    <form class="form-group" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <input type="text" pInputText formControlName="email">
+        <p-password [toggleMask]="true" formControlName="password" [feedback]="false"></p-password>
+        <br>
+        @if(form.getError('tooManyRequests')){
+        <label style="color: red;">Rate Limit Exceeded</label>
+        <br>
+        } @else if(form.getError('backendfault')){
+        <label style="color: red;">There was a problem sending the request</label>
+        <br>
+        } @else if(form.getError('tooManyFailures')) {
+        <label style="color: red;">Invalid Credentials. Try Again In {{timeoutString}}</label>
+        <br>
+        } @else if(form.getError('invalidCredentials')) {
+        <label style="color: red;">Invalid Credentials</label>
+        <br>
+        }
+        <p-button label="Submit" (onClick)="onSubmit()" [disabled]="disabled" />
+    </form>
+
+</div>
