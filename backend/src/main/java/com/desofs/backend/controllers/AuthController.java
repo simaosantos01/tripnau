@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,12 +65,11 @@ public class AuthController {
             expiry = expCustomer;
         }
 
-        final String scope = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .collect(joining(" "));
+        final String scope = authentication.getAuthorities().iterator().next().getAuthority();
 
         final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .expiresAt(Instant.now().plusSeconds(expiry))
-                .subject(format("%s,%s", user.getUsername(), user.getPassword()))
+                .subject(format("%s", user.getUsername()))
                 .claim("roles", scope)
                 .claim("email", request.getEmail())
                 .build();

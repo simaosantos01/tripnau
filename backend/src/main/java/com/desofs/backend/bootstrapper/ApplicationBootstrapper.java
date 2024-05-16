@@ -12,8 +12,11 @@ public class ApplicationBootstrapper implements CommandLineRunner {
 
     private final UserBootstrapper userBootstrapper;
 
+    private final RentalPropertyBootstrapper rentalPropertyBootstrapper;
+
     @Override
     public void run(String... args) throws Exception {
         this.userBootstrapper.run();
+        this.rentalPropertyBootstrapper.run();
     }
 }

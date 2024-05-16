@@ -8,8 +8,8 @@ import com.desofs.backend.domain.valueobjects.Name;
 import com.desofs.backend.domain.valueobjects.Password;
 import com.desofs.backend.dtos.CreateUserDto;
 import com.desofs.backend.dtos.FetchUserDto;
-import com.desofs.backend.dtos.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,30 +18,25 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final PasswordEncoder encoder;
+
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
     @Transactional
     public FetchUserDto create(CreateUserDto createUserDTO) throws DatabaseException {
         UserDomain user = new UserDomain(Name.create(createUserDTO.getName()), Email.create(createUserDTO.getEmail()),
-                Password.create(createUserDTO.getPassword()), createUserDTO.getRole(),
-                createUserDTO.isBanned());
-        this.userRepository.create(user);
+                Password.create(createUserDTO.getPassword()), createUserDTO.getRole(), createUserDTO.isBanned());
+
+        UserDomain userToCreate = new UserDomain(user.getId(), user.getName(), user.getEmail(),
+                Password.create(encoder.encode(user.getPassword().value())), user.getRole(), user.isBanned());
+
+        this.userRepository.create(userToCreate);
         return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
                 user.getRole(), user.isBanned());
-    }
-
-    @Transactional
-    public void update(UserDto userDto) throws DatabaseException {
-        UserDomain user = this.userRepository.findByEmail(userDto.getEmail());
-        user.setName(Name.create(userDto.getName()));
-        user.setEmail(Email.create(userDto.getEmail()));
-        user.setPassword(Password.create(userDto.getPassword()));
-        user.setRole(user.getRole());
-        //TODO: BAN ???
-        this.userRepository.update(user);
     }
 
     @Transactional

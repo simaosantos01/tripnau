@@ -15,8 +15,8 @@ public class Id {
         isTrue(id != null || !id.trim().isEmpty(),
                 "ID must not be null or empty.");
         matchesPattern(id,
-                "^\\w+$",
-                "ID must contain only alphanumeric characters and underscores.");
+                "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "ID must be an UUID.");
         return new Id(new String(id));
     }
 

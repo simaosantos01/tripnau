@@ -9,24 +9,24 @@ import static org.apache.commons.lang3.Validate.isTrue;
 @Getter
 public class Location {
 
-    private final double longitude;
-    private final double latitude;
+    private final double lat;
+    private final double lon;
 
-    private Location(double longitude, double latitude) {
-        this.longitude = longitude;
-        this.latitude = latitude;
+    private Location(double lat, double lon) {
+        this.lat = lat;
+        this.lon = lon;
     }
 
-    public static Location create(double longitude, double latitude) {
-        isTrue(isValidLongitude(longitude),
-                "Invalid longitude value.");
-        isTrue(isValidLatitude(latitude),
+    public static Location create(double lat, double lon) {
+        isTrue(isValidLatitude(lat),
                 "Invalid latitude value.");
-        return new Location(longitude, latitude);
+        isTrue(isValidLongitude(lon),
+                "Invalid longitude value.");
+        return new Location(lat, lon);
     }
 
     public Location copy() {
-        return new Location(longitude, latitude);
+        return new Location(lat, lon);
     }
 
 }

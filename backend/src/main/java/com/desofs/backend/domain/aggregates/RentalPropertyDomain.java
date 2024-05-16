@@ -4,6 +4,7 @@ import com.desofs.backend.domain.valueobjects.*;
 import com.desofs.backend.dtos.RentalPropertyDto;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -12,13 +13,13 @@ public class RentalPropertyDomain {
     private final Id propertyOwner;
     private final PropertyName propertyName;
     private final Location location;
-    private PositiveInteger maxGuests;
-    private PositiveInteger numBedrooms;
-    private PositiveInteger numBathrooms;
-    private PropertyDescription propertyDescription;
-    private MoneyAmount amount;
-    private List<PriceNightInterval> priceNightIntervalList;
-    private List<BookingDomain> bookingList;
+    private final PositiveInteger maxGuests;
+    private final PositiveInteger numBedrooms;
+    private final PositiveInteger numBathrooms;
+    private final PropertyDescription propertyDescription;
+    private final MoneyAmount amount;
+    private final List<PriceNightInterval> priceNightIntervalList;
+    private final List<BookingDomain> bookingList;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -51,11 +52,40 @@ public class RentalPropertyDomain {
         this.bookingList = List.copyOf(bookingList);
     }
 
+    // Used to create a rental property
+    public RentalPropertyDomain(Id propertyOwner, PropertyName propertyName, Location location,
+                                PositiveInteger maxGuests, PositiveInteger numBedrooms, PositiveInteger numBathrooms,
+                                PropertyDescription propertyDescription, MoneyAmount amount,
+                                List<PriceNightInterval> priceNightIntervalList, List<BookingDomain> bookingList) {
+        notNull(propertyOwner, "PropertyOwner must not be null.");
+        notNull(propertyName, "PropertyName must not be null.");
+        notNull(location, "Location must not be null.");
+        notNull(maxGuests, "MaxGuests must not be null.");
+        notNull(numBedrooms, "NumBedrooms must not be null.");
+        notNull(numBathrooms, "NumBathrooms must not be null.");
+        notNull(propertyDescription, "PropertyDescription must not be null.");
+        notNull(amount, "Amount must not be null.");
+        notNull(priceNightIntervalList, "PriceNightIntervalList must not be null.");
+        notNull(bookingList, "BookingList must not be null.");
+
+        this.id = Id.create(UUID.randomUUID().toString());
+        this.propertyOwner = propertyOwner.copy();
+        this.propertyName = propertyName.copy();
+        this.location = location.copy();
+        this.maxGuests = maxGuests.copy();
+        this.numBedrooms = numBedrooms.copy();
+        this.numBathrooms = numBathrooms.copy();
+        this.propertyDescription = propertyDescription.copy();
+        this.amount = amount.copy();
+        this.priceNightIntervalList = priceNightIntervalList;
+        this.bookingList = List.copyOf(bookingList);
+    }
+
     public RentalPropertyDomain(RentalPropertyDto dto) {
         this(Id.create(dto.getId()),
                 Id.create(dto.getPropertyOwner()),
                 PropertyName.create(dto.getPropertyName()),
-                Location.create(dto.getLocation().getLongitude(), dto.getLocation().getLatitude()),
+                Location.create(dto.getLocation().getLon(), dto.getLocation().getLat()),
                 PositiveInteger.create(dto.getMaxGuests()),
                 PositiveInteger.create(dto.getNumBedrooms()),
                 PositiveInteger.create(dto.getNumBathrooms()),
@@ -131,7 +161,7 @@ public class RentalPropertyDomain {
 
     public void addBooking(BookingDomain bookingDomain) {
         if (bookingAlreadyExists(bookingDomain)) {
-            throw new IllegalArgumentException("There is already a booking with that id associated");
+            throw new IllegalArgumentException("There is already a booking with that id associated.");
         }
         // todo: validar se o booking tem a info que encaixa na property (intervals, etc)
         this.bookingList.add(bookingDomain);

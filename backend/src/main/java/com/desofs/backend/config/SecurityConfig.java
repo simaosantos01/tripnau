@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -54,6 +53,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/create").hasAuthority(Role.BusinessAdmin)
+                .requestMatchers(HttpMethod.POST, "/rental_property/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Role.PropertyOwner)
                 .requestMatchers(restApiDocPath + "/**").permitAll()
                 .requestMatchers(swaggerPath + "/**").permitAll()
                 .anyRequest().authenticated());
