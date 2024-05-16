@@ -1,6 +1,6 @@
 package com.desofs.backend.services;
 
-import com.desofs.backend.database.DatabaseException;
+import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.database.repositories.RentalPropertyRepository;
 import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
 import com.desofs.backend.domain.valueobjects.*;

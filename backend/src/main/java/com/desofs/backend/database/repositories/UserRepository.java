@@ -1,6 +1,6 @@
 package com.desofs.backend.database.repositories;
 
-import com.desofs.backend.database.DatabaseException;
+import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.database.mappers.UserMapper;
 import com.desofs.backend.database.models.UserDB;
 import com.desofs.backend.database.springRepositories.UserRepositoryJPA;

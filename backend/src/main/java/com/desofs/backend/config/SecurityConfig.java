@@ -52,7 +52,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/user/create").hasAuthority(Role.BusinessAdmin)
+                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/rental_property/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Role.PropertyOwner)
                 .requestMatchers(restApiDocPath + "/**").permitAll()

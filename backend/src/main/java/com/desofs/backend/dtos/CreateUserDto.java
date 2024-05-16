@@ -11,5 +11,4 @@ public class CreateUserDto {
     private final String email;
     private final String password;
     private final String role;
-    private final boolean isBanned;
 }

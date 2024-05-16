@@ -1,6 +1,6 @@
 package com.desofs.backend.controllers;
 
-import com.desofs.backend.database.DatabaseException;
+import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.dtos.CreateRentalPropertyDto;
 import com.desofs.backend.dtos.FetchRentalPropertyDto;
 import com.desofs.backend.services.RentalPropertyService;
@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Rental Property", description = "Endpoints for managing rental properties")
@@ -28,9 +27,8 @@ public class RentalPropertyController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<FetchRentalPropertyDto> create(@RequestBody CreateRentalPropertyDto createRentalPropertyDto)
-            throws DatabaseException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<FetchRentalPropertyDto> create(@RequestBody CreateRentalPropertyDto createRentalPropertyDto,
+                                                         Authentication authentication) throws DatabaseException {
         String userId = authentication.getName();
         FetchRentalPropertyDto rentalProperty = this.rentalPropertyService.create(createRentalPropertyDto, userId);
         return new ResponseEntity<>(rentalProperty, HttpStatus.CREATED);

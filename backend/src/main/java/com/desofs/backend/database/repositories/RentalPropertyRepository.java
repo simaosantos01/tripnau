@@ -1,6 +1,6 @@
 package com.desofs.backend.database.repositories;
 
-import com.desofs.backend.database.DatabaseException;
+import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.database.mappers.RentalPropertyMapper;
 import com.desofs.backend.database.models.RentalPropertyDB;
 import com.desofs.backend.database.springRepositories.RentalPropertyRepositoryJPA;
@@ -9,7 +9,6 @@ import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
 import com.desofs.backend.domain.valueobjects.PriceNightInterval;
 import org.springframework.stereotype.Component;
 
-import java.awt.print.Book;
 import java.util.*;
 
 @Component("RentalPropertyRepositoryCapsule")
