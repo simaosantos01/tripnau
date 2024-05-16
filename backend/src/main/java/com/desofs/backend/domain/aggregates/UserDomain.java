@@ -40,7 +40,7 @@ public class UserDomain {
     }
 
     // Used to create a user
-    public UserDomain(Name name, Email email, Password password, String role, boolean isBanned) {
+    public UserDomain(Name name, Email email, Password password, String role) {
         notNull(name, "Name must not be null.");
         notNull(email, "Email must not be null.");
         notNull(password, "Password must not be null.");
@@ -51,7 +51,7 @@ public class UserDomain {
         this.email = email.copy();
         this.password = password.copy();
         this.role = role;
-        this.isBanned = isBanned;
+        this.isBanned = false;
     }
 
     // Used for tests

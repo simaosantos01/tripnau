@@ -1,11 +1,14 @@
 package com.desofs.backend.controllers;
 
+import com.desofs.backend.exceptions.DatabaseException;
+import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,21 +82,23 @@ public class ControllerAdvisor {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleInvalidsArguments(MethodArgumentNotValidException exception, WebRequest request) {
         Map<String, String> errorMap = new HashMap<>();
-        exception.getBindingResult().getFieldErrors().forEach(error ->
-                errorMap.put(error.getField(), error.getDefaultMessage())
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(this.createPayload(exception, request, mapToString(errorMap)));
+        exception.getBindingResult().getFieldErrors().forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createPayload(exception, request, mapToString(errorMap)));
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleIllegalArgumentExceptions(NotFoundException exception, WebRequest request) {
+    public ResponseEntity<Object> handleNotFoundExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createPayload(exception, request));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgumentExceptions(IllegalArgumentException exception, WebRequest request) {
+    @ExceptionHandler({IllegalArgumentException.class, DatabaseException.class})
+    public ResponseEntity<Object> handleBadRequestExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.createPayload(exception, request));
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, NotAuthorizedException.class})
+    public ResponseEntity<Object> handleForbiddenExceptions(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(this.createPayload(exception, request));
     }
 
     @ExceptionHandler(Exception.class)
@@ -102,5 +107,4 @@ public class ControllerAdvisor {
         String genericMsg = "Some generic error occurred. Contact administrator.";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.createPayload(genericMsg, request));
     }
-
 }

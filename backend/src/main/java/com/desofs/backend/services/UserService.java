@@ -1,6 +1,6 @@
 package com.desofs.backend.services;
 
-import com.desofs.backend.database.DatabaseException;
+import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.database.repositories.UserRepository;
 import com.desofs.backend.domain.aggregates.UserDomain;
 import com.desofs.backend.domain.valueobjects.Email;
@@ -29,7 +29,7 @@ public class UserService {
     @Transactional
     public FetchUserDto create(CreateUserDto createUserDTO) throws DatabaseException {
         UserDomain user = new UserDomain(Name.create(createUserDTO.getName()), Email.create(createUserDTO.getEmail()),
-                Password.create(createUserDTO.getPassword()), createUserDTO.getRole(), createUserDTO.isBanned());
+                Password.create(createUserDTO.getPassword()), createUserDTO.getRole());
 
         UserDomain userToCreate = new UserDomain(user.getId(), user.getName(), user.getEmail(),
                 Password.create(encoder.encode(user.getPassword().value())), user.getRole(), user.isBanned());

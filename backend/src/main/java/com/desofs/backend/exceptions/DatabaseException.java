@@ -1,4 +1,4 @@
-package com.desofs.backend.database;
+package com.desofs.backend.exceptions;
 
 public class DatabaseException extends Exception {
 

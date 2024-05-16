@@ -5,6 +5,7 @@ import com.desofs.backend.domain.aggregates.UserDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Collections;
+import java.util.List;
 
 import static java.lang.String.format;
 
@@ -36,4 +38,8 @@ public class UserDetailsConfig {
         };
     }
 
+    public static boolean hasAuthorization(Authentication authentication, String role) {
+        List<String> authRoleList = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        return authRoleList.contains(role);
+    }
 }
