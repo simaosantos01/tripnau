@@ -5,6 +5,7 @@ import { ROUTE } from '../enum/routes';
 import { LoginRequest } from '../model/login-request';
 import { LoginResponse } from '../model/login-response';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,10 +19,9 @@ export class AuthService {
 
   http = inject(HttpClient)
 
-  constructor() {}
+  constructor() { }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    // return throwError(null);
     return this.http.post<LoginResponse>(this.BASE_URL + ROUTE.LOGIN, credentials).pipe(
       tap((response) => {
         if (response.token) {

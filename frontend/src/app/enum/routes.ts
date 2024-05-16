@@ -1,4 +1,4 @@
 export enum ROUTE {
-    LOGIN = "/login",
-    LANDING = "/"
+    LOGIN = '/login',
+    LANDING = '/'
 }
