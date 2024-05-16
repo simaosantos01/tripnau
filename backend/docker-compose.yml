@@ -1,0 +1,18 @@
+name: 'desofs'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: 'database'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: 'admin'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
