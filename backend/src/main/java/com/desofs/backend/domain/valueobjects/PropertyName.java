@@ -15,7 +15,7 @@ public class PropertyName {
         isTrue(name != null && !name.trim().isEmpty(),
                 "Property name must not be null or empty.");
         matchesPattern(name,
-                "^[a-zA-Z0-9]+$",
+                "^[a-zA-Z0-9 ]+$",
                 "Property name must contain only letters and digits.");
         return new PropertyName(new String(name));
     }

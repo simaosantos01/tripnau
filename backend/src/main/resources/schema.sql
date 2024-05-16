@@ -13,25 +13,17 @@ create table payment
 
 create table rental_property
 (
-    id                  varchar(255) not null
+    id                   varchar(255) not null
         primary key,
-    priceNightDefault   float        not null,
-    propertyOwnerId     int          not null,
-    propertyName        varchar(255) not null,
-    lat                 double       not null,
-    lon                 double       not null,
-    maxGuests           int          not null,
-    numOfBedrooms       int          not null,
-    numOfBathrooms      int          not null,
-    propertyDescription varchar(255) not null,
-    constraint maxGuests
-        check (`maxGuests` >= 0),
-    constraint numOfBathrooms
-        check (`numOfBathrooms` >= 0),
-    constraint numOfBedrooms
-        check (`numOfBedrooms` >= 0),
-    constraint priceNightDefault
-        check (`priceNightDefault` = round(`maxGuests`, 2))
+    price_night_default  float        not null,
+    property_owner_id    varchar(255) not null,
+    property_name        varchar(255) not null,
+    lat                  double       not null,
+    lon                  double       not null,
+    max_guests           int          not null,
+    num_bedrooms         int          not null,
+    num_bathrooms        int          not null,
+    property_description varchar(255) not null
 );
 
 create table price_night_interval

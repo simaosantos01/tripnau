@@ -5,7 +5,6 @@ import com.desofs.backend.database.mappers.UserMapper;
 import com.desofs.backend.database.models.UserDB;
 import com.desofs.backend.database.springRepositories.UserRepositoryJPA;
 import com.desofs.backend.domain.aggregates.UserDomain;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -14,7 +13,6 @@ import java.util.Optional;
 public class UserRepository {
 
     private final UserRepositoryJPA userRepository;
-
     private final UserMapper mapper;
 
     public UserRepository(UserRepositoryJPA userRepository, UserMapper mapper) {
@@ -35,15 +33,6 @@ public class UserRepository {
             throw new DatabaseException("Duplicated email violation.");
         }
 
-        this.userRepository.save(this.mapper.toDatabaseObject(user));
-    }
-
-    public void update(UserDomain user) throws DatabaseException {
-        Optional<UserDB> matchingUser = this.userRepository.findById(user.getId().value());
-
-        if (matchingUser.isEmpty()) {
-            throw new DatabaseException("Update target does not exist.");
-        }
         this.userRepository.save(this.mapper.toDatabaseObject(user));
     }
 

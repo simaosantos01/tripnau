@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LocationDto {
 
-    private final double longitude;
-    private final double latitude;
+    private final double lon;
+    private final double lat;
 
 }

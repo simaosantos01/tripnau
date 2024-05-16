@@ -11,8 +11,8 @@ class LocationTest {
         double latitude = 20.0;
         Location location = Location.create(longitude, latitude);
 
-        assertTrue(location.getLongitude() == longitude);
-        assertTrue(location.getLatitude() == latitude);
+        assertTrue(location.getLon() == longitude);
+        assertTrue(location.getLat() == latitude);
     }
 
     @Test
@@ -38,8 +38,8 @@ class LocationTest {
         Location minLocation = Location.create(minLongitude, validLatitude);
         Location maxLocation = Location.create(maxLongitude, validLatitude);
 
-        assertTrue(minLocation.getLongitude() == minLongitude);
-        assertTrue(maxLocation.getLongitude() == maxLongitude);
+        assertTrue(minLocation.getLon() == minLongitude);
+        assertTrue(maxLocation.getLon() == maxLongitude);
     }
 
     @Test
@@ -51,7 +51,7 @@ class LocationTest {
         Location minLocation = Location.create(validLongitude, minLatitude);
         Location maxLocation = Location.create(validLongitude, maxLatitude);
 
-        assertTrue(minLocation.getLatitude() == minLatitude);
-        assertTrue(maxLocation.getLatitude() == maxLatitude);
+        assertTrue(minLocation.getLat() == minLatitude);
+        assertTrue(maxLocation.getLat() == maxLatitude);
     }
 }
