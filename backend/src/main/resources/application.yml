@@ -1,8 +1,46 @@
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+
+jwt:
+  private:
+    key: classpath:rsa.private.key
+  public:
+    key: classpath:rsa.public.key
+  exp-business-admin: 604800 #3600
+  exp-property-owner: 604800 #86400
+  exp-customer: 604800
+
 spring:
   application:
     name: backend
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql=true:sql:
+    init:
+      mode: never
+  profiles:
+    active: bootstrap
+  database:
+    entityManager: javax.persistence.EntityManagerFactory
+    transactionManager: org.springframework.orm.jpa.JpaTransactionManager
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/database
+    username: admin
+    password: admin
 
 management:
   endpoint:
     shutdown:
       enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
