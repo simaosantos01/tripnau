@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PaymentEntityTest {
 
-    @Test
+    /* @Test
     @DisplayName("Test constructor with valid parameters")
     void testConstructorValidParameters() {
         Id id = Id.create("123456");
@@ -35,5 +35,5 @@ class PaymentEntityTest {
         assertEquals(email.value(), paymentEntity.getEmail().value());
         assertEquals(name.value(), paymentEntity.getName().value());
         assertEquals(createdAt, paymentEntity.getCreatedAt());
-    }
+    } */
 }

@@ -38,14 +38,14 @@ jobs:
           image-ref: "simaosantos1230212/desofs-frontend:${{ needs.Frontend-BuildDockerImage.outputs.sha_short }}_${{ needs.Frontend-BuildDockerImage.outputs.now }}"
           scan-type: image
           format: "sarif"
-          output: "trivy-results.sarif"
+          output: "frontend-trivy-results.sarif"
           github-pat: ${{ secrets.TOKEN_GITHUB }}
           scanners: "vuln"
           severity: "HIGH,CRITICAL"
       - uses: actions/upload-artifact@v4
         with:
           name: trivy-results
-          path: "${{ github.workspace }}/trivy-results.sarif"
+          path: "${{ github.workspace }}/frontend-trivy-results.sarif"
 
   Frontend-PushDockerImage:
     runs-on: self-hosted
