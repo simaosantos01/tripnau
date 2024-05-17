@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class PaymentDto {
-    private final String id;
+public class CreatePaymentDto {
     private final BigDecimal moneyAmount;
     private final String creditCardNumber;
     private final String cardVerificationCode;

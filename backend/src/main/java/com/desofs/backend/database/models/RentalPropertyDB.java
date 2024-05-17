@@ -39,12 +39,15 @@ public class RentalPropertyDB {
     @Column(nullable = false)
     private String propertyDescription;
 
+    @Column(nullable = false)
+    private boolean isActive;
+
     public RentalPropertyDB(){
     }
 
     public RentalPropertyDB(String id, String priceNightDefault, String propertyOwnerId, String propertyName,
                             double lat, double lon, int maxGuests, int numBedrooms, int numBathrooms,
-                            String propertyDescription) {
+                            String propertyDescription, boolean isActive) {
         this.id = id;
         this.priceNightDefault = priceNightDefault;
         this.propertyOwnerId = propertyOwnerId;
@@ -55,5 +58,6 @@ public class RentalPropertyDB {
         this.numBedrooms = numBedrooms;
         this.numBathrooms = numBathrooms;
         this.propertyDescription = propertyDescription;
+        this.isActive = isActive;
     }
 }

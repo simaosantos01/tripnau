@@ -3,7 +3,6 @@ package com.desofs.backend.domain.entities;
 import com.desofs.backend.domain.valueobjects.*;
 import com.desofs.backend.dtos.PaymentDto;
 import com.desofs.backend.utils.LocalDateTimeUtils;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +17,7 @@ public class PaymentEntity {
     private final LocalDateTime expirationDate;
     private final Email email;
     private final Name name;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
