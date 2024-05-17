@@ -3,13 +3,15 @@ package com.desofs.backend.domain.aggregates;
 import com.desofs.backend.domain.entities.PaymentEntity;
 import com.desofs.backend.domain.enums.BookingStatusEnum;
 import com.desofs.backend.domain.valueobjects.*;
-import com.desofs.backend.dtos.BookingDto;
+import com.desofs.backend.dtos.CreateBookingDto;
+import com.desofs.backend.dtos.FetchBookingDto;
 import com.desofs.backend.utils.ListUtils;
 import com.desofs.backend.utils.LocalDateTimeUtils;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang3.Validate.isTrue;
@@ -21,7 +23,7 @@ public class BookingDomain {
 
     private final Id id;
     private final Id accountId;
-    private PaymentEntity payment;
+    private final PaymentEntity payment;
     private final IntervalTime intervalTime;
     private final List<Event> eventList;
     private ReviewDomain review;
@@ -45,19 +47,22 @@ public class BookingDomain {
         this.payment = payment.copy();
         this.intervalTime = intervalTime.copy();
         this.eventList = List.copyOf(eventList);
-        this.review = review.copy();
+        this.review = review == null ? null : review.copy();
         this.createdAt = LocalDateTimeUtils.copyLocalDateTime(createdAt);
     }
 
-    public BookingDomain(BookingDto dto) {
-        this(Id.create(dto.getId()), Id.create(dto.getAccountId()), new PaymentEntity(dto.getPayment()),
+    public BookingDomain(CreateBookingDto dto, Id bookingId) {
+        this(bookingId,
+                Id.create(dto.getAccountId()),
+                new PaymentEntity(dto.getPayment(), bookingId.value()), // todo: o booking id que foi criado agora
                 IntervalTime.create(dto.getIntervalTime().getFrom(), dto.getIntervalTime().getTo()),
-                dto.getEventList().stream().map(event -> Event.create(event.getDatetime(), event.getState())).toList(),
-                new ReviewDomain(dto.getReview()), dto.getCreatedAt());
+                List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED)),
+                null,
+                LocalDateTime.now());
     }
 
     private static boolean eventListIsValid(List<Event> eventList) {
-        return ListUtils.hasDuplicates(eventList);
+        return !ListUtils.hasDuplicates(eventList);
     }
 
     // Getters ---------------------------------------------------------------------------------------------------------
@@ -83,7 +88,7 @@ public class BookingDomain {
     }
 
     public ReviewDomain getReview() {
-        return review.copy();
+        return this.review == null ? null : review.copy();
     }
 
     public LocalDateTime getCreatedAt() {

@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/rental_property/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Role.PropertyOwner)
+                .requestMatchers(HttpMethod.POST, "/booking/add").permitAll()
                 .requestMatchers(restApiDocPath + "/**").permitAll()
                 .requestMatchers(swaggerPath + "/**").permitAll()
                 .anyRequest().authenticated());

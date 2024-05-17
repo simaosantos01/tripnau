@@ -14,21 +14,6 @@ drop table if exists rental_property;
 
 drop table if exists state;
 
-drop table if exists user;
-
-create table payment
-(
-    id               varchar(255)                       not null
-        primary key,
-    total            float                              not null,
-    creditCardNumber varchar(255)                       not null,
-    cvc              varchar(255)                       not null,
-    expirationDate   datetime                           not null,
-    email            varchar(255)                       not null,
-    nameOnCard       varchar(255)                       not null,
-    createdAt        datetime default CURRENT_TIMESTAMP not null
-);
-
 create table rental_property
 (
     id                   varchar(255) not null
@@ -47,14 +32,14 @@ create table rental_property
 
 create table price_night_interval
 (
-    id               varchar(255) not null
+    id                 varchar(255) not null
         primary key,
-    rentalPropertyId varchar(255) not null,
-    price            float        not null,
-    `from`           datetime     not null,
-    `to`             datetime     not null,
+    rental_property_id varchar(255) not null,
+    price              float        not null,
+    from_date          date         not null,
+    to_date            date         not null,
     constraint PriceNightInterval_RentalProperty_id_fk
-        foreign key (rentalPropertyId) references rental_property (id)
+        foreign key (rental_property_id) references rental_property (id)
 );
 
 create table state
@@ -77,43 +62,59 @@ create table user
 
 create table booking
 (
-    id         varchar(255)                       not null
+    id          varchar(255)                       not null
         primary key,
-    accountId  varchar(255)                       not null,
-    paymentId  varchar(255)                       not null,
-    `from`     datetime                           not null,
-    `to`       datetime                           not null,
-    created_at datetime default CURRENT_TIMESTAMP not null,
-    constraint Booking_Payment_id_fk
-        foreign key (paymentId) references payment (id),
+    account_id  varchar(255)                       not null,
+    property_id varchar(255)                       not null,
+    from_date   date                               not null,
+    to_date     date                               not null,
+    created_at  datetime default CURRENT_TIMESTAMP not null,
     constraint Booking_User_id_fk
-        foreign key (accountId) references user (id)
+        foreign key (account_id) references user (id),
+    constraint booking_property_id
+        foreign key (property_id) references rental_property (id)
 );
 
 create table event
 (
-    id        varchar(255)             not null
+    id         varchar(255)             not null
         primary key,
-    bookingId varchar(255)             not null,
-    dateTime  datetime default (now()) not null,
-    stateId   varchar(255)             not null,
+    booking_id varchar(255)             not null,
+    date_time  datetime default (now()) not null,
+    state_id   varchar(255)             not null,
     constraint Event_Booking_id_fk
-        foreign key (bookingId) references booking (id)
+        foreign key (booking_id) references booking (id)
+);
+
+create table payment
+(
+    id                 varchar(255)                       not null
+        primary key,
+    booking_id         varchar(255)                       not null,
+    total              float                              not null,
+    credit_card_number varchar(255)                       not null,
+    cvc                varchar(255)                       not null,
+    expiration_date    datetime                           not null,
+    email              varchar(255)                       not null,
+    name_on_card       varchar(255)                       not null,
+    created_at         datetime default CURRENT_TIMESTAMP not null,
+    constraint payment_booking_fk
+        foreign key (booking_id) references booking (id)
 );
 
 create table review
 (
-    id               varchar(255)         not null
+    id         varchar(255)         not null
         primary key,
-    userId           varchar(255)         not null,
-    rentalPropertyId varchar(255)         not null,
-    text             varchar(255)         not null,
-    stars            int                  not null,
-    isBanned         tinyint(1) default 0 not null,
-    constraint Review_RentalProperty_id_fk
-        foreign key (rentalPropertyId) references rental_property (id),
+    user_id    varchar(255)         not null,
+    booking_id varchar(255)         not null,
+    text       varchar(255)         not null,
+    stars      int                  not null,
+    is_banned  tinyint(1) default 0 not null,
+    constraint Review_BookingId_id_fk
+        foreign key (booking_id) references booking (id),
     constraint Review_User_id_fk
-        foreign key (userId) references user (id),
+        foreign key (user_id) references user (id),
     constraint stars
         check ((`stars` < 6) and (`stars` > -(1)))
 );
@@ -122,9 +123,9 @@ create table image
 (
     id        varchar(255) not null
         primary key,
-    reviewId  varchar(255) not null,
+    review_id varchar(255) not null,
     reference varchar(255) not null,
     constraint Image_Review_id_fk
-        foreign key (reviewId) references review (id)
+        foreign key (review_id) references review (id)
 );
 

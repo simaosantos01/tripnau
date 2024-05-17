@@ -11,7 +11,7 @@ import com.desofs.backend.dtos.PriceNightIntervalDto;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class RentalPropertyMapper {
@@ -19,8 +19,8 @@ public class RentalPropertyMapper {
     private final BookingMapper bookingMapper = new BookingMapper();
 
     public RentalPropertyDomain toDomainObject(RentalPropertyDB rentalProperty,
-                                               ArrayList<PriceNightInterval> priceNightIntervals,
-                                               ArrayList<BookingDomain> bookings) {
+                                               List<PriceNightInterval> priceNightIntervals,
+                                               List<BookingDomain> bookings) {
         return new RentalPropertyDomain(Id.create(rentalProperty.getId()),
                 Id.create(rentalProperty.getPropertyOwnerId()), PropertyName.create(rentalProperty.getPropertyName()),
                 Location.create(rentalProperty.getLat(), rentalProperty.getLon()),

@@ -1,16 +1,19 @@
 package com.desofs.backend.domain.entities;
 
 import com.desofs.backend.domain.valueobjects.*;
+import com.desofs.backend.dtos.CreatePaymentDto;
 import com.desofs.backend.dtos.PaymentDto;
 import com.desofs.backend.utils.LocalDateTimeUtils;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
 public class PaymentEntity {
 
     private final Id id;
+    private final Id bookingId;
     private final MoneyAmount moneyAmount;
     private final CreditCardNumber creditCardNumber;
     private final CardVerificationCode cardVerificationCode;
@@ -21,10 +24,11 @@ public class PaymentEntity {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public PaymentEntity(Id id, MoneyAmount moneyAmount, CreditCardNumber creditCardNumber,
+    public PaymentEntity(Id id, Id bookingId, MoneyAmount moneyAmount, CreditCardNumber creditCardNumber,
                          CardVerificationCode cardVerificationCode, LocalDateTime expirationDate,
                          Email email, Name personalName, LocalDateTime createdAt) {
         notNull(id, "Id must not be null.");
+        notNull(bookingId, "BookingId must not be null.");
         notNull(moneyAmount, "Money amount must not be null.");
         notNull(creditCardNumber, "Credit card number must not be null.");
         notNull(cardVerificationCode, "Card verification code must not be null.");
@@ -34,6 +38,7 @@ public class PaymentEntity {
         notNull(createdAt, "Creation date must not be null.");
 
         this.id = id.copy();
+        this.bookingId = bookingId.copy();
         this.moneyAmount = moneyAmount.copy();
         this.creditCardNumber = creditCardNumber.copy();
         this.cardVerificationCode = cardVerificationCode.copy();
@@ -43,8 +48,9 @@ public class PaymentEntity {
         this.createdAt = createdAt;
     }
 
-    public PaymentEntity(PaymentDto dto) {
-        this(Id.create(dto.getId()),
+    public PaymentEntity(CreatePaymentDto dto, String bookingId) {
+        this(Id.create(UUID.randomUUID().toString()),
+                Id.create(bookingId),
                 MoneyAmount.create(dto.getMoneyAmount()),
                 CreditCardNumber.create(dto.getCreditCardNumber()),
                 CardVerificationCode.create(dto.getCardVerificationCode()),
@@ -55,7 +61,7 @@ public class PaymentEntity {
     }
 
     public PaymentEntity copy() {
-        return new PaymentEntity(id.copy(), moneyAmount.copy(), creditCardNumber.copy(), cardVerificationCode.copy(),
+        return new PaymentEntity(id.copy(), bookingId.copy(), moneyAmount.copy(), creditCardNumber.copy(), cardVerificationCode.copy(),
                 LocalDateTimeUtils.copyLocalDateTime(expirationDate), email.copy(), name,
                 LocalDateTimeUtils.copyLocalDateTime(createdAt));
     }
@@ -65,6 +71,10 @@ public class PaymentEntity {
 
     public Id getId() {
         return id.copy();
+    }
+
+    public Id getBookingId() {
+        return bookingId.copy();
     }
 
     public MoneyAmount getMoneyAmount() {

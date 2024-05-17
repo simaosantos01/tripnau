@@ -19,6 +19,6 @@ public class FetchRentalPropertyDto {
     private final String propertyDescription;
     private final BigDecimal amount;
     private final List<PriceNightIntervalDto> priceNightIntervalList;
-    private final List<BookingDto> bookingList;
+    private final List<FetchBookingDto> bookingList;
     private final boolean isActive;
 }
