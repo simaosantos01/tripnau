@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface ImageRepositoryJpa extends CrudRepository<ImageUrlDB, String> {
+public interface ImageRepositoryJPA extends CrudRepository<ImageUrlDB, String> {
 
     List<ImageUrlDB> findByReviewId(String reviewId);
 

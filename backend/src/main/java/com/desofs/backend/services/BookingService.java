@@ -11,6 +11,7 @@ import com.desofs.backend.domain.aggregates.BookingDomain;
 import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
 import com.desofs.backend.domain.aggregates.UserDomain;
 import com.desofs.backend.domain.entities.PaymentEntity;
+import com.desofs.backend.domain.valueobjects.Id;
 import com.desofs.backend.dtos.*;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -42,12 +44,12 @@ public class BookingService {
             throw new NotFoundException("Rental property not found");
         }
 
-        BookingDomain bookingDomain = new BookingDomain(bookingDto);
+        Id bookingId = Id.create(UUID.randomUUID().toString());
+        BookingDomain bookingDomain = new BookingDomain(bookingDto, bookingId);
         rentalProperty.addBooking(bookingDomain);
-        bookingRepository.create(bookingDomain, rentalProperty.getId());
 
-        // todo: meter com o novo booking id
-        paymentRepository.create(paymentMapper.dtoToDomain(bookingDto.getPayment(), "a"));
+        bookingRepository.create(bookingDomain, rentalProperty.getId());
+        paymentRepository.create(paymentMapper.dtoToDomain(bookingDto.getPayment(), bookingId.value()));
 
         return this.bookingMapper.domainToDto(bookingDomain);
     }

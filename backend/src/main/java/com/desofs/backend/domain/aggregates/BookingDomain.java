@@ -23,7 +23,7 @@ public class BookingDomain {
 
     private final Id id;
     private final Id accountId;
-    private PaymentEntity payment;
+    private final PaymentEntity payment;
     private final IntervalTime intervalTime;
     private final List<Event> eventList;
     private ReviewDomain review;
@@ -51,10 +51,10 @@ public class BookingDomain {
         this.createdAt = LocalDateTimeUtils.copyLocalDateTime(createdAt);
     }
 
-    public BookingDomain(CreateBookingDto dto) {
-        this(Id.create(UUID.randomUUID().toString()),
+    public BookingDomain(CreateBookingDto dto, Id bookingId) {
+        this(bookingId,
                 Id.create(dto.getAccountId()),
-                new PaymentEntity(dto.getPayment(), "a"), // todo: o booking id que foi criado agora
+                new PaymentEntity(dto.getPayment(), bookingId.value()), // todo: o booking id que foi criado agora
                 IntervalTime.create(dto.getIntervalTime().getFrom(), dto.getIntervalTime().getTo()),
                 List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED)),
                 null,
@@ -62,7 +62,7 @@ public class BookingDomain {
     }
 
     private static boolean eventListIsValid(List<Event> eventList) {
-        return ListUtils.hasDuplicates(eventList);
+        return !ListUtils.hasDuplicates(eventList);
     }
 
     // Getters ---------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ public class BookingDomain {
     }
 
     public ReviewDomain getReview() {
-        return review.copy();
+        return this.review == null ? null : review.copy();
     }
 
     public LocalDateTime getCreatedAt() {

@@ -21,7 +21,7 @@ public class RentalPropertyDomain {
     private final PropertyDescription propertyDescription;
     private final MoneyAmount amount;
     private final List<PriceNightInterval> priceNightIntervalList;
-    private final List<BookingDomain> bookingList;
+    private List<BookingDomain> bookingList;
     private final boolean isActive;
 
     // Constructors ----------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public class RentalPropertyDomain {
         this.propertyDescription = propertyDescription.copy();
         this.amount = amount.copy();
         this.priceNightIntervalList = priceNightIntervalList;
-        this.bookingList = List.copyOf(bookingList);
+        this.bookingList = bookingList;
         this.isActive = isActive;
     }
 
@@ -155,6 +155,7 @@ public class RentalPropertyDomain {
         if (bookingAlreadyExists(bookingDomain)) {
             throw new IllegalArgumentException("There is already a booking with that id associated.");
         }
+
         // todo: validar se o booking tem a info que encaixa na property (intervals, etc)
         this.bookingList.add(bookingDomain);
     }

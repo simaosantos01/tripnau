@@ -20,3 +20,4 @@ public class ApplicationBootstrapper implements CommandLineRunner {
         this.rentalPropertyBootstrapper.run();
     }
 }
+

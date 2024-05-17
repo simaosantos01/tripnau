@@ -11,6 +11,7 @@ import com.desofs.backend.domain.valueobjects.Id;
 import com.desofs.backend.domain.valueobjects.IntervalTime;
 import com.desofs.backend.dtos.EventDto;
 import com.desofs.backend.dtos.FetchBookingDto;
+import com.desofs.backend.dtos.FetchReviewDto;
 import com.desofs.backend.dtos.IntervalTimeDto;
 import org.springframework.stereotype.Component;
 
@@ -24,13 +25,14 @@ public class BookingMapper {
     private final ReviewMapper reviewMapper = new ReviewMapper();
 
     public FetchBookingDto domainToDto(BookingDomain booking) {
+        FetchReviewDto reviewDto = booking.getReview() == null ? null : reviewMapper.domainToDto(booking.getReview());
         return new FetchBookingDto(
                 booking.getId().value(),
                 booking.getAccountId().value(),
                 paymentMapper.domainToDto(booking.getPayment()),
                 new IntervalTimeDto(booking.getIntervalTime().getFrom(), booking.getIntervalTime().getTo()),
                 booking.getEventList().stream().map(event -> new EventDto(event.getDatetime(), event.getState())).toList(),
-                reviewMapper.domainToDto(booking.getReview()),
+                reviewDto,
                 booking.getCreatedAt());
     }
 
@@ -49,7 +51,7 @@ public class BookingMapper {
                 Id.create(booking.getId()),
                 Id.create(booking.getAccountId()),
                 paymentMapper.dbToDomain(paymentDB),
-                IntervalTime.create(booking.getFrom(), booking.getTo()),
+                IntervalTime.create(booking.getFromDate(), booking.getToDate()),
                 List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED)),
                 this.reviewMapper.dbToDomain(reviewDB, imageUrlDB),
                 LocalDateTime.now());

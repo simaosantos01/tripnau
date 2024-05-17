@@ -1,15 +1,11 @@
 package com.desofs.backend.database.repositories;
 
-import com.desofs.backend.database.mappers.PaymentMapper;
 import com.desofs.backend.database.mappers.ReviewMapper;
 import com.desofs.backend.database.models.ImageUrlDB;
-import com.desofs.backend.database.models.PaymentDB;
 import com.desofs.backend.database.models.ReviewDB;
-import com.desofs.backend.database.springRepositories.ImageRepositoryJpa;
-import com.desofs.backend.database.springRepositories.PaymentRepositoryJPA;
+import com.desofs.backend.database.springRepositories.ImageRepositoryJPA;
 import com.desofs.backend.database.springRepositories.ReviewRepositoryJPA;
 import com.desofs.backend.domain.aggregates.ReviewDomain;
-import com.desofs.backend.domain.entities.PaymentEntity;
 import com.desofs.backend.exceptions.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,7 +17,7 @@ import java.util.List;
 public class ReviewRepository {
 
     private final ReviewRepositoryJPA reviewRepositoryJPA;
-    private final ImageRepositoryJpa imageRepositoryJpa;
+    private final ImageRepositoryJPA imageRepositoryJpa;
     private final ReviewMapper mapper;
 
     public void create(ReviewDomain reviewDomain) throws DatabaseException {

@@ -23,10 +23,10 @@ public class BookingDB {
     private String propertyId;
 
     @Column(nullable = false)
-    private Date from;
+    private Date fromDate;
 
     @Column(nullable = false)
-    private Date to;
+    private Date toDate;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -39,8 +39,8 @@ public class BookingDB {
         this.id = id;
         this.accountId = accountId;
         this.propertyId = propertyId;
-        this.from = from;
-        this.to = to;
+        this.fromDate = from;
+        this.toDate = to;
         this.createdAt = createdAt;
     }
 }

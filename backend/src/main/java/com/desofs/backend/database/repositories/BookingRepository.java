@@ -7,7 +7,7 @@ import com.desofs.backend.database.models.ImageUrlDB;
 import com.desofs.backend.database.models.PaymentDB;
 import com.desofs.backend.database.models.ReviewDB;
 import com.desofs.backend.database.springRepositories.BookingRepositoryJPA;
-import com.desofs.backend.database.springRepositories.ImageRepositoryJpa;
+import com.desofs.backend.database.springRepositories.ImageRepositoryJPA;
 import com.desofs.backend.database.springRepositories.PaymentRepositoryJPA;
 import com.desofs.backend.database.springRepositories.ReviewRepositoryJPA;
 import com.desofs.backend.domain.aggregates.BookingDomain;
@@ -25,26 +25,17 @@ public class BookingRepository {
     private final BookingRepositoryJPA bookingRepository;
     private final PaymentRepositoryJPA paymentRepositoryJpa;
     private final ReviewRepositoryJPA reviewRepositoryJpa;
-    private final ImageRepositoryJpa imageRepositoryJpa;
-    private final ReviewRepository reviewRepository;
-    private final RentalPropertyRepository rentalPropertyRepository;
-    private final PaymentRepository paymentRepository;
+    private final ImageRepositoryJPA imageRepositoryJpa;
     private final BookingMapper bookingMapper;
-    private final PaymentMapper paymentMapper;
 
-    public BookingDomain create(BookingDomain bookingDomain, Id propertyId) throws DatabaseException {
+    public void create(BookingDomain bookingDomain, Id propertyId) throws DatabaseException {
         BookingDB bookingDB = this.bookingRepository.findById(bookingDomain.getId().value()).orElse(null);
 
         if (bookingDB != null) {
             throw new DatabaseException("Duplicated ID violation.");
         }
 
-        this.paymentRepository.create(bookingDomain.getPayment());
-
-        bookingDB = this.bookingRepository.save(this.bookingMapper.domainToDb(bookingDomain, propertyId.value()));
-
-        // todo: retornar o novo backend
-        return null;
+        this.bookingRepository.save(this.bookingMapper.domainToDb(bookingDomain, propertyId.value()));
     }
 
     public BookingDomain findById(String bookingId) {
@@ -69,5 +60,4 @@ public class BookingRepository {
         }
         return null;
     }
-
 }
