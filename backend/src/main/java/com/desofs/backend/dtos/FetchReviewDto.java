@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class ReviewDto {
+public class FetchReviewDto {
 
     private final String id;
     private final String authorId;
-    private final String propertyId;
+    private final String bookingId;
     private final String text;
     private final int stars;
     private final boolean banned;

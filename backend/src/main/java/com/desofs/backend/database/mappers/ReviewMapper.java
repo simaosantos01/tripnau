@@ -1,19 +1,50 @@
 package com.desofs.backend.database.mappers;
 
+import com.desofs.backend.database.models.ImageUrlDB;
+import com.desofs.backend.database.models.ReviewDB;
 import com.desofs.backend.domain.aggregates.ReviewDomain;
+import com.desofs.backend.domain.valueobjects.Id;
 import com.desofs.backend.domain.valueobjects.ImageUrl;
-import com.desofs.backend.dtos.ReviewDto;
+import com.desofs.backend.domain.valueobjects.ReviewStars;
+import com.desofs.backend.domain.valueobjects.ReviewText;
+import com.desofs.backend.dtos.FetchReviewDto;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+@Component
 public class ReviewMapper {
 
-    public ReviewDto domainToDto(ReviewDomain review) {
-        return new ReviewDto(
+    public FetchReviewDto domainToDto(ReviewDomain review) {
+        return new FetchReviewDto(
                 review.getId().value(),
                 review.getAuthorId().value(),
-                review.getPropertyId().value(),
+                review.getBookingId().value(),
                 review.getText().value(),
                 review.getStars().getStars(),
                 review.isBanned(),
                 review.getImageUrlList().stream().map(ImageUrl::getUrl).toList());
     }
+
+    public ReviewDB domainToDb(ReviewDomain review) {
+        return new ReviewDB(
+                review.getId().value(),
+                review.getAuthorId().value(),
+                review.getBookingId().value(),
+                review.getText().value(),
+                review.getStars().getStars(),
+                review.isBanned());
+    }
+
+    public ReviewDomain dbToDomain(ReviewDB review, List<ImageUrlDB> imageUrls) {
+        return new ReviewDomain(
+                Id.create(review.getId()),
+                Id.create(review.getBookingId()),
+                Id.create(review.getUserId()),
+                ReviewText.create(review.getText()),
+                ReviewStars.create(review.getStars()),
+                review.isBanned(),
+                imageUrls.stream().map(i -> ImageUrl.create(i.getReference())).toList());
+    }
+
 }
