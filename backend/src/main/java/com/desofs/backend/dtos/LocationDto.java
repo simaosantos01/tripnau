@@ -6,8 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LocationDto {
-
-    private final double lon;
     private final double lat;
-
+    private final double lon;
 }

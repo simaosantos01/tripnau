@@ -29,7 +29,8 @@ public class RentalPropertyBootstrapper {
                 MoneyAmount.create(new BigDecimal("200.00")),
                 //todo: populate
                 new ArrayList<>(),
-                new ArrayList<>()
+                new ArrayList<>(),
+                true
         );
         rentalPropertyRepository.create(rentalProperty1);
 
@@ -44,7 +45,8 @@ public class RentalPropertyBootstrapper {
                 PropertyDescription.create("Property 2 description"),
                 MoneyAmount.create(new BigDecimal("150.00")),
                 new ArrayList<>(),
-                new ArrayList<>()
+                new ArrayList<>(),
+                true
         );
         rentalPropertyRepository.create(rentalProperty2);
 
@@ -59,7 +61,8 @@ public class RentalPropertyBootstrapper {
                 PropertyDescription.create("Property 3 description"),
                 MoneyAmount.create(new BigDecimal("250.00")),
                 new ArrayList<>(),
-                new ArrayList<>()
+                new ArrayList<>(),
+                true
         );
         rentalPropertyRepository.create(rentalProperty3);
     }

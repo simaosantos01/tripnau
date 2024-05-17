@@ -11,6 +11,6 @@ import java.math.BigDecimal;
 public class PriceNightIntervalDto {
 
     private final BigDecimal price;
-    private final IntervalTime interval;
+    private final IntervalTimeDto interval;
 
 }

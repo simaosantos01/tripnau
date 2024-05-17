@@ -1,3 +1,21 @@
+drop table if exists event;
+
+drop table if exists booking;
+
+drop table if exists image;
+
+drop table if exists payment;
+
+drop table if exists price_night_interval;
+
+drop table if exists review;
+
+drop table if exists rental_property;
+
+drop table if exists state;
+
+drop table if exists user;
+
 create table payment
 (
     id               varchar(255)                       not null
@@ -23,7 +41,8 @@ create table rental_property
     max_guests           int          not null,
     num_bedrooms         int          not null,
     num_bathrooms        int          not null,
-    property_description varchar(255) not null
+    property_description varchar(255) not null,
+    is_active            tinyint(1)   not null
 );
 
 create table price_night_interval
@@ -108,3 +127,4 @@ create table image
     constraint Image_Review_id_fk
         foreign key (reviewId) references review (id)
 );
+

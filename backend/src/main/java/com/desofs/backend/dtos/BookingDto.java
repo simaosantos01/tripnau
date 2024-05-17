@@ -17,5 +17,4 @@ public class BookingDto {
     private List<EventDto> eventList;
     private ReviewDto review;
     private LocalDateTime createdAt;
-
 }
