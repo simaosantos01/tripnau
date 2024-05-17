@@ -1,7 +1,18 @@
 on:
   push:
     branches:
-      - devSecOps
+      - dev
+    paths:
+      - 'frontend/**'
+  pull_request:
+    types:
+      - opened
+      - reopened
+    branches:
+      - dev
+      - master
+    paths:
+      - 'frontend/**'
 
   workflow_dispatch:
 
@@ -47,6 +58,10 @@ jobs:
     steps:
       - working-directory: frontend
         run: dependency-check.sh --disableYarnAudit --out ../ --scan .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-checker-results
+          path: "${{ github.workspace }}/dependency-check-report.html"  
 
   UnitTesting:
     runs-on: self-hosted
@@ -55,6 +70,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "18.19.0"
-      - working-directory: frontend 
-        run: npm run test 
+      - working-directory: frontend
+        run: npm run ci:test 
 
