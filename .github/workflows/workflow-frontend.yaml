@@ -35,9 +35,23 @@ jobs:
       - working-directory: frontend
         run: npm install && npm run build
 
-  SonarQubeScan:
+  UnitTesting:
     runs-on: self-hosted
     needs: [InstallDependenciesAndBuild]
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.19.0"
+      - working-directory: frontend
+        run: npm run ci:test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: karma-code-coverage-results
+          path: "${{ github.workspace }}/frontend/coverage"         
+
+  SonarQubeScan:
+    runs-on: self-hosted
+    needs: [UnitTesting]
     steps:
       - run: touch sonar-project.properties
       - uses: DamianReeves/write-file-action@master
@@ -45,12 +59,17 @@ jobs:
           path: sonar-project.properties
           write-mode: overwrite
           contents: |
-            sonar.projectKey=desofs
+            sonar.projectKey=desofs-frontend
             sonar.sources=frontend/src/
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}    
 
   DependencyAnalysis:
     runs-on: self-hosted
@@ -63,13 +82,4 @@ jobs:
           name: owasp-dependency-checker-results
           path: "${{ github.workspace }}/dependency-check-report.html"  
 
-  UnitTesting:
-    runs-on: self-hosted
-    needs: [DependencyAnalysis]
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "18.19.0"
-      - working-directory: frontend
-        run: npm run ci:test 
 
