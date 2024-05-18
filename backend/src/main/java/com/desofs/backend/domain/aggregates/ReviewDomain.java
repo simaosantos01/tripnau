@@ -16,12 +16,12 @@ public class ReviewDomain {
     private final Id bookingId;
     private final ReviewText text;
     private final ReviewStars stars;
-    private boolean banned;
+    private boolean isBanned;
     private final List<ImageUrl> imageUrlList;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public ReviewDomain(Id id, Id authorId, Id bookingId, ReviewText text, ReviewStars stars, boolean banned,
+    public ReviewDomain(Id id, Id authorId, Id bookingId, ReviewText text, ReviewStars stars, boolean isBanned,
                         List<ImageUrl> imageUrlList) {
         notNull(id, "Id must not be null.");
         notNull(authorId, "AuthorId must not be null.");
@@ -36,14 +36,21 @@ public class ReviewDomain {
         this.bookingId = bookingId.copy();
         this.text = text.copy();
         this.stars = stars.copy();
-        this.banned = banned;
+        this.isBanned = isBanned;
         this.imageUrlList = List.copyOf(imageUrlList);
     }
 
-    public ReviewDomain(CreateReviewDto reviewDto) {
-        this(Id.create(UUID.randomUUID().toString()), Id.create(reviewDto.getAuthorId()), Id.create(reviewDto.getBookingId()),
-                ReviewText.create(reviewDto.getText()), ReviewStars.create(reviewDto.getStars()),
-                reviewDto.isBanned(), reviewDto.getImageUrlList().stream().map(ImageUrl::create).toList());
+    // Used to create a Review
+    public ReviewDomain(CreateReviewDto reviewDto, String authorId) {
+        this(
+                Id.create(UUID.randomUUID().toString()),
+                Id.create(authorId),
+                Id.create(reviewDto.getBookingId()),
+                ReviewText.create(reviewDto.getText()),
+                ReviewStars.create(reviewDto.getStars()),
+                reviewDto.isBanned(),
+                reviewDto.getImageUrlList().stream().map(image ->
+                        ImageUrl.create(Id.create(UUID.randomUUID().toString()), image)).toList());
     }
 
     private static boolean imgUrlListIsValid(List<ImageUrl> imageUrlList) {
@@ -73,7 +80,7 @@ public class ReviewDomain {
     }
 
     public boolean isBanned() {
-        return banned;
+        return isBanned;
     }
 
     public List<ImageUrl> getImageUrlList() {
@@ -82,15 +89,15 @@ public class ReviewDomain {
 
     public ReviewDomain copy() {
         return new ReviewDomain(id.copy(), authorId.copy(), bookingId.copy(), text.copy(),
-                stars.copy(), banned, List.copyOf(imageUrlList));
+                stars.copy(), isBanned, List.copyOf(imageUrlList));
     }
 
     // Domain methods --------------------------------------------------------------------------------------------------
 
     public void banReview() {
-        if (this.banned) {
+        if (this.isBanned) {
             throw new IllegalArgumentException("The review is already banned");
         }
-        this.banned = true;
+        this.isBanned = true;
     }
 }

@@ -61,6 +61,8 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.POST, "/booking/add").permitAll()
 
+                .requestMatchers(HttpMethod.POST, "/review/add").permitAll()
+
                 .requestMatchers(restApiDocPath + "/**").permitAll()
                 .requestMatchers(swaggerPath + "/**").permitAll()
                 .anyRequest().authenticated());

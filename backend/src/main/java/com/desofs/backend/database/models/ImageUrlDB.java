@@ -24,11 +24,9 @@ public class ImageUrlDB {
     public ImageUrlDB() {
     }
 
-    public ImageUrlDB(String id, String reviewId, String reference, String paymentId, Date from,
-                      Date to, LocalDateTime createdAt) {
+    public ImageUrlDB(String id, String reviewId, String reference) {
         this.id = id;
         this.reviewId = reviewId;
         this.reference = reference;
     }
-
 }

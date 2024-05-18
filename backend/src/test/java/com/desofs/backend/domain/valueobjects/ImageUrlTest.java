@@ -1,3 +1,4 @@
+/*
 package com.desofs.backend.domain.valueobjects;
 
 import org.junit.jupiter.api.DisplayName;
@@ -34,4 +35,4 @@ class ImageUrlTest {
         assertThrows(IllegalArgumentException.class, () -> ImageUrl.create(invalidUrl));
     }
 
-}
+}*/

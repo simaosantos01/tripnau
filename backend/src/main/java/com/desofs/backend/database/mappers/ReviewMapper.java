@@ -44,6 +44,6 @@ public class ReviewMapper {
                 ReviewText.create(review.getText()),
                 ReviewStars.create(review.getStars()),
                 review.isBanned(),
-                imageUrls.stream().map(i -> ImageUrl.create(i.getReference())).toList());
+                imageUrls.stream().map(i -> ImageUrl.create(Id.create(i.getId()), i.getReference())).toList());
     }
 }

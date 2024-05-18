@@ -1,9 +1,6 @@
 package com.desofs.backend.controllers;
 
-import com.desofs.backend.dtos.CreateBookingDto;
-import com.desofs.backend.dtos.CreateRentalPropertyDto;
-import com.desofs.backend.dtos.FetchBookingDto;
-import com.desofs.backend.dtos.FetchRentalPropertyDto;
+import com.desofs.backend.dtos.*;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
