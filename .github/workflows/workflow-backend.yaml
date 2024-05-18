@@ -25,9 +25,20 @@ jobs:
         with:
           fetch-depth: 0
 
-  InstallDependenciesAndBuild:
+  SecretScanner:
     runs-on: self-hosted
     needs: [Checkout]
+    steps:
+      - run: |
+          NOW=$(date +'%Y-%m-%d_%Hh%Mm%Ss')
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          echo "NOW=$NOW" >> $GITHUB_ENV
+          echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_ENV
+      - run: python detect-new-secrets.py resolve_secrets_${{ env.SHA_SHORT }}_${{ env.NOW }}
+
+  InstallDependenciesAndBuild:
+    runs-on: self-hosted
+    needs: [SecretScanner]
     steps:
       - working-directory: backend
         run: mvn install -DskipTests
@@ -39,11 +50,11 @@ jobs:
     needs: [InstallDependenciesAndBuild]
     steps:
       - working-directory: backend
-        run: mvn verify   
+        run: mvn verify
       - uses: actions/upload-artifact@v4
         with:
           name: jacoco-code-coverage-results
-          path: "${{ github.workspace }}/backend/target/site/jacoco"     
+          path: "${{ github.workspace }}/backend/target/site/jacoco"
 
   SonarQubeScan:
     runs-on: self-hosted
@@ -66,7 +77,7 @@ jobs:
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}    
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   DependencyAnalysis:
     runs-on: self-hosted
