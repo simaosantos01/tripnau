@@ -5,9 +5,13 @@
         <span>You don't have an account? <a href="/register">Sign up</a></span>
     </div>
     <form class="form-group" [formGroup]="form" (ngSubmit)="onSubmit()">
-        <input type="text" pInputText formControlName="email">
-        <p-password [toggleMask]="true" formControlName="password" [feedback]="false"></p-password>
-        <br>
+        <!-- <input type="text" pInputText formControlName="email">
+        <p-password [toggleMask]="true" formControlName="password" [feedback]="false"></p-password> -->
+        <input type="email" name="email" placeholder="Email" formControlName="email">
+        <input type="password" name="password" placeholder="Password" formControlName="password">
+        <input type="submit" value="Signup">
+    </form>
+    <div class="card-terms">
         @if(form.getError('tooManyRequests')){
         <label style="color: red;">Rate Limit Exceeded</label>
         <br>
@@ -21,7 +25,5 @@
         <label style="color: red;">Invalid Credentials</label>
         <br>
         }
-        <p-button label="Submit" (onClick)="onSubmit()" [disabled]="disabled" />
-    </form>
-
+    </div>
 </div>
