@@ -1,16 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { ROUTE } from '../enum/routes';
 import { LoginRequest } from '../model/login-request';
 import { LoginResponse } from '../model/login-response';
+import { RegisterRequest } from '../model/register-request';
+import { RegisterResponse } from '../model/register-response';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  readonly BASE_URL = "";
 
   user: string | undefined;
   token: string | undefined;
@@ -22,7 +24,7 @@ export class AuthService {
   constructor() { }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(this.BASE_URL + ROUTE.LOGIN, credentials).pipe(
+    return this.http.post<LoginResponse>(environment.apiUrl + ROUTE.LOGIN, credentials).pipe(
       tap((response) => {
         if (response.token) {
           this.setToken(response.token);
@@ -30,7 +32,14 @@ export class AuthService {
       })
     )
   }
-
+  register(user: RegisterRequest): Observable<RegisterResponse> {
+    return new Observable<RegisterResponse>(observer => {
+      observer.next({
+        success: true
+      })
+    })
+    return this.http.post<RegisterResponse>(environment.apiUrl + ROUTE.REGISTER, user);
+  }
   getUser() {
     return this.user;
   }
@@ -44,7 +53,9 @@ export class AuthService {
     try {
       this.parseToken(token);
       this.token = token;
-      localStorage.setItem('token', token);
+      if (this.getRole() != 'ADMIN') {
+        localStorage.setItem('token', token);
+      }
     } catch (e) {
       this.token = '';
     }

@@ -3,18 +3,18 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ROUTE } from '../../enum/routes';
 import { LoginRequest } from '../../model/login-request';
 import { LoginResponse } from '../../model/login-response';
 import { AuthService } from '../../services/auth.service';
+import { MessagesService } from '../../services/messages.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CardModule, ButtonModule, PasswordModule, InputTextModule, ReactiveFormsModule],
+  imports: [ButtonModule, PasswordModule, InputTextModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -22,6 +22,7 @@ export class LoginComponent {
   fb = inject(FormBuilder)
   authService = inject(AuthService)
   router = inject(Router)
+  messagesService = inject(MessagesService);
 
   form = this.fb.group({
     email: ['', [Validators.email, Validators.required]],
@@ -79,9 +80,9 @@ export class LoginComponent {
 
   handleError(error: any) {
     if (error.name) {
-      this.form.setErrors({ backendfault: true });
+      this.messagesService.error('There was a problem sending the request', 'Oopsie Daisy')
     } else {
-      this.form.setErrors({ tooManyRequests: true });
+      this.messagesService.error('Take a breather', 'Rate Limit Exceeded')
     }
   }
 }
