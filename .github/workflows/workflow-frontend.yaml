@@ -36,7 +36,6 @@ jobs:
           echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_ENV
       - run: python detect-new-secrets.py resolve_secrets_${{ env.SHA_SHORT }}_${{ env.NOW }}
 
-
   InstallDependenciesAndBuild:
     runs-on: self-hosted
     needs: [SecretScanner]
