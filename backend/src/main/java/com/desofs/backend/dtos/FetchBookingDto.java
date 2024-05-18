@@ -1,5 +1,6 @@
 package com.desofs.backend.dtos;
 
+import com.desofs.backend.domain.enums.BookingStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,6 +16,7 @@ public class FetchBookingDto {
     private PaymentDto payment;
     private IntervalTimeDto intervalTime;
     private List<EventDto> eventList;
+    private BookingStatusEnum status;
     private FetchReviewDto review;
     private LocalDateTime createdAt;
 }

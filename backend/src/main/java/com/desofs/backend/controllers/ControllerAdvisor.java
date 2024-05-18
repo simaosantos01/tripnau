@@ -40,22 +40,22 @@ public class ControllerAdvisor {
         return "";
     }
 
-    private ErrorPayloadMessage createPayload(String message, WebRequest request) {
+    private ErrorPayloadMessage createPayload(String message, HttpStatus status, WebRequest request) {
         ErrorPayloadMessage errorResponse = new ErrorPayloadMessage();
         errorResponse.setTimestamp(LocalDateTime.now());
-        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        errorResponse.setStatus(status.value());
+        errorResponse.setError(status.getReasonPhrase());
         errorResponse.setMessage(message);
         errorResponse.setPath(this.getPath(request));
         return errorResponse;
     }
 
-    private ErrorPayloadMessage createPayload(Exception exception, WebRequest request) {
-        return createPayload(exception.getMessage(), request);
+    private ErrorPayloadMessage createPayload(Exception exception, HttpStatus status, WebRequest request) {
+        return createPayload(exception.getMessage(), status, request);
     }
 
-    private ErrorPayloadMessage createPayload(Exception exception, WebRequest request, String msg) {
-        ErrorPayloadMessage errorResponse = this.createPayload(exception, request);
+    private ErrorPayloadMessage createPayload(Exception exception, WebRequest request, HttpStatus status, String msg) {
+        ErrorPayloadMessage errorResponse = this.createPayload(exception, status, request);
         errorResponse.setMessage(msg);
         return errorResponse;
     }
@@ -83,28 +83,33 @@ public class ControllerAdvisor {
     public ResponseEntity<Object> handleInvalidsArguments(MethodArgumentNotValidException exception, WebRequest request) {
         Map<String, String> errorMap = new HashMap<>();
         exception.getBindingResult().getFieldErrors().forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createPayload(exception, request, mapToString(errorMap)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(this.createPayload(exception, request, HttpStatus.BAD_REQUEST, mapToString(errorMap)));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundExceptions(Exception exception, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createPayload(exception, request));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(this.createPayload(exception, HttpStatus.NOT_FOUND, request));
     }
 
     @ExceptionHandler({IllegalArgumentException.class, DatabaseException.class})
     public ResponseEntity<Object> handleBadRequestExceptions(Exception exception, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.createPayload(exception, request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
     }
 
     @ExceptionHandler({BadCredentialsException.class, NotAuthorizedException.class})
     public ResponseEntity<Object> handleForbiddenExceptions(Exception exception, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(this.createPayload(exception, request));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(this.createPayload(exception, HttpStatus.FORBIDDEN, request));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericExceptions(Exception exception, WebRequest request) {
         log.error("Not caught exception: {}", exception.getMessage());
         String genericMsg = "Some generic error occurred. Contact administrator.";
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.createPayload(genericMsg, request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(this.createPayload(genericMsg, HttpStatus.BAD_REQUEST, request));
     }
 }

@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Booking Controller", description = "Endpoints for managing bookings")
 @RestController
 @RequestMapping(path = "/booking")
@@ -24,20 +26,37 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    @GetMapping
-    public ResponseEntity<FetchBookingDto> getById(@RequestParam final String propertyId,
-                                                   @RequestParam final String bookingId) throws NotFoundException {
-        FetchBookingDto rentalProperty = this.bookingService.findById(propertyId, bookingId);
+    @GetMapping("/{id}")
+    public ResponseEntity<FetchBookingDto> getById(@PathVariable final String id) throws NotFoundException {
+        FetchBookingDto booking = this.bookingService.findById(id);
+
+        return ResponseEntity.ok().body(booking);
+    }
+
+    @GetMapping("/getAllByUser/{id}")
+    public ResponseEntity<List<FetchBookingDto>> getAllByUserId(@PathVariable final String id) throws NotFoundException {
+        List<FetchBookingDto> rentalProperty = this.bookingService.findAllByUserId(id);
 
         return ResponseEntity.ok().body(rentalProperty);
     }
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<FetchBookingDto> create(@RequestBody CreateBookingDto createBookingDto)
+    public ResponseEntity<FetchBookingDto> create(@RequestBody final CreateBookingDto createBookingDto)
             throws DatabaseException, NotFoundException {
 
         FetchBookingDto bookingDto = this.bookingService.create(createBookingDto);
         return new ResponseEntity<>(bookingDto, HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}/cancel")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<FetchBookingDto> cancel(@PathVariable final String id)
+            throws NotFoundException {
+
+        FetchBookingDto bookingDto = this.bookingService.cancel(id);
+
+        return new ResponseEntity<>(bookingDto, HttpStatus.CREATED);
+    }
+
 }

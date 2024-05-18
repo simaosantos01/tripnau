@@ -94,7 +94,9 @@ public class AuthController {
                                                  Authentication authentication)
             throws DatabaseException, NotAuthorizedException {
 
-        if (createUserDto.getRole().equals(Role.BusinessAdmin) && !hasAuthorization(authentication, Role.BusinessAdmin)) {
+        if (authentication != null
+                && createUserDto.getRole().equals(Role.BusinessAdmin)
+                && !hasAuthorization(authentication, Role.BusinessAdmin)) {
             throw new NotAuthorizedException("You're not authorized!");
         }
 

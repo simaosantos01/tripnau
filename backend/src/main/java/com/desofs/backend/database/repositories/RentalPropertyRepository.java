@@ -7,7 +7,9 @@ import com.desofs.backend.database.models.*;
 import com.desofs.backend.database.springRepositories.*;
 import com.desofs.backend.domain.aggregates.BookingDomain;
 import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
+import com.desofs.backend.domain.valueobjects.IntervalTime;
 import com.desofs.backend.domain.valueobjects.PriceNightInterval;
+import com.desofs.backend.dtos.UpdateRentalPropertyDto;
 import com.desofs.backend.exceptions.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,8 @@ public class RentalPropertyRepository {
 
     private final ReviewRepositoryJPA reviewRepositoryJPA;
 
+    private final PriceNightIntervalRepository priceNightIntervalRepository;
+
     private final RentalPropertyMapper rentalPropertyMapper;
 
     private final ImageRepositoryJPA imageRepositoryJPA;
@@ -49,11 +53,45 @@ public class RentalPropertyRepository {
         this.rentalPropertyRepositoryJPA.save(this.rentalPropertyMapper.toDatabaseObject(rentalProperty));
     }
 
+    public RentalPropertyDomain update(RentalPropertyDomain rentalProperty) throws DatabaseException {
+        RentalPropertyDB rentalPropertyById =
+                this.rentalPropertyRepositoryJPA.findById(rentalProperty.getId().value()).orElse(null);
+
+        if (rentalPropertyById == null) {
+            throw new DatabaseException("ID not found.");
+        }
+
+        RentalPropertyDB updated = this.rentalPropertyRepositoryJPA.save(this.rentalPropertyMapper.toDatabaseObject(rentalProperty));
+
+        List<PriceNightIntervalDB> oldIntervals = this.priceNightIntervalRepositoryJPA.findByRentalPropertyId(rentalProperty.getId().value());
+        this.priceNightIntervalRepositoryJPA.deleteAll(oldIntervals);
+
+        for (PriceNightInterval interval : rentalProperty.getPriceNightIntervalList()) {
+            this.priceNightIntervalRepository.create(interval);
+        }
+
+        return this.rentalPropertyMapper.toDomainObject(updated, rentalProperty.getPriceNightIntervalList(), rentalProperty.getBookingList());
+    }
+
     public RentalPropertyDomain findById(String id) {
         try {
             Optional<RentalPropertyDB> rentalProperty = this.rentalPropertyRepositoryJPA.findById(id);
-            return rentalProperty.map(rp -> this.rentalPropertyMapper.toDomainObject(rp, joinPriceNightIntervals(rp),
-                    joinBookings(rp))).orElse(null);
+            if (rentalProperty.isPresent()) {
+                return rentalProperty.map(rp -> this.rentalPropertyMapper.toDomainObject(rp, joinPriceNightIntervals(rp),
+                        joinBookings(rp))).orElse(null);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    public List<RentalPropertyDomain> findAllByUserId(String id) {
+        try {
+            List<RentalPropertyDB> rentalPropertyList = this.rentalPropertyRepositoryJPA.findAllByPropertyOwnerId(id);
+
+            return rentalPropertyList.stream().map(rp -> this.rentalPropertyMapper.toDomainObject(rp, joinPriceNightIntervals(rp),
+                    joinBookings(rp))).toList();
         } catch (Exception e) {
             return null;
         }

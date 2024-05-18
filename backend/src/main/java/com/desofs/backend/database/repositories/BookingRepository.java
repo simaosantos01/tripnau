@@ -1,22 +1,19 @@
 package com.desofs.backend.database.repositories;
 
 import com.desofs.backend.database.mappers.BookingMapper;
-import com.desofs.backend.database.mappers.PaymentMapper;
-import com.desofs.backend.database.models.BookingDB;
-import com.desofs.backend.database.models.ImageUrlDB;
-import com.desofs.backend.database.models.PaymentDB;
-import com.desofs.backend.database.models.ReviewDB;
-import com.desofs.backend.database.springRepositories.BookingRepositoryJPA;
-import com.desofs.backend.database.springRepositories.ImageRepositoryJPA;
-import com.desofs.backend.database.springRepositories.PaymentRepositoryJPA;
-import com.desofs.backend.database.springRepositories.ReviewRepositoryJPA;
+import com.desofs.backend.database.models.*;
+import com.desofs.backend.database.springRepositories.*;
 import com.desofs.backend.domain.aggregates.BookingDomain;
+import com.desofs.backend.domain.valueobjects.Event;
 import com.desofs.backend.domain.valueobjects.Id;
 import com.desofs.backend.exceptions.DatabaseException;
+import com.desofs.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +27,8 @@ public class BookingRepository {
 
     private final ImageRepositoryJPA imageRepositoryJPA;
 
+    private final EventRepositoryJPA eventRepositoryJPA;
+
     private final BookingMapper bookingMapper;
 
     public void create(BookingDomain bookingDomain, Id propertyId) throws DatabaseException {
@@ -39,7 +38,30 @@ public class BookingRepository {
             throw new DatabaseException("Duplicated ID violation.");
         }
 
-        this.bookingRepositoryJPA.save(this.bookingMapper.domainToDb(bookingDomain, propertyId.value()));
+        bookingDB = this.bookingRepositoryJPA.save(this.bookingMapper.domainToDb(bookingDomain, propertyId.value()));
+
+        for (Event event : bookingDomain.getEventList()) {
+            StateDB stateDB = new StateDB(event.getState());
+            EventDB eventDB = new EventDB(UUID.randomUUID().toString(), bookingDB, event.getDatetime(), stateDB);
+            this.eventRepositoryJPA.save(eventDB);
+        }
+    }
+
+    public void updateEvents(BookingDomain bookingDomain) throws NotFoundException {
+        BookingDB bookingDB = this.bookingRepositoryJPA.findById(bookingDomain.getId().value()).orElse(null);
+
+        if (bookingDB == null) {
+            throw new NotFoundException("ID not found.");
+        }
+
+        var toInsertEventList = bookingDomain.getEventList().stream().filter(e ->
+                bookingDB.getEvents().stream().allMatch(eDB -> eDB.getState().getValue() != e.getState())).toList();
+
+        for (Event event : toInsertEventList) {
+            StateDB stateDB = new StateDB(event.getState());
+            EventDB eventDB = new EventDB(UUID.randomUUID().toString(), bookingDB, event.getDatetime(), stateDB);
+            this.eventRepositoryJPA.save(eventDB);
+        }
     }
 
     public BookingDomain findById(String bookingId) {
@@ -54,9 +76,9 @@ public class BookingRepository {
 
                     if (reviewDB != null) {
                         List<ImageUrlDB> imagesUrlsDB = this.imageRepositoryJPA.findByReviewId(reviewDB.getId());
-                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, reviewDB, imagesUrlsDB);
+                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, reviewDB, imagesUrlsDB, bookingDB.getEvents());
                     } else {
-                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, null, null);
+                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, null, null, bookingDB.getEvents());
                     }
                 }
             }
@@ -65,4 +87,31 @@ public class BookingRepository {
         }
         return null;
     }
+
+    public List<BookingDomain> findAllByUserId(String userId) {
+        List<BookingDomain> result = new ArrayList<>();
+        try {
+            List<BookingDB> bookingDB = this.bookingRepositoryJPA.findAllByAccountId(userId);
+
+            for (BookingDB bookingId : bookingDB) {
+                result.add(this.findById(bookingId.getId()));
+            }
+            return result;
+        } catch (Exception e) {
+            return result;
+        }
+    }
+
+    public int clearBookingWhereCheckoutDatePassed() {
+        List<BookingDB> bookings = this.bookingRepositoryJPA.findAllBookingWhereCheckoutDatePassed();
+        for (BookingDB booking : bookings) {
+            var domain = this.findById(booking.getId());
+            try {
+                this.updateEvents(domain.terminate());
+            } catch (NotFoundException ignored) {
+            }
+        }
+        return bookings.size();
+    }
+
 }
