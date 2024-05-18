@@ -5,6 +5,7 @@ import com.desofs.backend.database.models.ImageUrlDB;
 import com.desofs.backend.database.models.PaymentDB;
 import com.desofs.backend.database.models.ReviewDB;
 import com.desofs.backend.domain.aggregates.BookingDomain;
+import com.desofs.backend.domain.aggregates.ReviewDomain;
 import com.desofs.backend.domain.enums.BookingStatusEnum;
 import com.desofs.backend.domain.valueobjects.Event;
 import com.desofs.backend.domain.valueobjects.Id;
@@ -47,14 +48,14 @@ public class BookingMapper {
     }
 
     public BookingDomain dbToDomain(BookingDB booking, PaymentDB paymentDB, ReviewDB reviewDB, List<ImageUrlDB> imageUrlDB) {
+        ReviewDomain reviewDomain = reviewDB == null ? null : reviewMapper.dbToDomain(reviewDB, imageUrlDB);
         return new BookingDomain(
                 Id.create(booking.getId()),
                 Id.create(booking.getAccountId()),
                 paymentMapper.dbToDomain(paymentDB),
                 IntervalTime.create(booking.getFromDate(), booking.getToDate()),
                 List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED)),
-                this.reviewMapper.dbToDomain(reviewDB, imageUrlDB),
+                reviewDomain,
                 LocalDateTime.now());
     }
-
 }

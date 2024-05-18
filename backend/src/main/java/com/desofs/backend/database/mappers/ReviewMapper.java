@@ -46,5 +46,4 @@ public class ReviewMapper {
                 review.isBanned(),
                 imageUrls.stream().map(i -> ImageUrl.create(i.getReference())).toList());
     }
-
 }

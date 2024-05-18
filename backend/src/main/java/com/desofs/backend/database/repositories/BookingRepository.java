@@ -22,36 +22,41 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingRepository {
 
-    private final BookingRepositoryJPA bookingRepository;
-    private final PaymentRepositoryJPA paymentRepositoryJpa;
-    private final ReviewRepositoryJPA reviewRepositoryJpa;
-    private final ImageRepositoryJPA imageRepositoryJpa;
+    private final BookingRepositoryJPA bookingRepositoryJPA;
+
+    private final PaymentRepositoryJPA paymentRepositoryJPA;
+
+    private final ReviewRepositoryJPA reviewRepositoryJPA;
+
+    private final ImageRepositoryJPA imageRepositoryJPA;
+
     private final BookingMapper bookingMapper;
 
     public void create(BookingDomain bookingDomain, Id propertyId) throws DatabaseException {
-        BookingDB bookingDB = this.bookingRepository.findById(bookingDomain.getId().value()).orElse(null);
+        BookingDB bookingDB = this.bookingRepositoryJPA.findById(bookingDomain.getId().value()).orElse(null);
 
         if (bookingDB != null) {
             throw new DatabaseException("Duplicated ID violation.");
         }
 
-        this.bookingRepository.save(this.bookingMapper.domainToDb(bookingDomain, propertyId.value()));
+        this.bookingRepositoryJPA.save(this.bookingMapper.domainToDb(bookingDomain, propertyId.value()));
     }
 
     public BookingDomain findById(String bookingId) {
         try {
-            BookingDB bookingDB = this.bookingRepository.findById(bookingId).orElse(null);
+            BookingDB bookingDB = this.bookingRepositoryJPA.findById(bookingId).orElse(null);
 
             if (bookingDB != null) {
-                PaymentDB paymentDB = this.paymentRepositoryJpa.findByBookingId(bookingId);
+                PaymentDB paymentDB = this.paymentRepositoryJPA.findByBookingId(bookingId).orElse(null);
 
                 if (paymentDB != null) {
-                    ReviewDB reviewDB = this.reviewRepositoryJpa.findByBookingId(bookingId);
+                    ReviewDB reviewDB = this.reviewRepositoryJPA.findByBookingId(bookingId);
 
                     if (reviewDB != null) {
-                        List<ImageUrlDB> imageUrlDB = this.imageRepositoryJpa.findByReviewId(reviewDB.getId());
-
-                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, reviewDB, imageUrlDB);
+                        List<ImageUrlDB> imagesUrlsDB = this.imageRepositoryJPA.findByReviewId(reviewDB.getId());
+                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, reviewDB, imagesUrlsDB);
+                    } else {
+                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, null, null);
                     }
                 }
             }

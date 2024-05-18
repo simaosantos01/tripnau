@@ -5,21 +5,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.Date;
 
-@Entity(name = "booking")
+@Entity(name = "price_night_interval")
 @Getter
-public class BookingDB {
+public class PriceNightIntervalDB {
 
     @Id
     private String id;
 
     @Column(nullable = false)
-    private String accountId;
+    private String rentalPropertyId;
 
     @Column(nullable = false)
-    private String propertyId;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private Date fromDate;
@@ -27,18 +27,14 @@ public class BookingDB {
     @Column(nullable = false)
     private Date toDate;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    public BookingDB() {
+    public PriceNightIntervalDB() {
     }
 
-    public BookingDB(String id, String accountId, String propertyId, Date from, Date to, LocalDateTime createdAt) {
+    public PriceNightIntervalDB(String id, String rentalPropertyId, BigDecimal price, Date from, Date to) {
         this.id = id;
-        this.accountId = accountId;
-        this.propertyId = propertyId;
+        this.rentalPropertyId = rentalPropertyId;
+        this.price = price;
         this.fromDate = from;
         this.toDate = to;
-        this.createdAt = createdAt;
     }
 }

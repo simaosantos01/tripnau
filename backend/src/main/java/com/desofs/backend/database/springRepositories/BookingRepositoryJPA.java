@@ -8,5 +8,4 @@ import java.util.List;
 public interface BookingRepositoryJPA extends CrudRepository<BookingDB, String> {
 
     List<BookingDB> findByPropertyId(String propertyId);
-
 }

@@ -2,24 +2,20 @@ package com.desofs.backend.services;
 
 import com.desofs.backend.database.mappers.BookingMapper;
 import com.desofs.backend.database.mappers.PaymentMapper;
-import com.desofs.backend.database.mappers.RentalPropertyMapper;
 import com.desofs.backend.database.repositories.BookingRepository;
 import com.desofs.backend.database.repositories.PaymentRepository;
 import com.desofs.backend.database.repositories.RentalPropertyRepository;
-import com.desofs.backend.database.repositories.UserRepository;
 import com.desofs.backend.domain.aggregates.BookingDomain;
 import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
-import com.desofs.backend.domain.aggregates.UserDomain;
-import com.desofs.backend.domain.entities.PaymentEntity;
 import com.desofs.backend.domain.valueobjects.Id;
-import com.desofs.backend.dtos.*;
+import com.desofs.backend.dtos.CreateBookingDto;
+import com.desofs.backend.dtos.FetchBookingDto;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -35,7 +31,6 @@ public class BookingService {
     private final BookingMapper bookingMapper;
 
     private final PaymentMapper paymentMapper;
-
 
     @Transactional
     public FetchBookingDto create(CreateBookingDto bookingDto) throws DatabaseException, NotFoundException {

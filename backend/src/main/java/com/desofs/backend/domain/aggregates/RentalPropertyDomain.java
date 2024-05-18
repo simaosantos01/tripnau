@@ -2,9 +2,9 @@ package com.desofs.backend.domain.aggregates;
 
 import com.desofs.backend.domain.valueobjects.*;
 import com.desofs.backend.dtos.CreateRentalPropertyDto;
-import com.desofs.backend.dtos.PriceNightIntervalDto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,16 +75,16 @@ public class RentalPropertyDomain {
         this.numBathrooms = PositiveInteger.create(dto.getNumBathrooms());
         this.propertyDescription = PropertyDescription.create(dto.getPropertyDescription());
         this.amount = MoneyAmount.create(dto.getAmount());
-        this.priceNightIntervalList = getPriceNightIntervalsList(dto);
+        this.priceNightIntervalList = getPriceNightIntervalsList(id, dto);
         this.bookingList = new ArrayList<>();
         this.isActive = true;
     }
 
-    private static List<PriceNightInterval> getPriceNightIntervalsList(CreateRentalPropertyDto dto){
+    private static List<PriceNightInterval> getPriceNightIntervalsList(Id id, CreateRentalPropertyDto dto) {
         return dto.getPriceNightIntervalList().stream().map(value -> {
             MoneyAmount tempMoneyAmount = MoneyAmount.create(value.getPrice());
             IntervalTime tempIntervalTime = IntervalTime.create(value.getInterval().getFrom(), value.getInterval().getTo());
-            return PriceNightInterval.create(tempMoneyAmount, tempIntervalTime);
+            return new PriceNightInterval(id, tempMoneyAmount, tempIntervalTime);
         }).toList();
     }
 
@@ -147,8 +147,14 @@ public class RentalPropertyDomain {
     }
 
     private boolean timeIntervalIntercepts(PriceNightInterval priceNightInterval) {
-        //todo
-        return false;
+        return !this.priceNightIntervalList.stream().allMatch(existingInterval -> {
+            IntervalTime a = existingInterval.getInterval();
+            IntervalTime b = priceNightInterval.getInterval();
+            return (a.getFrom().before(b.getFrom()) && a.getTo().before(b.getFrom())) || // precedes
+                    (a.getTo().equals(b.getFrom())) || // meets
+                    (b.getTo().equals(a.getFrom())) || // met by
+                    (b.getFrom().before(a.getFrom()) && b.getTo().before(a.getFrom())); // preceded by
+        });
     }
 
     public void addBooking(BookingDomain bookingDomain) {
@@ -164,9 +170,9 @@ public class RentalPropertyDomain {
         return this.bookingList.stream().mapToDouble(b -> b.getReview().getStars().value()).average().orElse(0.0);
     }
 
-    public void addPriceInterval(PriceNightInterval priceNightInterval) {
+    public void addPriceNightInterval(PriceNightInterval priceNightInterval) {
         if (timeIntervalIntercepts(priceNightInterval)) {
-            throw new IllegalArgumentException("The time interval is not valid");
+            throw new IllegalArgumentException("The time interval intercepts with existing intervals");
         }
         this.priceNightIntervalList.add(priceNightInterval);
     }

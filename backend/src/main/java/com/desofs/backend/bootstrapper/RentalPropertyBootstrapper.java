@@ -27,7 +27,6 @@ public class RentalPropertyBootstrapper {
                 PositiveInteger.create(2),
                 PropertyDescription.create("Property 1 description"),
                 MoneyAmount.create(new BigDecimal("200.00")),
-                //todo: populate
                 new ArrayList<>(),
                 new ArrayList<>(),
                 true

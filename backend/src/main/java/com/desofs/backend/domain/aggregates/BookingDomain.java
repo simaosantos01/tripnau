@@ -7,6 +7,7 @@ import com.desofs.backend.dtos.CreateBookingDto;
 import com.desofs.backend.dtos.FetchBookingDto;
 import com.desofs.backend.utils.ListUtils;
 import com.desofs.backend.utils.LocalDateTimeUtils;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -27,6 +28,7 @@ public class BookingDomain {
     private final IntervalTime intervalTime;
     private final List<Event> eventList;
     private ReviewDomain review;
+    @Getter
     private final LocalDateTime createdAt;
 
     // Constructors ----------------------------------------------------------------------------------------------------
@@ -54,7 +56,7 @@ public class BookingDomain {
     public BookingDomain(CreateBookingDto dto, Id bookingId) {
         this(bookingId,
                 Id.create(dto.getAccountId()),
-                new PaymentEntity(dto.getPayment(), bookingId.value()), // todo: o booking id que foi criado agora
+                new PaymentEntity(dto.getPayment(), bookingId.value()),
                 IntervalTime.create(dto.getIntervalTime().getFrom(), dto.getIntervalTime().getTo()),
                 List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED)),
                 null,
@@ -89,10 +91,6 @@ public class BookingDomain {
 
     public ReviewDomain getReview() {
         return this.review == null ? null : review.copy();
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 
     // Domain methods --------------------------------------------------------------------------------------------------

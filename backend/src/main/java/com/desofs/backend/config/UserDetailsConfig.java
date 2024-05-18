@@ -29,7 +29,7 @@ public class UserDetailsConfig {
             UserDomain user = this.userRepository.findByEmail(email);
 
             if (user == null) {
-                throw new UsernameNotFoundException(format("User: %s not found.", email));
+                throw new UsernameNotFoundException(format("User: %s not found", email));
             }
 
             GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
