@@ -8,11 +8,13 @@ import com.desofs.backend.database.springRepositories.ImageRepositoryJPA;
 import com.desofs.backend.database.springRepositories.ReviewRepositoryJPA;
 import com.desofs.backend.domain.aggregates.ReviewDomain;
 import com.desofs.backend.domain.valueobjects.ImageUrl;
+import com.desofs.backend.dtos.FetchReviewDto;
 import com.desofs.backend.exceptions.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component("ReviewRepositoryCapsule")
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class ReviewRepository {
 
     private final ReviewRepositoryJPA reviewRepositoryJPA;
 
-    private final ImageRepositoryJPA imageRepositoryJpa;
+    private final ImageRepositoryJPA imageRepositoryJPA;
 
     private final ReviewMapper reviewMapper;
 
@@ -36,7 +38,7 @@ public class ReviewRepository {
         this.reviewRepositoryJPA.save(this.reviewMapper.domainToDb(reviewDomain));
 
         for (ImageUrl imageToSave : reviewDomain.getImageUrlList()) {
-            this.imageRepositoryJpa.save(imageUrlMapper.domainToDb(imageToSave, reviewDomain.getId().value()));
+            this.imageRepositoryJPA.save(imageUrlMapper.domainToDb(imageToSave, reviewDomain.getId().value()));
         }
     }
 
@@ -44,7 +46,7 @@ public class ReviewRepository {
         try {
             ReviewDB reviewDB = this.reviewRepositoryJPA.findById(reviewId).orElse(null);
             if (reviewDB != null) {
-                List<ImageUrlDB> imageUrlDB = imageRepositoryJpa.findByReviewId(reviewId);
+                List<ImageUrlDB> imageUrlDB = imageRepositoryJPA.findByReviewId(reviewId);
                 return this.reviewMapper.dbToDomain(reviewDB, imageUrlDB);
             }
         } catch (Exception e) {
@@ -56,5 +58,15 @@ public class ReviewRepository {
     public ReviewDomain findByBookingId(String bookingId) {
         ReviewDB reviewDB = this.reviewRepositoryJPA.findByBookingId(bookingId);
         return this.findById(reviewDB.getId());
+    }
+
+    public void update(ReviewDomain reviewDomain) throws DatabaseException {
+        ReviewDB reviewDB = this.reviewRepositoryJPA.findById(reviewDomain.getId().value()).orElse(null);
+
+        if (reviewDB == null) {
+            throw new DatabaseException("Review not found");
+        }
+
+        this.reviewRepositoryJPA.save(this.reviewMapper.domainToDb(reviewDomain));
     }
 }

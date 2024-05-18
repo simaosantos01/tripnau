@@ -66,9 +66,9 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority).toList();
         final long expiry;
 
-        if (stringAuthorities.contains(Role.BusinessAdmin)) {
+        if (stringAuthorities.contains(Role.BUSINESSADMIN)) {
             expiry = expBusinessAdmin;
-        } else if (stringAuthorities.contains(Role.PropertyOwner)) {
+        } else if (stringAuthorities.contains(Role.PROPERTYOWNER)) {
             expiry = expPropertyOwner;
         } else {
             expiry = expCustomer;
@@ -95,8 +95,8 @@ public class AuthController {
             throws DatabaseException, NotAuthorizedException {
 
         if (authentication != null
-                && createUserDto.getRole().equals(Role.BusinessAdmin)
-                && !hasAuthorization(authentication, Role.BusinessAdmin)) {
+                && createUserDto.getRole().equals(Role.BUSINESSADMIN)
+                && !hasAuthorization(authentication, Role.BUSINESSADMIN)) {
             throw new NotAuthorizedException("You're not authorized!");
         }
 

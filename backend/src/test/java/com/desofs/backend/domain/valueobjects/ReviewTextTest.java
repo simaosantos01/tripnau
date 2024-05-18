@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ReviewTextTest {
 
+    private final String reviewTextErrorMessage = "Review text must not be null or empty.";
     @Test
     @DisplayName("Test create method with valid review text")
     void testCreateValidReviewText() {
@@ -20,7 +21,7 @@ class ReviewTextTest {
     void testCreateNullReviewText() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> ReviewText.create(null));
-        assertEquals("Review text must not be null or empty.", exception.getMessage());
+        assertEquals(reviewTextErrorMessage, exception.getMessage());
     }
 
     @Test
@@ -28,7 +29,7 @@ class ReviewTextTest {
     void testCreateEmptyReviewText() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> ReviewText.create(""));
-        assertEquals("Review text must not be null or empty.", exception.getMessage());
+        assertEquals(reviewTextErrorMessage, exception.getMessage());
     }
 
     @Test
@@ -36,6 +37,6 @@ class ReviewTextTest {
     void testCreateWhitespaceReviewText() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> ReviewText.create("   "));
-        assertEquals("Review text must not be null or empty.", exception.getMessage());
+        assertEquals(reviewTextErrorMessage, exception.getMessage());
     }
 }

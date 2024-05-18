@@ -11,6 +11,5 @@ public class CreateReviewDto {
     private final String bookingId;
     private final String text;
     private final int stars;
-    private final boolean isBanned;
     private final List<String> imageUrlList;
 }

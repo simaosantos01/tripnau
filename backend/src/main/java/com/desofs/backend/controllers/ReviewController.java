@@ -3,6 +3,7 @@ package com.desofs.backend.controllers;
 import com.desofs.backend.dtos.CreateReviewDto;
 import com.desofs.backend.dtos.FetchReviewDto;
 import com.desofs.backend.exceptions.DatabaseException;
+import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
 import com.desofs.backend.services.ReviewService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,5 +30,14 @@ public class ReviewController {
         String userId = authentication.getName();
         FetchReviewDto reviewDto = this.reviewService.create(createReviewDto, userId);
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/change_state")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> create(@RequestParam String reviewId, @RequestParam String state)
+            throws DatabaseException, NotFoundException {
+
+        FetchReviewDto reviewDto = this.reviewService.changeState(reviewId, state);
+        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
 }

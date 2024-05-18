@@ -7,11 +7,11 @@ import org.springframework.security.core.GrantedAuthority;
 @AllArgsConstructor
 public class Role implements GrantedAuthority {
 
-    public static final String BusinessAdmin = "BUSINESSADMIN";
+    public static final String BUSINESSADMIN = "BUSINESSADMIN";
 
-    public static final String PropertyOwner = "PROPERTYOWNER";
+    public static final String PROPERTYOWNER = "PROPERTYOWNER";
 
-    public static final String Customer = "CUSTOMER";
+    public static final String CUSTOMER = "CUSTOMER";
 
     String authority;
 

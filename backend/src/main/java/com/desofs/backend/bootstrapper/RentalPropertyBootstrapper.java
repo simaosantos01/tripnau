@@ -17,9 +17,11 @@ public class RentalPropertyBootstrapper {
     private final RentalPropertyRepository rentalPropertyRepository;
 
     public void run() throws Exception {
+        String userId = "1a1a1a1a-1a1a-1a1a-1a1a-1a1a1a1a1a1a";
+
         RentalPropertyDomain rentalProperty1 = new RentalPropertyDomain(
                 Id.create(UUID.randomUUID().toString()),
-                Id.create("1a1a1a1a-1a1a-1a1a-1a1a-1a1a1a1a1a1a"),
+                Id.create(userId),
                 PropertyName.create("Property 1"),
                 Location.create(40.712776, -74.005974),
                 PositiveInteger.create(5),
@@ -31,11 +33,11 @@ public class RentalPropertyBootstrapper {
                 new ArrayList<>(),
                 true
         );
-        rentalPropertyRepository.create(rentalProperty1);
+        this.rentalPropertyRepository.create(rentalProperty1);
 
         RentalPropertyDomain rentalProperty2 = new RentalPropertyDomain(
                 Id.create(UUID.randomUUID().toString()),
-                Id.create("1a1a1a1a-1a1a-1a1a-1a1a-1a1a1a1a1a1a"),
+                Id.create(userId),
                 PropertyName.create("Property 2"),
                 Location.create(34.052235, -118.243683),
                 PositiveInteger.create(4),
@@ -47,11 +49,11 @@ public class RentalPropertyBootstrapper {
                 new ArrayList<>(),
                 true
         );
-        rentalPropertyRepository.create(rentalProperty2);
+        this.rentalPropertyRepository.create(rentalProperty2);
 
         RentalPropertyDomain rentalProperty3 = new RentalPropertyDomain(
                 Id.create(UUID.randomUUID().toString()),
-                Id.create("1a1a1a1a-1a1a-1a1a-1a1a-1a1a1a1a1a1a"),
+                Id.create(userId),
                 PropertyName.create("Property 3"),
                 Location.create(51.507351, -0.127758),
                 PositiveInteger.create(6),
@@ -63,6 +65,6 @@ public class RentalPropertyBootstrapper {
                 new ArrayList<>(),
                 true
         );
-        rentalPropertyRepository.create(rentalProperty3);
+        this.rentalPropertyRepository.create(rentalProperty3);
     }
 }
