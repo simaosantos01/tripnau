@@ -8,5 +8,5 @@ export class ReviewService {
 
   http = inject(HttpClient)
 
-  constructor() { }
+  //constructor() { }
 }
