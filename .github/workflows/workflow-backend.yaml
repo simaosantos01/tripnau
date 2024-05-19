@@ -10,7 +10,6 @@ on:
       - reopened
     branches:
       - dev
-      - master
     paths:
       - 'backend/**'
 
