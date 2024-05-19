@@ -13,13 +13,13 @@
           <img [src]="'../../assets/images/RentalProperty' + i + '.jpg'" alt="Property Image" class="property-image">
           <div class="property-info">
             <div>
-              <div class="property-title">{{ property.propertyName }}</div>
-              <div class="property-description">{{ property.propertyDescription }}</div>
-              <div class="property-location">Location: Lat {{ property.location.lat }}, Lon {{ property.location.lon }}</div>
-              <div class="property-max-guests">Max Guests: {{ property.maxGuests }}</div>
+              <div class="property-title">{{ property!.propertyName }}</div>
+              <div class="property-description">{{ property!.propertyDescription }}</div>
+              <div class="property-location">Location: Lat {{ property!.location.lat }}, Lon {{ property!.location.lon }}</div>
+              <div class="property-max-guests">Max Guests: {{ property!.maxGuests }}</div>
             </div>
             <div>
-              <div class="property-price">${{ property.amount }} / night</div>
+              <div class="property-price">${{ property!.amount }} / night</div>
               <button class="rent-button" (click)="rentProperty(i)">Rent</button>
             </div>
           </div>
