@@ -5,7 +5,6 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { rateLimitingInterceptor } from './interceptors/rate-limiting.interceptor';
-// import { sanitizerInterceptor } from './interceptors/sanitizer.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
@@ -13,7 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(
-      withInterceptors([rateLimitingInterceptor,/* sanitizerInterceptor,*/ authInterceptor])
+      withInterceptors([rateLimitingInterceptor, authInterceptor])
     ),
   ]
 };

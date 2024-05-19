@@ -19,8 +19,6 @@ import { MessagesService } from './services/messages.service';
   providers: [MessageService]
 })
 export class AppComponent implements OnInit {
-  title = 'frontend';
-
   authService = inject(AuthService);
   messageService = inject(MessageService)
   messagesService = inject(MessagesService);

@@ -8,6 +8,6 @@ export const routes: Routes = [
     { path: '', component: AppComponent, pathMatch: 'full', canActivate: [authGuard([])] },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: 'admin', component: AppComponent, canActivate: [authGuard(['ADMIN'])] },
+    { path: 'admin', component: AppComponent, canActivate: [authGuard(['BUSINESSADMIN'])] },
     { path: 'home', component: AppComponent, canActivate: [authGuard([])] }
 ];

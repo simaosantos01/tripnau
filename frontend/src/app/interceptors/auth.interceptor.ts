@@ -16,7 +16,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   headers = appendHeaderIfMissing(headers, 'Cache-Control', 'no-cache')
 
   // Only keeping multipart/form-data as I assume we will be using it for image upload
-  if (headers.get('Content-Type') != 'multipart/form-data') {
+  if (headers.get('Content-Type') == 'multipart/form-data') {
+    headers.set('Content-Type', 'multipart/form-data')
+  } else {
     headers.set('Content-Type', 'application/json')
   }
   if (authService.getUser()) {

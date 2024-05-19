@@ -80,7 +80,7 @@ export class LoginComponent {
   }
 
   handleLoginResponse(response: LoginResponse) {
-    if (response.success) {
+    if (response.token) {
       this.router.navigateByUrl(ROUTE.LANDING);
     } else {
       this.failedAttempts += 1;

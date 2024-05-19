@@ -5,25 +5,28 @@ import { Injectable } from '@angular/core';
 })
 export class RateLimitingService {
   // number of requests allowed per minute
-  readonly MAX_CAPACITY = 60;
-  private capacity = this.MAX_CAPACITY;
+  private capacity = 60;
+  private refillRate = 60000;
 
-  constructor() {
-    const timeout = 1000 * 60 * 1;
-    setTimeout(() => {
-      this.refill();
-    }, timeout)
-  }
+  constructor() { }
 
   tryConsume(): boolean {
     if (this.capacity > 0) {
       this.capacity--;
+      setTimeout(() => {
+        this.refill();
+      }, this.refillRate)
       return true;
     }
     return false;
   }
 
   refill(): void {
-    this.capacity = this.MAX_CAPACITY;
+    this.capacity++;
+  }
+
+  // Only to be used in testing 
+  setCapacity(capacity: number): void {
+    this.capacity = capacity
   }
 }

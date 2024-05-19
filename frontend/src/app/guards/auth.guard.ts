@@ -13,13 +13,15 @@ export function authGuard(requiredRoles: Array<string>) {
       return false;
     }
 
-    // Will add logic to validate roles here after there are proper roles / routes to be guarded
     if (requiredRoles.length == 0) return true;
-    if (requiredRoles.indexOf(authService.getRole()!) > -1) {
-      return true;
-    }
+    const roles = authService.getRoles();
+    let authorizide = false;
+    
+    requiredRoles.forEach((role) => {
+      if (roles.includes(role)) authorizide = true
+    })
 
-    return false;
+    return authorizide;
   };
   return guard;
 }

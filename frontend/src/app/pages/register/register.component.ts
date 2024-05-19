@@ -109,7 +109,6 @@ export class RegisterComponent {
           });
       }
     }
-    console.log(this.form)
   }
 
   handleRegisterResponse(response: RegisterResponse): void {
