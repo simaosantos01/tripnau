@@ -54,7 +54,7 @@ describe('AuthService', () => {
   });
 
   it('should register', () => {
-    const registerRequest: RegisterRequest = { name: 'Cristiano Reinaldo', email: 'rei@naldo.pt', password: 'password' };
+    const registerRequest: RegisterRequest = { name: 'Cristiano Reinaldo', email: 'rei@naldo.pt', password: 'somethingsomething' };
     const registerResponse: RegisterResponse = { success: true };
 
     service.register(registerRequest).subscribe((response) => {
@@ -75,7 +75,7 @@ describe('AuthService', () => {
   });
 
   it('should login and set token', () => {
-    const loginRequest: LoginRequest = { email: 'test@example.com', password: 'password' };
+    const loginRequest: LoginRequest = { email: 'test@example.com', password: 'somethingsomething' };
     const loginResponse: LoginResponse = { token: mockToken };
 
     service.login(loginRequest).subscribe((response) => {

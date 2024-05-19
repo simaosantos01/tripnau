@@ -10,7 +10,7 @@ import { MessagesService } from '../../services/messages.service';
 /**
  *  by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository 
  */
-const EMAIL_REGEXP = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$]]/;
+const EMAIL_REGEXP = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
 
 interface PasswordRequirement {
   requirement: string,
