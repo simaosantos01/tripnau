@@ -53,6 +53,7 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBeFalse();
   });
 
+  // BEGIN-NOSCAN
   it('should register', () => {
     const registerRequest: RegisterRequest = { name: 'Cristiano Reinaldo', email: 'rei@naldo.pt', password: 'somethingsomething' };
     const registerResponse: RegisterResponse = { success: true };
@@ -65,6 +66,7 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('POST');
     req.flush(registerResponse);
   });
+  // END-NOSCAN
 
   it('should parse token', () => {
     service.parseToken(mockToken);
@@ -74,6 +76,7 @@ describe('AuthService', () => {
     expect(service.getRoles()).toEqual(["admin", "user", "productalog"])
   });
 
+  // BEGIN-NOSCAN
   it('should login and set token', () => {
     const loginRequest: LoginRequest = { email: 'test@example.com', password: 'somethingsomething' };
     const loginResponse: LoginResponse = { token: mockToken };
@@ -82,6 +85,7 @@ describe('AuthService', () => {
       expect(response).toEqual(loginResponse);
       expect(service.getToken()).toEqual(mockToken);
     });
+    // END-NOSCAN
 
     const req = httpTesting.expectOne(`${environment.apiUrl}/login`);
     expect(req.request.method).toBe('POST');
