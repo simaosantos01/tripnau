@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RentalPropertyService } from '../../services/rental-property.service';
+//import { RentalPropertyService } from '../../services/rental-property.service';
 
 @Component({
   selector: 'app-home',
