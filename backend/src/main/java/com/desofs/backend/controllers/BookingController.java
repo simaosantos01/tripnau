@@ -39,10 +39,11 @@ public class BookingController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<FetchBookingDto> create(@RequestBody final CreateBookingDto createBookingDto)
+    public ResponseEntity<FetchBookingDto> create(@RequestBody final CreateBookingDto createBookingDto, Authentication authentication)
             throws DatabaseException, NotFoundException {
 
-        FetchBookingDto bookingDto = this.bookingService.create(createBookingDto);
+        String userId = authentication.getName();
+        FetchBookingDto bookingDto = this.bookingService.create(createBookingDto, userId);
         return new ResponseEntity<>(bookingDto, HttpStatus.CREATED);
     }
 

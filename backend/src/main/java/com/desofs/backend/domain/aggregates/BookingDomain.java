@@ -55,9 +55,9 @@ public class BookingDomain {
         this.createdAt = LocalDateTimeUtils.copyLocalDateTime(createdAt);
     }
 
-    public BookingDomain(CreateBookingDto dto, Id bookingId) {
+    public BookingDomain(CreateBookingDto dto, Id bookingId, String userId) {
         this(bookingId,
-                Id.create(dto.getAccountId()),
+                Id.create(userId),
                 new PaymentEntity(dto.getPayment(), bookingId.value()),
                 IntervalTime.create(dto.getIntervalTime().getFrom(), dto.getIntervalTime().getTo()),
                 new ArrayList<>(List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED))),

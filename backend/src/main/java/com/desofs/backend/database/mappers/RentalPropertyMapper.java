@@ -62,7 +62,7 @@ public class RentalPropertyMapper {
                     return new PriceNightIntervalDto(rentalProperty.getId().value(),
                             priceNightInterval.getPrice().value(), tempIntervalTime);
                 }).toList(),
-                rentalProperty.getBookingList().stream().map(bookingMapper::domainToDto).toList(),
+                rentalProperty.getBookingList().stream().map(booking -> bookingMapper.domainToDto(booking, rentalProperty.getId().value())).toList(),
                 rentalProperty.getIsActive());
     }
 }

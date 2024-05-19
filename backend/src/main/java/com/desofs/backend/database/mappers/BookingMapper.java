@@ -24,11 +24,12 @@ public class BookingMapper {
     private final ReviewMapper reviewMapper = new ReviewMapper();
     private final EventMapper eventMapper = new EventMapper();
 
-    public FetchBookingDto domainToDto(BookingDomain booking) {
+    public FetchBookingDto domainToDto(BookingDomain booking, String propertyId) {
         FetchReviewDto reviewDto = booking.getReview() == null ? null : reviewMapper.domainToDto(booking.getReview());
         return new FetchBookingDto(
                 booking.getId().value(),
                 booking.getAccountId().value(),
+                propertyId,
                 paymentMapper.domainToDto(booking.getPayment()),
                 new IntervalTimeDto(booking.getIntervalTime().getFrom(), booking.getIntervalTime().getTo()),
                 booking.getEventList().stream().map(event -> new EventDto(event.getDatetime(), event.getState())).toList(),

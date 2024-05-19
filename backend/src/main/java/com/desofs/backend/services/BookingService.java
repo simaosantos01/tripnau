@@ -59,42 +59,52 @@ public class BookingService {
     }
 
     @Transactional
-    public FetchBookingDto create(CreateBookingDto bookingDto) throws DatabaseException, NotFoundException {
+    public FetchBookingDto create(CreateBookingDto bookingDto, String userId) throws DatabaseException, NotFoundException {
         RentalPropertyDomain rentalProperty = getPropertyThrowingError(bookingDto.getPropertyId());
 
         Id bookingId = Id.create(UUID.randomUUID().toString());
-        BookingDomain bookingDomain = new BookingDomain(bookingDto, bookingId);
+        BookingDomain bookingDomain = new BookingDomain(bookingDto, bookingId, userId);
         rentalProperty.addBooking(bookingDomain);
 
         bookingRepository.create(bookingDomain, rentalProperty.getId());
         paymentRepository.create(paymentMapper.dtoToDomain(bookingDto.getPayment(), bookingId.value()));
 
-        return this.bookingMapper.domainToDto(bookingDomain);
+        return this.bookingMapper.domainToDto(bookingDomain, rentalProperty.getId().value());
     }
 
     @Transactional
     public FetchBookingDto cancel(String bookingId) throws NotFoundException {
         BookingDomain bookingDomain = this.getBookingThrowingError(bookingId);
+        RentalPropertyDomain rentalPropertyDomain = this.bookingRepository.findRentalProperty(bookingId);
 
         bookingDomain = bookingDomain.cancel();
 
         bookingRepository.updateEvents(bookingDomain);
 
-        return this.bookingMapper.domainToDto(bookingDomain);
+        return this.bookingMapper.domainToDto(bookingDomain, rentalPropertyDomain.getId().value());
     }
 
     @Transactional
     public List<FetchBookingDto> findAllByUserId(String userId) throws NotFoundException {
         List<BookingDomain> bookingDomain = this.bookingRepository.findAllByUserId(userId);
 
-        return bookingDomain.stream().map(this.bookingMapper::domainToDto).toList();
+        return bookingDomain.stream().map(booking -> {
+            RentalPropertyDomain rentalPropertyDomain;
+            try {
+                rentalPropertyDomain = this.bookingRepository.findRentalProperty(booking.getId().value());
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            return this.bookingMapper.domainToDto(booking, rentalPropertyDomain.getId().value());
+        }).toList();
     }
 
     @Transactional
     public FetchBookingDto findById(String bookingId) throws NotFoundException {
         BookingDomain bookingDomain = getBookingThrowingError(bookingId);
+        RentalPropertyDomain rentalPropertyDomain = this.bookingRepository.findRentalProperty(bookingId);
 
-        return bookingMapper.domainToDto(bookingDomain);
+        return bookingMapper.domainToDto(bookingDomain, rentalPropertyDomain.getId().value());
     }
 
     @Scheduled(cron = "* * 3 * * *")

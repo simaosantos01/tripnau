@@ -4,6 +4,7 @@ import com.desofs.backend.database.mappers.BookingMapper;
 import com.desofs.backend.database.models.*;
 import com.desofs.backend.database.springRepositories.*;
 import com.desofs.backend.domain.aggregates.BookingDomain;
+import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
 import com.desofs.backend.domain.valueobjects.Event;
 import com.desofs.backend.domain.valueobjects.Id;
 import com.desofs.backend.exceptions.DatabaseException;
@@ -28,6 +29,8 @@ public class BookingRepository {
     private final ImageRepositoryJPA imageRepositoryJPA;
 
     private final EventRepositoryJPA eventRepositoryJPA;
+
+    private final RentalPropertyRepository rentalPropertyRepository;
 
     private final BookingMapper bookingMapper;
 
@@ -114,4 +117,14 @@ public class BookingRepository {
         return bookings.size();
     }
 
+    public RentalPropertyDomain findRentalProperty(String bookingId) throws NotFoundException {
+        BookingDB bookingDB = this.bookingRepositoryJPA.findById(bookingId).orElse(null);
+
+        if(bookingDB == null){
+            throw new NotFoundException("Booking not found");
+        }
+
+        String propertyId = bookingDB.getPropertyId();
+        return this.rentalPropertyRepository.findById(propertyId);
+    }
 }

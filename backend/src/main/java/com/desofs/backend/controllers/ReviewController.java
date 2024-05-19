@@ -25,7 +25,7 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<FetchReviewDto> create(@RequestBody CreateReviewDto createReviewDto,
                                                  Authentication authentication)
-            throws DatabaseException, NotFoundException {
+            throws DatabaseException, NotFoundException, NotAuthorizedException {
 
         String userId = authentication.getName();
         FetchReviewDto reviewDto = this.reviewService.create(createReviewDto, userId);

@@ -1,12 +1,15 @@
 package com.desofs.backend.services;
 
 import com.desofs.backend.database.mappers.ReviewMapper;
+import com.desofs.backend.database.models.BookingDB;
 import com.desofs.backend.database.repositories.ReviewRepository;
+import com.desofs.backend.domain.aggregates.BookingDomain;
 import com.desofs.backend.domain.aggregates.ReviewDomain;
 import com.desofs.backend.domain.enums.ReviewState;
 import com.desofs.backend.dtos.CreateReviewDto;
 import com.desofs.backend.dtos.FetchReviewDto;
 import com.desofs.backend.exceptions.DatabaseException;
+import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Component;
@@ -26,10 +29,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public FetchReviewDto create(CreateReviewDto createReviewDto, String authorId) throws DatabaseException {
-        ReviewDomain reviewDomain = new ReviewDomain(createReviewDto, authorId);
+    public FetchReviewDto create(CreateReviewDto createReviewDto, String userId) throws DatabaseException, NotAuthorizedException {
+        ReviewDomain reviewDomain = new ReviewDomain(createReviewDto, userId);
 
-        this.reviewRepository.create(reviewDomain);
+        this.reviewRepository.create(reviewDomain, createReviewDto.getBookingId(), userId);
 
         return reviewMapper.domainToDto(reviewDomain);
     }
