@@ -1,0 +1,284 @@
+permissions: write-all
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - reopened
+    branches:
+      - master
+
+  workflow_dispatch:
+
+name: Release Workflow
+jobs:
+  Checkout:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+  SecretScanner:
+    runs-on: self-hosted
+    needs: [Checkout]
+    steps:
+      - run: |
+          NOW=$(date +'%Y-%m-%d_%Hh%Mm%Ss')
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          echo "NOW=$NOW" >> $GITHUB_ENV
+          echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_ENV
+      - run: python detect-new-secrets.py resolve_secrets_${{ env.SHA_SHORT }}_${{ env.NOW }}
+
+  Frontend-InstallDependenciesAndBuild:
+    runs-on: self-hosted
+    needs: [SecretScanner]
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.19.0"
+      - working-directory: frontend
+        run: npm install && npm run build
+
+  Frontend-UnitTesting:
+    runs-on: self-hosted
+    needs: [Frontend-InstallDependenciesAndBuild]
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.19.0"
+      - working-directory: frontend
+        run: npm run ci:test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: karma-code-coverage-results
+          path: "${{ github.workspace }}/frontend/coverage"
+
+  Backend-InstallDependenciesAndBuild:
+    runs-on: self-hosted
+    needs: [Frontend-UnitTesting]
+    steps:
+      - working-directory: backend
+        run: mvn install -DskipTests
+      - working-directory: backend
+        run: mvn compile
+
+  Backend-UnitTesting:
+    runs-on: self-hosted
+    needs: [Backend-InstallDependenciesAndBuild]
+    steps:
+      - working-directory: backend
+        run: mvn verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-code-coverage-results
+          path: "${{ github.workspace }}/backend/target/site/jacoco"
+
+  Frontend-SonarQubeScan:
+    runs-on: self-hosted
+    needs: [Backend-UnitTesting]
+    steps:
+      - run: touch sonar-project.properties
+      - uses: DamianReeves/write-file-action@master
+        with:
+          path: sonar-project.properties
+          write-mode: overwrite
+          contents: |
+            sonar.projectKey=desofs-frontend
+            sonar.sources=frontend/src/
+            sonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  Backend-SonarQubeScan:
+    runs-on: self-hosted
+    needs: [Frontend-SonarQubeScan]
+    steps:
+      - run: touch sonar-project.properties
+      - uses: DamianReeves/write-file-action@master
+        with:
+          path: sonar-project.properties
+          write-mode: overwrite
+          contents: |
+            sonar.projectKey=desofs-backend
+            sonar.sources=backend/src/
+            sonar.java.binaries=backend/target/
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}        
+
+  Frontend-DependencyAnalysis:
+    runs-on: self-hosted
+    needs: [Backend-SonarQubeScan]
+    steps:
+      - working-directory: frontend
+        run: dependency-check.sh --disableYarnAudit --out ../ --scan .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-owasp-dependency-checker-results
+          path: "${{ github.workspace }}/dependency-check-report.html"
+
+  Backend-DependencyAnalysis:
+    runs-on: self-hosted
+    needs: [Frontend-DependencyAnalysis]
+    steps:
+      - working-directory: backend
+        run: dependency-check.sh --out ../ --scan .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-owasp-dependency-checker-results
+          path: "${{ github.workspace }}/dependency-check-report.html"
+
+  MakeTagString:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    needs: [Backend-DependencyAnalysis]
+    outputs:
+      now: ${{ steps.meta.outputs.NOW }}
+      sha_short: ${{ steps.meta.outputs.SHA_SHORT }}
+    steps:
+      - id: meta
+        run: |
+          NOW=$(date +'%Y-%m-%d_%Hh%Mm%Ss')
+          SHA_SHORT=$(git rev-parse --short HEAD)
+
+          echo "NOW=$NOW" >> $GITHUB_OUTPUT
+          echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_OUTPUT
+
+  Frontend-BuildDockerImage:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    needs: [MakeTagString]
+    outputs:
+      now: ${{ needs.MakeTagString.outputs.now }}
+      sha_short: ${{ needs.MakeTagString.outputs.sha_short }}
+    steps:
+      - working-directory: frontend
+        run: docker build -t simaosantos1230212/desofs-frontend:${{ needs.MakeTagString.outputs.sha_short }}_${{ needs.MakeTagString.outputs.now }} .
+
+  Frontend-ContainerAnalysis:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    outputs:
+      now: ${{ needs.Frontend-BuildDockerImage.outputs.now }}
+      sha_short: ${{ needs.Frontend-BuildDockerImage.outputs.sha_short }}
+    needs: [Frontend-BuildDockerImage]
+    steps:
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "simaosantos1230212/desofs-frontend:${{ needs.Frontend-BuildDockerImage.outputs.sha_short }}_${{ needs.Frontend-BuildDockerImage.outputs.now }}"
+          scan-type: image
+          format: "sarif"
+          output: "frontend-trivy-results.sarif"
+          github-pat: ${{ secrets.TOKEN_GITHUB }}
+          scanners: "vuln"
+          severity: "HIGH,CRITICAL"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-trivy-results
+          path: "${{ github.workspace }}/frontend-trivy-results.sarif"
+
+  Backend-BuildDockerImage:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    needs: [Frontend-ContainerAnalysis]
+    outputs:
+      now: ${{ needs.Frontend-ContainerAnalysis.outputs.now }}
+      sha_short: ${{ needs.Frontend-ContainerAnalysis.outputs.sha_short }}
+    steps:
+      - working-directory: backend
+        run: docker build -t simaosantos1230212/desofs-backend:${{ needs.Frontend-ContainerAnalysis.outputs.sha_short }}_${{ needs.Frontend-ContainerAnalysis.outputs.now }} .
+
+  Backend-ContainerAnalysis:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    outputs:
+      now: ${{ needs.Backend-BuildDockerImage.outputs.now }}
+      sha_short: ${{ needs.Backend-BuildDockerImage.outputs.sha_short }}
+    needs: [Backend-BuildDockerImage]
+    steps:
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "simaosantos1230212/desofs-backend:${{ needs.Backend-BuildDockerImage.outputs.sha_short }}_${{ needs.Backend-BuildDockerImage.outputs.now }}"
+          scan-type: image
+          format: "sarif"
+          output: "backend-trivy-results.sarif"
+          github-pat: ${{ secrets.TOKEN_GITHUB }}
+          scanners: "vuln"
+          severity: "HIGH,CRITICAL"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-trivy-results
+          path: "${{ github.workspace }}/backend-trivy-results.sarif"
+
+  Backend-PushDockerImage:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    needs: [Backend-ContainerAnalysis]
+    outputs:
+      now: ${{ needs.Backend-ContainerAnalysis.outputs.now }}
+      sha_short: ${{ needs.Backend-ContainerAnalysis.outputs.sha_short }}
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: docker push simaosantos1230212/desofs-backend:${{ needs.Backend-ContainerAnalysis.outputs.sha_short }}_${{ needs.Backend-ContainerAnalysis.outputs.now }}
+
+  Frontend-PushDockerImage:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    needs: [Backend-PushDockerImage]
+    outputs:
+      now: ${{ needs.Backend-PushDockerImage.outputs.now }}
+      sha_short: ${{ needs.Backend-PushDockerImage.outputs.sha_short }}
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: docker push simaosantos1230212/desofs-frontend:${{ needs.Backend-PushDockerImage.outputs.sha_short }}_${{ needs.Backend-PushDockerImage.outputs.now }}
+
+  UpdateChangelog:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    needs: [Frontend-PushDockerImage]
+    outputs:
+      now: ${{ needs.Frontend-PushDockerImage.outputs.now }}
+      sha_short: ${{ needs.Frontend-PushDockerImage.outputs.sha_short }}
+    steps:
+      - run: |
+          name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
+          echo "PREVIOUS_TAG: $name"
+          echo "PREVIOUS_TAG=$name" >> $GITHUB_ENV
+      - run: git config push.default current
+      - run: git remote set-url origin git@github.com:mei-desofs/desofs2024_M1A_2.git
+      - run: git tag ${{ needs.Frontend-PushDockerImage.outputs.sha_short }}_${{ needs.Frontend-PushDockerImage.outputs.now }} && git push --tags
+      - run: python update-changelog.py ${{ env.PREVIOUS_TAG }} ${{ needs.Frontend-PushDockerImage.outputs.sha_short }}_${{ needs.Frontend-PushDockerImage.outputs.now }}
+
+  CreateRelease:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    needs: [UpdateChangelog]
+    steps:
+      - uses: ncipollo/release-action@v1.12.0
+        with:
+          allowUpdates: true
+          makeLatest: true
+          tag: ${{ needs.UpdateChangelog.outputs.sha_short }}_${{ needs.UpdateChangelog.outputs.now }}
