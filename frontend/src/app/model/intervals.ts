@@ -3,6 +3,6 @@ export interface PriceInterval {
 }
 
 export interface Interval {
-    from: Date,
-    to: Date
+    from: string,
+    to: string
 }

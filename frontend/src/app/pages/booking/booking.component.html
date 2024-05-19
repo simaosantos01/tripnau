@@ -4,37 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rent Property</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .property-image {
+            width: 100%;
+            height: auto;
+        }
+        .property-info {
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Rent Cozy Apartment in City Center</h1>
-        <img src="https://via.placeholder.com/800x400" alt="Property Image" class="property-image">
+        <h1>Rent {{ property!.propertyName }}</h1>
+        <img [src]="'../../assets/images/RentalProperty' + propertyIndex + '.jpg'" alt="Property Image" class="property-image">
         <div class="property-info">
-            <p>A modern 2-bedroom apartment located in the heart of the city. Close to shops and public transport.</p>
-            <p><strong>Price:</strong> $1,500 / month</p>
+            <p>{{ property!.propertyDescription }}</p>
+            <p><strong>Price:</strong> ${{ property!.amount }} / night</p>
         </div>
-        <form action="/submit-rental" method="POST">
+        <form [formGroup]="form">
             <div class="form-group">
                 <label for="checkin">Check-in Date</label>
-                <input type="date" id="checkin" name="checkin" required>
+                <input type="date" id="checkin" formControlName="from" required>
             </div>
             <div class="form-group">
                 <label for="checkout">Check-out Date</label>
-                <input type="date" id="checkout" name="checkout" required>
+                <input type="date" id="checkout" formControlName="to" required>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="guests">Number of Guests</label>
-                <select id="guests" name="guests" required>
-                    <option value="1">1 Guest</option>
-                    <option value="2">2 Guests</option>
-                    <option value="3">3 Guests</option>
-                    <option value="4">4 Guests</option>
-                    <option value="5">5 Guests</option>
-                    <option value="6">6 Guests</option>
+                <select id="guests">
+                    <option *ngFor="let guest of [1,2,3,4,5,6]" [value]="guest">{{ guest }} Guest{{ guest > 1 ? 's' : '' }}</option>
                 </select>
-            </div>
-            <button type="submit">Rent Now</button>
+            </div> -->
         </form>
+        <button (click)="onSubmit()">Rent Now</button>
     </div>
 </body>
 </html>
+
