@@ -56,7 +56,7 @@ public class AuthController {
     private Long expCustomer;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid final AuthRequestDto request)
+    public ResponseEntity<?> login(@RequestBody @Valid final AuthRequestDto request)
             throws BadCredentialsException {
 
         final Authentication authentication = this.authenticationManager
@@ -87,10 +87,10 @@ public class AuthController {
                 .build();
 
         final String token = this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        
+
         Map<String,Object> responseBody = new HashMap<>();
         responseBody.put("token",token);
-        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(token);
+        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(responseBody);
     }
 
     @PostMapping("/register")

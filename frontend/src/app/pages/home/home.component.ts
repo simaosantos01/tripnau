@@ -21,12 +21,14 @@ export class HomeComponent implements OnInit {
   bookingService = inject(BookingService);
   router: Router = inject(Router);
   properties: RentalProperty[] = [];
+  image: number = 0;
   
   ngOnInit(): void {
     this.initData();
   }
 
   initData() {
+    this.image = Math.floor(Math.random() * 5) + 1;
     this.propertyService.getAll().subscribe((data) => {
       this.properties = data;
     }); 
