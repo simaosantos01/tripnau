@@ -13,7 +13,7 @@ export class RentalPropertyService {
   http = inject(HttpClient)
 
   getAll(): Observable<RentalProperty[]> {
-      return this.http.get<RentalProperty[]>(environment.apiUrl + ROUTE.RENTALPROPERTIES);
+    return this.http.get<RentalProperty[]>(environment.apiUrl + ROUTE.RENTALPROPERTIES);
   }
 
   getUserRentalProperties(userId: number): Observable<RentalProperty[]> {

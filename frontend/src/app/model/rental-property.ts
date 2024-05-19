@@ -1,3 +1,4 @@
+import { Location } from "./location";
 import { PriceInterval } from "./price-interval";
 
 export interface RentalProperty {

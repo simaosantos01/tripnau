@@ -54,3 +54,16 @@ body {
     font-weight: bold;
     color: #007b5e;
 }
+
+.rent-button {
+    background-color: #003b95;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+}
