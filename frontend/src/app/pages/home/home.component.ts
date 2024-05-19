@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit {
   }
 
   initData() {
+    console.log('initData')
     this.propertyService.getAll().subscribe((data) => {
       this.properties = data;
     }); 
