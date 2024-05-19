@@ -1,0 +1,12 @@
+import { PriceInterval } from "./price-interval";
+
+export interface RentalProperty {
+    id: string,
+    propertyName: string,
+    location: Location,
+    maxGuests: number,
+    numBathrooms: number,
+    propertyDescription: string,
+    amount: number,
+    priceIntervals: PriceInterval[],
+}
