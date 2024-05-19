@@ -1,12 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ROUTE } from '../enum/routes';
 import { LoginRequest } from '../model/login-request';
 import { LoginResponse } from '../model/login-response';
 import { RegisterRequest } from '../model/register-request';
 import { RegisterResponse } from '../model/register-response';
+
 
 @Injectable({
   providedIn: 'root'
@@ -15,34 +16,23 @@ export class AuthService {
 
   user: string | undefined;
   token: string | undefined;
-  role: string | undefined;
+  roles: string[] | undefined;
+  email: string | undefined;
   authenticated = false;
 
   http = inject(HttpClient)
 
-  constructor() { }
-
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    // this.authenticated = true;
-    return new Observable<LoginResponse>(observer => {
-      observer.next({
-        token: ''
-      })
-    })
-    return this.http.post<LoginResponse>(environment.apiUrl + ROUTE.LOGIN, credentials).pipe(
-      tap((response) => {
-        if (response.token) {
-          this.setToken(response.token);
+    return this.http.post<LoginResponse>(environment.apiUrl + ROUTE.LOGIN, credentials, { observe: 'response' }).pipe(
+      map((response: HttpResponse<LoginResponse>) => {
+        if (response.headers.get('Authorization')) {
+          this.setToken(response.headers.get('Authorization')!)
         }
+        return response.body!;
       })
     )
   }
   register(user: RegisterRequest): Observable<RegisterResponse> {
-    return new Observable<RegisterResponse>(observer => {
-      observer.next({
-        success: true
-      })
-    })
     return this.http.post<RegisterResponse>(environment.apiUrl + ROUTE.REGISTER, user);
   }
   getUser() {
@@ -51,14 +41,19 @@ export class AuthService {
   setUser(user: string) {
     this.user = user;
   }
+  getEmail(): string {
+    return this.email!;
+  }
+  setEmail(email: string): void {
+    this.email = email
+  }
   getToken() {
     return this.token
   }
   setToken(token: string) {
     try {
       this.parseToken(token);
-      this.token = token;
-      if (this.getRole() != 'ADMIN') {
+      if (!this.getRoles().includes('BUSINESSADMIN')) {
         localStorage.setItem('token', token);
       }
     } catch (e) {
@@ -66,18 +61,22 @@ export class AuthService {
     }
   }
   parseToken(token: string) {
-    // parse the token and instantiate the values of user + roles
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid token format');
+    }
+    const payload = JSON.parse(atob(parts[1]));
+    this.email = payload.email;
+    this.roles = payload.roles;
+    this.token = token;
   }
-  getRole() {
-    return this.role;
+  getRoles(): string[] {
+    return this.roles!;
   }
-  setRole(role: string) {
-    this.role = role;
+  setRoles(roles: string[]): void {
+    this.roles = roles;
   }
   isAuthenticated(): boolean {
     return this.authenticated;
-  }
-  logout() {
-
   }
 }
