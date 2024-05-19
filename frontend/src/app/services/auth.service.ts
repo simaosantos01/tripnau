@@ -23,7 +23,7 @@ export class AuthService {
   http = inject(HttpClient)
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(environment.apiUrl + ROUTE.LOGIN, credentials, { observe: 'response' }).pipe(
+    return this.http.post<LoginResponse>(environment.apiUrl + '/auth' +ROUTE.LOGIN, credentials, { observe: 'response' }).pipe(
       map((response: HttpResponse<LoginResponse>) => {
         if (response.headers.get('Authorization')) {
           this.setToken(response.headers.get('Authorization')!)
@@ -33,7 +33,7 @@ export class AuthService {
     )
   }
   register(user: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(environment.apiUrl + ROUTE.REGISTER, user);
+    return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' +ROUTE.REGISTER, user);
   }
   getUser() {
     return this.user;

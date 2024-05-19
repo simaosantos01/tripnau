@@ -82,7 +82,7 @@ export class RegisterComponent {
 
   validateInputs(): Boolean {
     let valid = true;
-    if (this.form.controls.password != this.form.controls.confirmPassword) {
+    if (this.form.controls.password.value != this.form.controls.confirmPassword.value) {
       this.form.setErrors({ matchingPasswords: true })
       valid = false;
     }
