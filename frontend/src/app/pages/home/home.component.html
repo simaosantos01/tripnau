@@ -7,39 +7,24 @@
 </head>
 <body>
     <div class="container">
-        <h1>Available Properties for Rent</h1>
-        <div class="property-list">
-            <div class="property-item">
-                <img src="./assets/images/RentalProperty1.jpeg" alt="Property Image" class="property-image">
-                <div class="property-info">
-                    <div>
-                        <div class="property-title">Cozy Apartment in City Center</div>
-                        <div class="property-description">A modern 2-bedroom apartment located in the heart of the city. Close to shops and public transport.</div>
-                    </div>
-                    <div class="property-price">$1,500 / month</div>
-                </div>
+      <h1>Available Properties for Rent</h1>
+      <div *ngIf="properties" class="property-list">
+        <div *ngFor="let property of properties; let i = index" class="property-item" >
+          <img [src]="'../../assets/images/RentalProperty' + i + '.jpg'" alt="Property Image" class="property-image">
+          <div class="property-info">
+            <div>
+              <div class="property-title">{{ property.propertyName }}</div>
+              <div class="property-description">{{ property.propertyDescription }}</div>
+              <div class="property-location">Location: Lat {{ property.location.lat }}, Lon {{ property.location.lon }}</div>
+              <div class="property-max-guests">Max Guests: {{ property.maxGuests }}</div>
             </div>
-            <div class="property-item">
-                <img src="./assets/images/RentalProperty2.jpg" alt="Property Image" class="property-image">
-                <div class="property-info">
-                    <div>
-                        <div class="property-title">Spacious Family Home</div>
-                        <div class="property-description">A beautiful 4-bedroom house with a large garden and garage. Perfect for families.</div>
-                    </div>
-                    <div class="property-price">$2,800 / month</div>
-                </div>
+            <div>
+              <div class="property-price">${{ property.amount }} / night</div>
+              <button class="rent-button">Rent</button>
             </div>
-            <div class="property-item">
-                <img src="./assets/images/RentalProperty3.jpg" alt="Property Image" class="property-image">
-                <div class="property-info">
-                    <div>
-                        <div class="property-title">Luxurious Villa with Pool</div>
-                        <div class="property-description">An exquisite villa featuring 5 bedrooms, a private pool, and stunning ocean views.</div>
-                    </div>
-                    <div class="property-price">$5,000 / month</div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

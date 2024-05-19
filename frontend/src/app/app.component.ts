@@ -6,6 +6,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { AuthService } from './services/auth.service';
 import { MessagesService } from './services/messages.service';
 import { HomeComponent } from './pages/home/home.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { HomeComponent } from './pages/home/home.component';
   imports: [
     RouterOutlet,
     HeaderComponent,
-    ToastModule
+    ToastModule,
+    CommonModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
