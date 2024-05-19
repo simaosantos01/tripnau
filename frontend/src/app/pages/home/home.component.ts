@@ -10,7 +10,7 @@ import { Component, OnInit, inject } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  propertyService = inject(RentalPropertyService)
+  //propertyService = inject(RentalPropertyService)
 
   ngOnInit(): void {
 
