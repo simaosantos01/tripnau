@@ -12,6 +12,7 @@
     --main-color: #003b95;
 }
 
-.p-card .p-card-title {
-    background-color: var(--main-color);
+.error {
+    font-size: 13px;
+    color: red;
 }

@@ -9,8 +9,6 @@ export class MessagesService {
 
   messages: Subject<Message> = new Subject();
 
-  constructor() { }
-
   getMessages(): Subject<Message> {
     return this.messages
   }
