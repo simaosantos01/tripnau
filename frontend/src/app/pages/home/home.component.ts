@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-
 import { RentalPropertyService } from '../../services/rental-property.service';
 import { RentalProperty } from '../../model/rental-property';
 import { Router } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { BookingService } from '../../services/booking.service';
 
