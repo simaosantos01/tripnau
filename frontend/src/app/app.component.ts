@@ -5,6 +5,7 @@ import { ToastModule } from 'primeng/toast';
 import { HeaderComponent } from './components/header/header.component';
 import { AuthService } from './services/auth.service';
 import { MessagesService } from './services/messages.service';
+import { HomeComponent } from './pages/home/home.component';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,8 @@ import { MessagesService } from './services/messages.service';
   providers: [MessageService]
 })
 export class AppComponent implements OnInit {
+  title = 'frontend';
+
   authService = inject(AuthService);
   messageService = inject(MessageService)
   messagesService = inject(MessagesService);
