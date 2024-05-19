@@ -1,0 +1,23 @@
+<div class="login-card">
+    <div class="card-title">
+        <h1>Login</h1>
+        <span>You don't have an account? <a href="/register">Sign up</a></span>
+    </div>
+    <form class="form-group" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <input type="email" name="email" placeholder="Email" formControlName="email">
+        @if(submitted && form.controls.email.getError('email')) {
+        <label class="error">Please enter a valid email</label>
+        }
+        <input type="password" name="password" placeholder="Password" formControlName="password">
+        <input type="submit" value="Signup" [disabled]="!form.valid && disabled">
+    </form>
+    <div class="card-terms">
+        @if(submitted && form.getError('tooManyFailures')) {
+        <label class="error">Invalid Credentials. Try Again In {{timeoutString}}</label>
+        <br>
+        } @else if(submitted && form.getError('invalidCredentials')) {
+        <label class="error">Invalid Credentials</label>
+        <br>
+        }
+    </div>
+</div>
