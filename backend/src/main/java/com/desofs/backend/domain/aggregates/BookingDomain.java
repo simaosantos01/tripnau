@@ -96,7 +96,11 @@ public class BookingDomain {
     }
 
     public BookingStatusEnum getStatus() {
-        return this.eventList.stream().max(Comparator.comparing(Event::getDatetime)).stream().findFirst().get().getState();
+        Event event = this.eventList.stream().max(Comparator.comparing(Event::getDatetime)).stream().findFirst().orElse(null);
+        if (event != null){
+            return event.getState();
+        }
+        return BookingStatusEnum.BOOKED;
     }
 
     // Domain methods --------------------------------------------------------------------------------------------------
