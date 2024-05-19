@@ -21,7 +21,7 @@ public class IntervalTime {
         notNull(to,
                 "To date must not be null.");
         isTrue(from.before(to),
-                "The from date must be before.");
+                "The from date must be before the to date.");
 
         return new IntervalTime(new Date(from.getTime()), new Date(to.getTime()));
     }

@@ -15,7 +15,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 @ToString
 public class UserDomain {
 
-    private Id id;
+    private final Id id;
     private final Name name;
     private final Email email;
     private final Password password;
@@ -56,7 +56,12 @@ public class UserDomain {
 
     // Used for tests
     public UserDomain(UserDto userDto) {
-        this(Id.create(userDto.getId()), Name.create(userDto.getName()), Email.create(userDto.getEmail()), Password.create(userDto.getPassword()), userDto.getRole(), userDto.isBanned());
+        this(Id.create(userDto.getId()),
+                Name.create(userDto.getName()),
+                Email.create(userDto.getEmail()),
+                Password.create(userDto.getPassword()),
+                userDto.getRole(),
+                userDto.isBanned());
     }
 
     public boolean banUser() {

@@ -6,13 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IdTest {
 
-/*     @Test
+    @Test
     public void testIdCreation() {
-        String validId = "test_id_123";
-        Id id = Id.create(validId);
-
-        assertEquals(validId, id.value());
-    } */
+        assertThrows(IllegalArgumentException.class, () -> Id.create("test_id_123"));
+    }
 
     @Test
     public void testNullId() {

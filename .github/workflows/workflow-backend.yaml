@@ -25,18 +25,40 @@ jobs:
         with:
           fetch-depth: 0
 
-  InstallDependenciesAndBuild:
+  SecretScanner:
     runs-on: self-hosted
     needs: [Checkout]
+    steps:
+      - run: |
+          NOW=$(date +'%Y-%m-%d_%Hh%Mm%Ss')
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          echo "NOW=$NOW" >> $GITHUB_ENV
+          echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_ENV
+      - run: python detect-new-secrets.py resolve_secrets_${{ env.SHA_SHORT }}_${{ env.NOW }}
+
+  InstallDependenciesAndBuild:
+    runs-on: self-hosted
+    needs: [SecretScanner]
     steps:
       - working-directory: backend
         run: mvn install -DskipTests
       - working-directory: backend
         run: mvn compile
 
-  SonarQubeScan:
+  UnitTesting:
     runs-on: self-hosted
     needs: [InstallDependenciesAndBuild]
+    steps:
+      - working-directory: backend
+        run: mvn verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-code-coverage-results
+          path: "${{ github.workspace }}/backend/target/site/jacoco"
+
+  SonarQubeScan:
+    runs-on: self-hosted
+    needs: [UnitTesting]
     steps:
       - run: touch sonar-project.properties
       - uses: DamianReeves/write-file-action@master
@@ -44,10 +66,15 @@ jobs:
           path: sonar-project.properties
           write-mode: overwrite
           contents: |
-            sonar.projectKey=desofs
+            sonar.projectKey=desofs-backend
             sonar.sources=backend/src/
             sonar.java.binaries=backend/target/
       - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -62,10 +89,3 @@ jobs:
         with:
           name: owasp-dependency-checker-results
           path: "${{ github.workspace }}/dependency-check-report.html"
-
-  UnitTesting:
-    runs-on: self-hosted
-    needs: [DependencyAnalysis]
-    steps:
-      - working-directory: backend
-        run: mvn test

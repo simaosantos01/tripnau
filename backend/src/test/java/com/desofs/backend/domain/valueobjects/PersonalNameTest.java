@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PersonalNameTest {
 
+    final String generalErrorMsg = "Name must not be null or empty.";
+
     @Test
     @DisplayName("Test create method with valid name")
     void testCreateValidName() {
@@ -28,7 +30,7 @@ class PersonalNameTest {
     void testCreateNullName() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Name.create(null));
-        assertEquals("Name must not be null or empty.", exception.getMessage());
+        assertEquals(generalErrorMsg, exception.getMessage());
     }
 
     @Test
@@ -36,6 +38,6 @@ class PersonalNameTest {
     void testCreateEmptyName() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Name.create(""));
-        assertEquals("Name must not be null or empty.", exception.getMessage());
+        assertEquals(generalErrorMsg, exception.getMessage());
     }
 }

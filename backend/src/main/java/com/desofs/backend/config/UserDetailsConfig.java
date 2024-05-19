@@ -29,7 +29,7 @@ public class UserDetailsConfig {
             UserDomain user = this.userRepository.findByEmail(email);
 
             if (user == null) {
-                throw new UsernameNotFoundException(format("User: %s not found.", email));
+                throw new UsernameNotFoundException(format("User: %s not found", email));
             }
 
             GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
@@ -38,8 +38,8 @@ public class UserDetailsConfig {
         };
     }
 
-    public static boolean hasAuthorization(Authentication authentication, String role) {
+    public static boolean hasAuthorization(Authentication authentication, String authority) {
         List<String> authRoleList = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        return authRoleList.contains(role);
+        return authRoleList.contains(authority);
     }
 }

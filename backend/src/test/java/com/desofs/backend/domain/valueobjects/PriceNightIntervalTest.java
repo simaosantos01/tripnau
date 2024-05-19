@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,11 +18,12 @@ class PriceNightIntervalTest {
         Date startDate = new Date(2024, 5, 1);
         Date endDate = new Date(2024, 5, 2);
         IntervalTime interval = IntervalTime.create(startDate, endDate);
-        PriceNightInterval priceNightInterval = PriceNightInterval.create(price, interval);
+        PriceNightInterval priceNightInterval = PriceNightInterval.create(Id.create(UUID.randomUUID().toString()),
+                Id.create(UUID.randomUUID().toString()), price, interval);
         assertNotNull(priceNightInterval);
         assertEquals(price.value(), priceNightInterval.getPrice().value());
-        assertEquals(interval.getTo(), priceNightInterval.value().getTo());
-        assertEquals(interval.getFrom(), priceNightInterval.value().getFrom());
+        assertEquals(interval.getTo(), priceNightInterval.getInterval().getTo());
+        assertEquals(interval.getFrom(), priceNightInterval.getInterval().getFrom());
     }
 
     @Test
@@ -31,8 +33,8 @@ class PriceNightIntervalTest {
         Date endDate = new Date(2024, 5, 2);
         IntervalTime interval = IntervalTime.create(startDate, endDate);
         NullPointerException exception = assertThrows(NullPointerException.class,
-                () -> PriceNightInterval.create(null, interval));
-        assertEquals("Price must not be null.", exception.getMessage());
+                () -> PriceNightInterval.create(null, null, null, interval));
+        assertEquals("Id must not be null.", exception.getMessage());
     }
 
     @Test
@@ -40,7 +42,8 @@ class PriceNightIntervalTest {
     void testCreateNullInterval() {
         MoneyAmount price = MoneyAmount.create(BigDecimal.valueOf(50));
         NullPointerException exception = assertThrows(NullPointerException.class,
-                () -> PriceNightInterval.create(price, null));
+                () -> PriceNightInterval.create(Id.create(UUID.randomUUID().toString()),
+                        Id.create(UUID.randomUUID().toString()), price, null));
         assertEquals("Interval must not be null.", exception.getMessage());
     }
 

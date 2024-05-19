@@ -8,12 +8,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class CreateReviewDto {
-
-    private final String authorId;
     private final String bookingId;
     private final String text;
     private final int stars;
-    private final boolean banned;
     private final List<String> imageUrlList;
-
 }

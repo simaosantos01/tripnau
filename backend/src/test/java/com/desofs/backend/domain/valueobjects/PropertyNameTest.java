@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PropertyNameTest {
 
+    private final String propertyNameErrorMessage = "Property name must not be null or empty.";
+
     @Test
     @DisplayName("Test create method with valid property name")
     void testCreateValidPropertyName() {
@@ -20,7 +22,7 @@ class PropertyNameTest {
     void testCreateNullPropertyName() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> PropertyName.create(null));
-        assertEquals("Property name must not be null or empty.", exception.getMessage());
+        assertEquals(propertyNameErrorMessage, exception.getMessage());
     }
 
     @Test
@@ -28,7 +30,7 @@ class PropertyNameTest {
     void testCreateEmptyPropertyName() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> PropertyName.create(""));
-        assertEquals("Property name must not be null or empty.", exception.getMessage());
+        assertEquals(propertyNameErrorMessage, exception.getMessage());
     }
 
     @Test
@@ -36,7 +38,7 @@ class PropertyNameTest {
     void testCreateWhitespacePropertyName() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> PropertyName.create("   "));
-        assertEquals("Property name must not be null or empty.", exception.getMessage());
+        assertEquals(propertyNameErrorMessage, exception.getMessage());
     }
 
     @Test

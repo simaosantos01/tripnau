@@ -8,23 +8,20 @@ import com.desofs.backend.domain.valueobjects.Name;
 import com.desofs.backend.domain.valueobjects.Password;
 import com.desofs.backend.dtos.CreateUserDto;
 import com.desofs.backend.dtos.FetchUserDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component("UserService")
+@Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
 
     private final PasswordEncoder encoder;
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
-        this.userRepository = userRepository;
-        this.encoder = encoder;
-    }
 
     @Transactional
     public FetchUserDto create(CreateUserDto createUserDTO) throws DatabaseException {
@@ -42,7 +39,23 @@ public class UserService {
     @Transactional
     public FetchUserDto findByEmail(String email) {
         UserDomain user = this.userRepository.findByEmail(email);
-        return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
-                user.getRole(), user.isBanned());
+        if (user != null) {
+            return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
+                    user.getRole(), user.isBanned());
+        } else {
+            return null;
+        }
+    }
+
+    @Transactional
+    public FetchUserDto findById(String id) {
+        UserDomain user = this.userRepository.findById(id);
+        if (user != null) {
+            return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
+                    user.getRole(), user.isBanned());
+        } else {
+            return null;
+        }
     }
 }
+
