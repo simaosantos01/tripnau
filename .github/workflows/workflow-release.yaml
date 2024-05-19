@@ -3,7 +3,7 @@ permissions: write-all
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'frontend/**'
       - 'backend/**'
@@ -12,7 +12,7 @@ on:
       - opened
       - reopened
     branches:
-      - master
+      - main
     paths:
       - 'frontend/**'
       - 'backend/**'
