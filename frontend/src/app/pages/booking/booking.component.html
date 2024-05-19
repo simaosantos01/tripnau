@@ -33,7 +33,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div *ngIf="property" class="container">
         <h1>Rent {{ property!.propertyName }}</h1>
         <img [src]="'../../assets/images/RentalProperty' + propertyIndex + '.jpg'" alt="Property Image" class="property-image">
         <div class="property-info">

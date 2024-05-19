@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BookingService } from './booking.service';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('BookingService', () => {
   let service: BookingService;
