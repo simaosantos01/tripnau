@@ -4,12 +4,18 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
   pull_request:
     types:
       - opened
       - reopened
     branches:
       - master
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
 
   workflow_dispatch:
 
