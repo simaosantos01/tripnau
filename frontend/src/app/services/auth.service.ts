@@ -26,7 +26,6 @@ export class AuthService {
     // this.authenticated = true;
     return new Observable<LoginResponse>(observer => {
       observer.next({
-        success: true,
         token: ''
       })
     })
