@@ -10,31 +10,28 @@
   
 # Index
 
-- [DESOFS 2024 M1A Group 2 - Phase 2](#desofs-2024-m1a-group-2---phase-2)
-    - [Members](#members)
-- [Index](#index)
-  - [Frontend](#frontend)
-    - [Components](#components)
-      - [Register](#register)
-      - [Login](#login)
+- [Frontend](#frontend)
+  - [Components](#components)
+    - [Register](#register)
+    - [Login](#login)
   - [Home](#home)
   - [Booking](#booking)
-    - [Interceptors](#interceptors)
-    - [Guards](#guards)
-    - [Tests](#tests)
-  - [Backend](#backend)
-    - [DDD, Immutability, DTOs](#ddd-immutability-dtos)
-    - [JWT and Statelessness](#jwt-and-statelessness)
-    - [Encryption](#encryption)
-    - [Security Chain](#security-chain)
-    - [SQL query parameterization](#sql-query-parameterization)
-    - [Validations](#validations)
-    - [Tests](#tests-1)
-    - [Controller Advisor](#controller-advisor)
-  - [DevSecOps](#devsecops)
-    - [Pipelines](#pipelines)
-    - [Dependabot](#dependabot)
-    - [Security Policy](#security-policy)
+  - [Interceptors](#interceptors)
+  - [Guards](#guards)
+  - [Tests](#tests)
+- [Backend](#backend)
+  - [DDD, Immutability, DTOs](#ddd-immutability-dtos)
+  - [JWT and Statelessness](#jwt-and-statelessness)
+  - [Encryption](#encryption)
+  - [Security Chain](#security-chain)
+  - [SQL query parameterization](#sql-query-parameterization)
+  - [Validations](#validations)
+  - [Tests](#tests-1)
+  - [Controller Advisor](#controller-advisor)
+- [DevSecOps](#devsecops)
+  - [Pipelines](#pipelines)
+  - [Dependabot](#dependabot)
+  - [Security Policy](#security-policy)
 
 ## Frontend 
 
@@ -144,16 +141,18 @@ ngOnInit(): void {
   }
 ```
 
-## Home
-  The landing page of the application. After a user authenticates they get access to a list of the properties they have available to rent as well as some information about them such as location, cost, etc.
-  This page is meant as a hub for most functionalities of the application. It also works as a return for most of the other applications when they conclude and therefore it's routing is intertwined with authenticationguards, restricting what each user is allowed to do.
+### Home
 
-## Booking
-  When a user clicks on a property to rent they're taken to a page containing the option to rent a property for an interval of time. This page follows the same information model as the home page allowing for a request to the database to be skipped.
-  When trying to rent a property the user is required to insert valid dates and in the future a guest list might be required, otherwise a request to the back-end will not be sent.
-  When a valid booking is generated, the back-end validates the information as well as the validity of the selected dates. In the future the user might be alerted as to what dates are valid.
-  This prevents abuse of the requests on a first level, as well as prevents a user overriding another's booked stay.
-  All these actions are also guarded by authentication.
+The landing page of the application. After a user authenticates they get access to a list of the properties they have available to rent as well as some information about them such as location, cost, etc.
+This page is meant as a hub for most functionalities of the application. It also works as a return for most of the other applications when they conclude and therefore it's routing is intertwined with authenticationguards, restricting what each user is allowed to do.
+
+### Booking
+
+When a user clicks on a property to rent they're taken to a page containing the option to rent a property for an interval of time. This page follows the same information model as the home page allowing for a request to the database to be skipped.
+When trying to rent a property the user is required to insert valid dates and in the future a guest list might be required, otherwise a request to the back-end will not be sent.
+When a valid booking is generated, the back-end validates the information as well as the validity of the selected dates. In the future the user might be alerted as to what dates are valid.
+This prevents abuse of the requests on a first level, as well as prevents a user overriding another's booked stay.
+All these actions are also guarded by authentication.
 
 ### Interceptors
 
