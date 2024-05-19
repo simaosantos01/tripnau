@@ -5,9 +5,9 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
-    { path: '', component: AppComponent, pathMatch: 'full', canActivate: [authGuard(['USER', 'ADMIN'])] },
+    { path: '', component: AppComponent, pathMatch: 'full', canActivate: [authGuard([])] },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'admin', component: AppComponent, canActivate: [authGuard(['ADMIN'])] },
-    { path: 'home', component: AppComponent, canActivate: [authGuard(['USER', 'ADMIN'])] }
+    { path: 'home', component: AppComponent, canActivate: [authGuard([])] }
 ];
