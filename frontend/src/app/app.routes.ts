@@ -10,7 +10,7 @@ import { BookingComponent } from './pages/booking/booking.component';
 export const routes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [authGuard([])] },
     //{ path: '/', component: HomeComponent },
-    { path: 'login', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'home', component: HomeComponent, canActivate: [authGuard([])] },
     { path: 'admin', component: HomeComponent, canActivate: [authGuard(['ADMIN'])] },
