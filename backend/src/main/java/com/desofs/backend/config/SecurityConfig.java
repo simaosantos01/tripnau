@@ -55,6 +55,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/rental_property/all").permitAll()
                 .requestMatchers(HttpMethod.POST, rentalPropertyEndpoint).permitAll()
                 .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Authority.PROPERTYOWNER)
 
@@ -62,8 +64,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Authority.PROPERTYOWNER)
                 .requestMatchers(HttpMethod.GET, "/rental_property/allByUser/{id}").hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
                 .requestMatchers(HttpMethod.DELETE, rentalPropertyEndpoint).hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
+                .requestMatchers(HttpMethod.PUT, rentalPropertyEndpoint).hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
 
                 .requestMatchers(HttpMethod.POST, "/booking/add").permitAll()
+                .requestMatchers(HttpMethod.POST, "/booking/{id}").authenticated()
+                .requestMatchers(HttpMethod.POST, "/booking/getAllByUser/{id}").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/booking/{id}/cancel").authenticated()
 
                 .requestMatchers(HttpMethod.POST, "/review/add").permitAll()
                 .requestMatchers(HttpMethod.POST, "/review/change_state").hasAuthority(Authority.BUSINESSADMIN)

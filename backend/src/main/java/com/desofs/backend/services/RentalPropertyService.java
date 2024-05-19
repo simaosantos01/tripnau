@@ -43,6 +43,13 @@ public class RentalPropertyService {
     }
 
     @Transactional
+    public List<FetchRentalPropertyDto> findAll() {
+        List<RentalPropertyDomain> rentalProperties = this.rentalPropertyRepository.findAll();
+
+        return rentalProperties.stream().map(rentalPropertyMapper::domainToDto).toList();
+    }
+
+    @Transactional
     public FetchRentalPropertyDto findById(String id) throws NotFoundException {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(id);
 
@@ -80,7 +87,7 @@ public class RentalPropertyService {
             throw new NotFoundException(rentalPropertyNotFoundMessage);
         }
 
-        RentalPropertyDomain updated =  this.rentalPropertyRepository.update(rentalProperty.update(dto));
+        RentalPropertyDomain updated = this.rentalPropertyRepository.update(rentalProperty.update(dto));
         return rentalPropertyMapper.domainToDto(updated);
     }
 }
