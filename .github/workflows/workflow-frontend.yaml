@@ -73,6 +73,7 @@ jobs:
           contents: |
             sonar.projectKey=desofs-frontend
             sonar.sources=frontend/src/
+            sonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
