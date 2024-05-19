@@ -20,18 +20,8 @@ public class CreditCardNumberTest {
     @DisplayName("Test create method with valid credit card number 2")
     void testCreateInvalidCreditCardNumberFormat() {
         CreditCardNumber ccn = CreditCardNumber.create("4111-1111-1111-1111");
-        assertNotNull(4111-1111-1111-1111);
         assertEquals("4111-1111-1111-1111", ccn.value());
     }
-
-    /*@Test
-    @DisplayName("Test create method with invalid credit card number length")
-    void testCreateInvalidCreditCardNumberLength() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> CreditCardNumber.create("4111111111111111"));
-        assertEquals("Credit card number must be a 16-digit number.", exception.getMessage());
-    }*/
-
 
     @Test
     @DisplayName("Test create method with null credit card number")

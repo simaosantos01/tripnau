@@ -1,11 +1,10 @@
 package com.desofs.backend.domain.enums;
 
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.security.core.GrantedAuthority;
 
 @AllArgsConstructor
-public class Role implements GrantedAuthority {
+public class Authority implements GrantedAuthority {
 
     public static final String BUSINESSADMIN = "BUSINESSADMIN";
 

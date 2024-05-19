@@ -6,15 +6,17 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PaymentEntityTest {
 
-    /* @Test
+    @Test
     @DisplayName("Test constructor with valid parameters")
     void testConstructorValidParameters() {
-        Id id = Id.create("123456");
+        Id id = Id.create(UUID.randomUUID().toString());
+        Id bookingId = Id.create(UUID.randomUUID().toString());
         MoneyAmount moneyAmount = MoneyAmount.create(BigDecimal.valueOf(100));
         CreditCardNumber creditCardNumber = CreditCardNumber.create("4111111111111111");
         CardVerificationCode cardVerificationCode = CardVerificationCode.create("123");
@@ -23,7 +25,7 @@ class PaymentEntityTest {
         Name name = Name.create("John Doe");
         LocalDateTime createdAt = LocalDateTime.now();
 
-        PaymentEntity paymentEntity = new PaymentEntity(id, moneyAmount, creditCardNumber,
+        PaymentEntity paymentEntity = new PaymentEntity(id, bookingId, moneyAmount, creditCardNumber,
                 cardVerificationCode, expirationDate, email, name, createdAt);
 
         assertNotNull(paymentEntity);
@@ -35,5 +37,5 @@ class PaymentEntityTest {
         assertEquals(email.value(), paymentEntity.getEmail().value());
         assertEquals(name.value(), paymentEntity.getName().value());
         assertEquals(createdAt, paymentEntity.getCreatedAt());
-    } */
+    }
 }

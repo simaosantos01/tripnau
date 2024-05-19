@@ -1,6 +1,6 @@
 package com.desofs.backend.config;
 
-import com.desofs.backend.domain.enums.Role;
+import com.desofs.backend.domain.enums.Authority;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,17 +54,17 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/rental_property/{id}").permitAll()
-                .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Role.PROPERTYOWNER)
+                .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Authority.PROPERTYOWNER)
 
                 .requestMatchers(HttpMethod.GET, "/rental_property/{id}").permitAll()
-                .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Role.PROPERTYOWNER)
-                .requestMatchers(HttpMethod.GET, "/rental_property/allByUser/{id}").hasAnyAuthority(Role.PROPERTYOWNER, Role.BUSINESSADMIN)
-                .requestMatchers(HttpMethod.DELETE, "/rental_property/{id}").hasAnyAuthority(Role.PROPERTYOWNER, Role.BUSINESSADMIN)
+                .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Authority.PROPERTYOWNER)
+                .requestMatchers(HttpMethod.GET, "/rental_property/allByUser/{id}").hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
+                .requestMatchers(HttpMethod.DELETE, "/rental_property/{id}").hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
 
                 .requestMatchers(HttpMethod.POST, "/booking/add").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/review/add").permitAll()
-                .requestMatchers(HttpMethod.POST, "/review/change_state").hasAuthority(Role.BUSINESSADMIN)
+                .requestMatchers(HttpMethod.POST, "/review/change_state").hasAuthority(Authority.BUSINESSADMIN)
 
                 .requestMatchers(restApiDocPath + "/**").permitAll()
                 .requestMatchers(swaggerPath + "/**").permitAll()

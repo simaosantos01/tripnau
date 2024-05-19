@@ -38,8 +38,8 @@ public class UserDetailsConfig {
         };
     }
 
-    public static boolean hasAuthorization(Authentication authentication, String role) {
+    public static boolean hasAuthorization(Authentication authentication, String authority) {
         List<String> authRoleList = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        return authRoleList.contains(role);
+        return authRoleList.contains(authority);
     }
 }

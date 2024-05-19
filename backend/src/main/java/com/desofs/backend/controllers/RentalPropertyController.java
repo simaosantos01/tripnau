@@ -1,6 +1,6 @@
 package com.desofs.backend.controllers;
 
-import com.desofs.backend.domain.enums.Role;
+import com.desofs.backend.domain.enums.Authority;
 import com.desofs.backend.dtos.FetchUserDto;
 import com.desofs.backend.dtos.UpdateRentalPropertyDto;
 import com.desofs.backend.exceptions.DatabaseException;
@@ -58,7 +58,7 @@ public class RentalPropertyController {
         }
 
         // if the user is trying to access a rental property of another user without being a admin
-        if (!authentication.getName().equals(user.getId()) && !hasAuthorization(authentication, Role.BUSINESSADMIN)) {
+        if (!authentication.getName().equals(user.getId()) && !hasAuthorization(authentication, Authority.BUSINESSADMIN)) {
             throw new NotAuthorizedException("Trying to access a property of another user.");
         }
 
@@ -76,7 +76,7 @@ public class RentalPropertyController {
         String userId = authentication.getName();
         FetchRentalPropertyDto rentalProperty = this.rentalPropertyService.findById(id);
 
-        if (!rentalProperty.getPropertyOwner().equals(userId) && !hasAuthorization(authentication, Role.BUSINESSADMIN)) {
+        if (!rentalProperty.getPropertyOwner().equals(userId) && !hasAuthorization(authentication, Authority.BUSINESSADMIN)) {
             throw new NotAuthorizedException("The request user is not the owner of rental property.");
         }
 
@@ -92,7 +92,7 @@ public class RentalPropertyController {
         String userId = authentication.getName();
         FetchRentalPropertyDto rentalProperty = this.rentalPropertyService.findById(id);
 
-        if (!rentalProperty.getPropertyOwner().equals(userId) && !hasAuthorization(authentication, Role.BUSINESSADMIN)) {
+        if (!rentalProperty.getPropertyOwner().equals(userId) && !hasAuthorization(authentication, Authority.BUSINESSADMIN)) {
             throw new NotAuthorizedException("The request user is not the owner of rental property.");
         }
 

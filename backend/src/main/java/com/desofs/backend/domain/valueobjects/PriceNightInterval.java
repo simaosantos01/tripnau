@@ -23,8 +23,8 @@ public class PriceNightInterval {
     public static PriceNightInterval create(Id id, Id rentalPropertyId, MoneyAmount price, IntervalTime interval) {
         notNull(id, "Id must not be null.");
         notNull(rentalPropertyId, "Rental Property Id must not be null.");
-        notNull(interval, "Price must not be null.");
-        notNull(price, "Interval must not be null.");
+        notNull(price, "Price must not be null.");
+        notNull(interval, "Interval must not be null.");
 
         return new PriceNightInterval(id, rentalPropertyId, price, interval);
     }

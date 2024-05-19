@@ -7,7 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PasswordTest {
 
-    private final String passwordFormatErrorMessage = "Password must contain 12 to 128 character password requiring at least 3 out 4 (uppercase and lowercase letters, numbers and special characters) and no more than 2 equal characters in a row.";
+    private final String passwordFormatErrorMsg = "Password must contain 12 to 128 character password requiring at least 3 out 4 (uppercase and lowercase letters, numbers and special characters) and no more than 2 equal characters in a row.";
+
+    private final String generalErrorMsg = "Password must not be null or empty.";
+
 
     @Test
     @DisplayName("Test create method with valid password")
@@ -22,7 +25,7 @@ class PasswordTest {
     void testCreateInvalidPasswordFormat() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Password.create("invalidpassword"));
-        assertEquals(passwordFormatErrorMessage, exception.getMessage());
+        assertEquals(passwordFormatErrorMsg, exception.getMessage());
     }
 
     @Test
@@ -30,7 +33,7 @@ class PasswordTest {
     void testCreateNullPassword() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Password.create(null));
-        assertEquals("Password must not be null or empty.", exception.getMessage());
+        assertEquals(generalErrorMsg, exception.getMessage());
     }
 
     @Test
@@ -38,7 +41,7 @@ class PasswordTest {
     void testCreateEmptyPassword() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Password.create(""));
-        assertEquals("Password must not be null or empty.", exception.getMessage());
+        assertEquals(generalErrorMsg, exception.getMessage());
     }
 
     @Test
@@ -46,7 +49,7 @@ class PasswordTest {
     void testCreateShortPassword() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Password.create("Abcdefg1!"));
-        assertEquals(passwordFormatErrorMessage, exception.getMessage());
+        assertEquals(passwordFormatErrorMsg, exception.getMessage());
     }
 
     @Test
@@ -58,7 +61,7 @@ class PasswordTest {
         }
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Password.create(longPassword.toString()));
-        assertEquals(passwordFormatErrorMessage, exception.getMessage());
+        assertEquals(passwordFormatErrorMsg, exception.getMessage());
     }
 
     @Test
@@ -66,6 +69,6 @@ class PasswordTest {
     void testCreatePasswordWithRepeatingCharacters() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> Password.create("Abcdef111!@#"));
-        assertEquals(passwordFormatErrorMessage, exception.getMessage());
+        assertEquals(passwordFormatErrorMsg, exception.getMessage());
     }
 }
