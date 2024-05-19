@@ -8,7 +8,7 @@ export class RateLimitingService {
   private capacity = 60;
   private refillRate = 60000;
 
-  constructor() { }
+  //constructor() { }
 
   tryConsume(): boolean {
     if (this.capacity > 0) {

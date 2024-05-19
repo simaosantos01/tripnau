@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Property</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Rent Cozy Apartment in City Center</h1>
+        <img src="https://via.placeholder.com/800x400" alt="Property Image" class="property-image">
+        <div class="property-info">
+            <p>A modern 2-bedroom apartment located in the heart of the city. Close to shops and public transport.</p>
+            <p><strong>Price:</strong> $1,500 / month</p>
+        </div>
+        <form action="/submit-rental" method="POST">
+            <div class="form-group">
+                <label for="checkin">Check-in Date</label>
+                <input type="date" id="checkin" name="checkin" required>
+            </div>
+            <div class="form-group">
+                <label for="checkout">Check-out Date</label>
+                <input type="date" id="checkout" name="checkout" required>
+            </div>
+            <div class="form-group">
+                <label for="guests">Number of Guests</label>
+                <select id="guests" name="guests" required>
+                    <option value="1">1 Guest</option>
+                    <option value="2">2 Guests</option>
+                    <option value="3">3 Guests</option>
+                    <option value="4">4 Guests</option>
+                    <option value="5">5 Guests</option>
+                    <option value="6">6 Guests</option>
+                </select>
+            </div>
+            <button type="submit">Rent Now</button>
+        </form>
+    </div>
+</body>
+</html>
