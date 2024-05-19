@@ -17,29 +17,55 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 @Configuration
 @RequiredArgsConstructor
 public class JwtConfig {
 
-    @Value("${jwt.public.key}")
-    private RSAPublicKey rsaPublicKey;
-
     @Value("${jwt.private.key}")
-    private RSAPrivateKey rsaPrivateKey;
+    private String rsaPrivateKeyString;
+
+    @Value("${jwt.public.key}")
+    private String rsaPublicKeyString;
 
     @Bean
-    public JwtEncoder jwtEncoder() {
-        final JWK jwk = new RSAKey.Builder(this.rsaPublicKey).privateKey(this.rsaPrivateKey).build();
+    public RSAPrivateKey rsaPrivateKey() throws Exception {
+        String privateKeyPEM = rsaPrivateKeyString.replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "").replaceAll("\\s", "");
+        byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
+        return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+    }
+
+    @Bean
+    public RSAPublicKey rsaPublicKey() throws Exception {
+        String publicKeyPEM = rsaPublicKeyString.replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "").replaceAll("\\s", "");
+        byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
+        return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+    }
+
+    @Bean
+    public JwtEncoder jwtEncoder() throws Exception {
+        final JWK jwk = new RSAKey.Builder(rsaPublicKey()).privateKey(rsaPrivateKey()).build();
         final JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
     }
 
     @Bean
-    public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(this.rsaPublicKey).build();
+    public JwtDecoder jwtDecoder() throws Exception {
+        return NimbusJwtDecoder.withPublicKey(rsaPublicKey()).build();
     }
 
     @Bean

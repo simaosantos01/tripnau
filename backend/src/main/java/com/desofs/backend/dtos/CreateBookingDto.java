@@ -9,10 +9,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class CreateBookingDto {
-
-    private final String accountId;
     private final String propertyId;
     private CreatePaymentDto payment;
     private IntervalTimeDto intervalTime;
-
 }

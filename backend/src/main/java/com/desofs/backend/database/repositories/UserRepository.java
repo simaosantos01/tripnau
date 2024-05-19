@@ -39,9 +39,25 @@ public class UserRepository {
     public UserDomain findByEmail(String email) {
         try {
             Optional<UserDB> user = this.userRepository.findByEmail(email);
-            return user.map(this.mapper::toDomainObject).orElse(null);
+            if (user.isPresent()) {
+                return user.map(this.mapper::toDomainObject).orElse(null);
+            }
         } catch (Exception e) {
             return null;
         }
+        return null;
     }
+
+    public UserDomain findById(String id) {
+        try {
+            Optional<UserDB> user = this.userRepository.findById(id);
+            if (user.isPresent()) {
+                return user.map(this.mapper::toDomainObject).orElse(null);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
 }

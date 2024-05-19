@@ -1,10 +1,13 @@
 package com.desofs.backend.domain.aggregates;
 
+import com.desofs.backend.domain.enums.ReviewState;
 import com.desofs.backend.domain.valueobjects.*;
 import com.desofs.backend.dtos.CreateReviewDto;
 import com.desofs.backend.utils.ListUtils;
+import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.Validate.isTrue;
@@ -16,18 +19,20 @@ public class ReviewDomain {
     private final Id bookingId;
     private final ReviewText text;
     private final ReviewStars stars;
-    private boolean banned;
+    @Getter
+    private ReviewState state;
     private final List<ImageUrl> imageUrlList;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public ReviewDomain(Id id, Id authorId, Id bookingId, ReviewText text, ReviewStars stars, boolean banned,
+    public ReviewDomain(Id id, Id authorId, Id bookingId, ReviewText text, ReviewStars stars, ReviewState state,
                         List<ImageUrl> imageUrlList) {
         notNull(id, "Id must not be null.");
         notNull(authorId, "AuthorId must not be null.");
         notNull(bookingId, "BookingId must not be null.");
         notNull(text, "Text must not be null.");
         notNull(stars, "Stars must not be null.");
+        notNull(state, "State must not be null.");
         notNull(imageUrlList, "ImageUrlList must not be null.");
         isTrue(!ListUtils.hasDuplicates(imageUrlList), "ImageUrlList cannot contain duplicates.");
 
@@ -36,14 +41,21 @@ public class ReviewDomain {
         this.bookingId = bookingId.copy();
         this.text = text.copy();
         this.stars = stars.copy();
-        this.banned = banned;
+        this.state = state;
         this.imageUrlList = List.copyOf(imageUrlList);
     }
 
-    public ReviewDomain(CreateReviewDto reviewDto) {
-        this(Id.create(UUID.randomUUID().toString()), Id.create(reviewDto.getAuthorId()), Id.create(reviewDto.getBookingId()),
-                ReviewText.create(reviewDto.getText()), ReviewStars.create(reviewDto.getStars()),
-                reviewDto.isBanned(), reviewDto.getImageUrlList().stream().map(ImageUrl::create).toList());
+    // Used to create a Review
+    public ReviewDomain(CreateReviewDto reviewDto, String authorId) {
+        this(
+                Id.create(UUID.randomUUID().toString()),
+                Id.create(authorId),
+                Id.create(reviewDto.getBookingId()),
+                ReviewText.create(reviewDto.getText()),
+                ReviewStars.create(reviewDto.getStars()),
+                ReviewState.PENDING,
+                reviewDto.getImageUrlList().stream().map(image ->
+                        ImageUrl.create(Id.create(UUID.randomUUID().toString()), image)).toList());
     }
 
     private static boolean imgUrlListIsValid(List<ImageUrl> imageUrlList) {
@@ -72,25 +84,23 @@ public class ReviewDomain {
         return stars.copy();
     }
 
-    public boolean isBanned() {
-        return banned;
-    }
-
     public List<ImageUrl> getImageUrlList() {
         return List.copyOf(imageUrlList);
     }
 
     public ReviewDomain copy() {
         return new ReviewDomain(id.copy(), authorId.copy(), bookingId.copy(), text.copy(),
-                stars.copy(), banned, List.copyOf(imageUrlList));
+                stars.copy(), state, List.copyOf(imageUrlList));
     }
 
     // Domain methods --------------------------------------------------------------------------------------------------
 
-    public void banReview() {
-        if (this.banned) {
-            throw new IllegalArgumentException("The review is already banned");
+    public void changeState(ReviewState state) {
+        if (!Objects.equals(this.state.toString(), ReviewState.PENDING.toString())) {
+            throw new IllegalArgumentException("The review is already responded");
+        } else if (state == ReviewState.PENDING) {
+            throw new IllegalArgumentException("The review is already waiting for response");
         }
-        this.banned = true;
+        this.state = state;
     }
 }

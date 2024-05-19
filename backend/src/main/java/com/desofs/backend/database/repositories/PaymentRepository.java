@@ -1,22 +1,12 @@
 package com.desofs.backend.database.repositories;
 
-import com.desofs.backend.database.mappers.BookingMapper;
 import com.desofs.backend.database.mappers.PaymentMapper;
-import com.desofs.backend.database.models.BookingDB;
 import com.desofs.backend.database.models.PaymentDB;
-import com.desofs.backend.database.models.RentalPropertyDB;
-import com.desofs.backend.database.springRepositories.BookingRepositoryJPA;
 import com.desofs.backend.database.springRepositories.PaymentRepositoryJPA;
-import com.desofs.backend.domain.aggregates.BookingDomain;
-import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
 import com.desofs.backend.domain.entities.PaymentEntity;
-import com.desofs.backend.domain.valueobjects.PriceNightInterval;
 import com.desofs.backend.exceptions.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -47,5 +37,4 @@ public class PaymentRepository {
             return null;
         }
     }
-
 }
