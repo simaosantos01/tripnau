@@ -12,8 +12,8 @@ export class RentalPropertyService {
 
   http = inject(HttpClient)
 
-  constructor() {
-  }
+  //constructor() {
+  //}
 
   // getAll(): Observable<RentalProperty[]> {
   //     return this.http.get<RentalProperty[]>(environment.apiUrl + ROUTE.RENTALPROPERTIES);
