@@ -48,6 +48,7 @@ export class BookingComponent implements OnInit{
   ngOnInit(): void {
     this.bookingService.currentPropertyToBook.subscribe((property) => {
       this.property = property;
+      this.form.controls.propertyId.setValue(this.property!.id);
     });
 
     this.bookingService.currentPropertyToBookIndex.subscribe((propertyId) => {
@@ -55,7 +56,6 @@ export class BookingComponent implements OnInit{
     });
 
     this.form.controls.accountId.setValue('1a1a1a1a-1a1-1a1a-1a1a-1a1a1a1a1a1a');
-    this.form.controls.propertyId.setValue(this.property!.id);
     this.form.controls.payment.setValue(this.payment);
   }
 
