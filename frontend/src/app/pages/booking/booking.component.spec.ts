@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BookingComponent } from './booking.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
+import { routes } from '../../app.routes';
 
 describe('BookingComponent', () => {
   let component: BookingComponent;
@@ -8,7 +12,12 @@ describe('BookingComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BookingComponent]
+      imports: [BookingComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter(routes),
+      ]
     })
     .compileComponents();
     
