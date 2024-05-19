@@ -10,7 +10,6 @@ on:
       - reopened
     branches:
       - dev
-      - master
     paths:
       - 'frontend/**'
 
@@ -35,7 +34,6 @@ jobs:
           echo "NOW=$NOW" >> $GITHUB_ENV
           echo "SHA_SHORT=$SHA_SHORT" >> $GITHUB_ENV
       - run: python detect-new-secrets.py resolve_secrets_${{ env.SHA_SHORT }}_${{ env.NOW }}
-
 
   InstallDependenciesAndBuild:
     runs-on: self-hosted
