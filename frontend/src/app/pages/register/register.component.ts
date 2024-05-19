@@ -37,6 +37,7 @@ export class RegisterComponent {
     email: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
     confirmPassword: new FormControl('', [Validators.required]),
+    role: new FormControl('', Validators.required)
   })
 
   tosForm = new FormGroup({
@@ -94,13 +95,15 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
+    console.log(this.form)
     this.submitted = true;
     if (this.validateInputs()) {
       if (this.tosForm.controls.tos.value && this.form.valid) {
         const body: RegisterRequest = {
           name: this.form.controls.name.value!,
           email: this.form.controls.email.value!,
-          password: this.form.controls.password.value!
+          password: this.form.controls.password.value!,
+          role: this.form.controls.role.value!
         }
         this.authService.register(body)
           .subscribe({

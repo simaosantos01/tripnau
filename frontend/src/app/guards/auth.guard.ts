@@ -14,14 +14,11 @@ export function authGuard(requiredRoles: Array<string>) {
     }
 
     if (requiredRoles.length == 0) return true;
-    const roles = authService.getRoles();
-    let authorizide = false;
-    
-    requiredRoles.forEach((role) => {
-      if (roles.includes(role)) authorizide = true
-    })
+    if (requiredRoles.indexOf(authService.getRole()!) > -1) {
+      return true;
+    }
 
-    return authorizide;
+    return false;
   };
   return guard;
 }

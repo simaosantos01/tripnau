@@ -16,14 +16,14 @@ export class AuthService {
 
   user: string | undefined;
   token: string | undefined;
-  roles: string[] | undefined;
+  role: string | undefined;
   email: string | undefined;
   authenticated = false;
 
   http = inject(HttpClient)
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(environment.apiUrl + '/auth' +ROUTE.LOGIN, credentials, { observe: 'response' }).pipe(
+    return this.http.post<LoginResponse>(environment.apiUrl + '/auth' + ROUTE.LOGIN, credentials, { observe: 'response' }).pipe(
       map((response: HttpResponse<LoginResponse>) => {
         if (response.headers.get('Authorization')) {
           this.setToken(response.headers.get('Authorization')!)
@@ -33,7 +33,7 @@ export class AuthService {
     )
   }
   register(user: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' +ROUTE.REGISTER, user);
+    return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' + ROUTE.REGISTER, user);
   }
   getUser() {
     return this.user;
@@ -53,7 +53,7 @@ export class AuthService {
   setToken(token: string) {
     try {
       this.parseToken(token);
-      if (!this.getRoles().includes('BUSINESSADMIN')) {
+      if (this.getRole() != 'BUSINESSADMIN') {
         localStorage.setItem('token', token);
       }
     } catch (e) {
@@ -67,14 +67,15 @@ export class AuthService {
     }
     const payload = JSON.parse(atob(parts[1]));
     this.email = payload.email;
-    this.roles = payload.roles;
+    this.role = payload.roles;
     this.token = token;
+    this.authenticated = true;
   }
-  getRoles(): string[] {
-    return this.roles!;
+  getRole(): string {
+    return this.role!;
   }
-  setRoles(roles: string[]): void {
-    this.roles = roles;
+  setRole(roles: string): void {
+    this.role = roles;
   }
   isAuthenticated(): boolean {
     return this.authenticated;

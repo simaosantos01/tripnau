@@ -43,7 +43,7 @@ describe('authGuard', () => {
 
   xit('should allow access if user has required role', () => {
     authService.isAuthenticated.and.returnValue(true);
-    authService.getRoles.and.returnValue(['admin', 'user']);
+    authService.getRole.and.returnValue('admin');
     const guard = authGuard(['admin']);
     // const canActivate = guard();
 
@@ -53,7 +53,7 @@ describe('authGuard', () => {
 
   xit('should deny access if user does not have required role', () => {
     authService.isAuthenticated.and.returnValue(true);
-    authService.getRoles.and.returnValue(['user']);
+    authService.getRole.and.returnValue('user');
     const guard = authGuard(['admin']);
     // const canActivate = guard();
 
