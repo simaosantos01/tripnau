@@ -26,7 +26,9 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.desofs.backend.config.UserDetailsConfig.hasAuthorization;
 import static java.lang.String.format;
@@ -85,6 +87,9 @@ public class AuthController {
                 .build();
 
         final String token = this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        
+        Map<String,Object> responseBody = new HashMap<>();
+        responseBody.put("token",token);
         return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(token);
     }
 
