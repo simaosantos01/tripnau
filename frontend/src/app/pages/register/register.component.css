@@ -49,6 +49,17 @@
     width: 100%;
 }
 
+.form-group input[type="submit"]:disabled {
+    background-color: #6eabfc;
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+    border-radius: 5px;
+    border: none;
+    padding: 8px 15px;
+    width: 100%;
+}
+
 .card-terms {
     display: flex;
     align-items: center;
@@ -58,4 +69,21 @@
 .card-terms span {
     margin: 5px;
     font-size: 13px;
+}
+
+.password-overlay {
+    position: relative;
+}
+
+.password-overlay ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.password-overlay ul li {
+    margin-bottom: 5px;
+}
+
+.password-overlay .icon {
+    margin-left: 5px;
 }

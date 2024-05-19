@@ -11,6 +11,11 @@ import { LoginResponse } from '../../model/login-response';
 import { AuthService } from '../../services/auth.service';
 import { MessagesService } from '../../services/messages.service';
 
+/**
+ *  by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository 
+ */
+const EMAIL_REGEXP = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$]]/;
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -31,8 +36,9 @@ export class LoginComponent {
 
   // timeouts in milliseconds for when login fails
   timeouts: number[] = [30 * 1000, 60 * 1000, 300 * 1000, 900 * 1000, 3600 * 1000];
-  timeoutsString: string[] = ['30  seconds', '1 minute', '5 minutes', '15 minutes', '1 hour']
+  timeoutsStrings: string[] = ['30  seconds', '1 minute', '5 minutes', '15 minutes', '1 hour']
   timeoutString: string = '';
+  timeout: number = 0;
 
   // individual failed attempt
   failedAttempts: number = 0;
@@ -41,20 +47,35 @@ export class LoginComponent {
 
   // if the login button should be disabled
   disabled: boolean = false;
+  submitted: boolean = false;
 
-  constructor() { }
+  constructor() {
+    this.form.valueChanges.subscribe(() => this.submitted = false)
+  }
+
+  validateInputs(): Boolean {
+    let valid = true;
+    if (!EMAIL_REGEXP.test(this.form.controls.email.value!)) {
+      this.form.controls.email.setErrors({ email: true })
+      valid = false;
+    }
+    return valid;
+  }
 
   onSubmit() {
-    if (this.form.valid) {
-      this.form.setErrors({});
-      const credentials: LoginRequest = {
-        email: this.form.controls.email.value!,
-        password: this.form.controls.password.value!
+    this.submitted = true;
+    if (this.validateInputs()) {
+      if (this.form.valid) {
+        this.form.setErrors({});
+        const credentials: LoginRequest = {
+          email: this.form.controls.email.value!,
+          password: this.form.controls.password.value!
+        }
+        this.authService.login(credentials).subscribe({
+          next: (response: LoginResponse) => this.handleLoginResponse(response),
+          error: (error: HttpErrorResponse | HttpResponse<LoginResponse>) => this.handleError(error)
+        })
       }
-      this.authService.login(credentials).subscribe({
-        next: (response: LoginResponse) => this.handleLoginResponse(response),
-        error: (error: HttpErrorResponse | HttpResponse<LoginResponse>) => this.handleError(error)
-      })
     }
   }
 
@@ -64,8 +85,14 @@ export class LoginComponent {
     } else {
       this.failedAttempts += 1;
       if (this.failedAttempts === 3) {
-        // define the timeout function such that it now starts
         this.disabled = true;
+        if (this.totalFailedAttempts < this.timeouts.length) {
+          this.timeout = this.timeouts[this.totalFailedAttempts]
+          this.timeoutString = this.timeoutsStrings[this.totalFailedAttempts]
+        } else {
+          this.timeout = this.timeouts[this.timeouts.length - 1]
+          this.timeoutString = this.timeoutsStrings[this.timeoutsStrings.length - 1]
+        }
         setTimeout(() => {
           this.form.setErrors({ tooManyFailures: true })
           this.disabled = false;
