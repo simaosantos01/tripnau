@@ -47,6 +47,12 @@ public class RentalPropertyController {
         return ResponseEntity.ok().body(rentalProperty);
     }
 
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<FetchRentalPropertyDto>> getAll() {
+        return new ResponseEntity<>(this.rentalPropertyService.findAll(), HttpStatus.OK);
+    }
+
     @GetMapping("/allByUser/{id}")
     public ResponseEntity<List<FetchRentalPropertyDto>> getAllByUser(@PathVariable final String id,
                                                                      final Authentication authentication)

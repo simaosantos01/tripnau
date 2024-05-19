@@ -12,6 +12,7 @@ import com.desofs.backend.exceptions.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -93,6 +94,14 @@ public class RentalPropertyRepository {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public List<RentalPropertyDomain> findAll() {
+        List<RentalPropertyDomain> rentalPropertyList = new ArrayList<>();
+        this.rentalPropertyRepositoryJPA.findAll().forEach(rp ->
+                rentalPropertyList.add(this.rentalPropertyMapper.toDomainObject(rp, joinPriceNightIntervals(rp),
+                        joinBookings(rp))));
+        return rentalPropertyList;
     }
 
     private List<PriceNightInterval> joinPriceNightIntervals(RentalPropertyDB rp) {
