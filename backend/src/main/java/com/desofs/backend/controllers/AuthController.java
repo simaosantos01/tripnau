@@ -1,7 +1,7 @@
 package com.desofs.backend.controllers;
 
 import com.desofs.backend.exceptions.DatabaseException;
-import com.desofs.backend.domain.enums.Role;
+import com.desofs.backend.domain.enums.Authority;
 import com.desofs.backend.dtos.AuthRequestDto;
 import com.desofs.backend.dtos.CreateUserDto;
 import com.desofs.backend.dtos.FetchUserDto;
@@ -66,9 +66,9 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority).toList();
         final long expiry;
 
-        if (stringAuthorities.contains(Role.BusinessAdmin)) {
+        if (stringAuthorities.contains(Authority.BUSINESSADMIN)) {
             expiry = expBusinessAdmin;
-        } else if (stringAuthorities.contains(Role.PropertyOwner)) {
+        } else if (stringAuthorities.contains(Authority.PROPERTYOWNER)) {
             expiry = expPropertyOwner;
         } else {
             expiry = expCustomer;
@@ -94,7 +94,9 @@ public class AuthController {
                                                  Authentication authentication)
             throws DatabaseException, NotAuthorizedException {
 
-        if (createUserDto.getRole().equals(Role.BusinessAdmin) && !hasAuthorization(authentication, Role.BusinessAdmin)) {
+        if (authentication != null
+                && createUserDto.getRole().equals(Authority.BUSINESSADMIN)
+                && !hasAuthorization(authentication, Authority.BUSINESSADMIN)) {
             throw new NotAuthorizedException("You're not authorized!");
         }
 

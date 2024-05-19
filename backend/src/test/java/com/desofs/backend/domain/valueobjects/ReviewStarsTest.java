@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ReviewStarsTest {
+
+    final String generalErrorMsg = "Stars must be between 1 and 5 inclusive.";
+
     @Test
     @DisplayName("Test create method with valid number of stars")
     void testCreateValidReviewStars() {
@@ -35,7 +38,7 @@ class ReviewStarsTest {
     void testCreateLessThanMinimumReviewStars() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> ReviewStars.create(0));
-        assertEquals("Stars must be between 1 and 5 inclusive.", exception.getMessage());
+        assertEquals(generalErrorMsg, exception.getMessage());
     }
 
     @Test
@@ -43,6 +46,6 @@ class ReviewStarsTest {
     void testCreateMoreThanMaximumReviewStars() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> ReviewStars.create(6));
-        assertEquals("Stars must be between 1 and 5 inclusive.", exception.getMessage());
+        assertEquals(generalErrorMsg, exception.getMessage());
     }
 }

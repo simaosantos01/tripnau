@@ -27,17 +27,17 @@ public class ReviewDB {
     private Integer stars;
 
     @Column(nullable = false)
-    private boolean isBanned;
+    private String state;
 
     public ReviewDB() {
     }
 
-    public ReviewDB(String id, String userId, String bookingId, String text, Integer stars, boolean isBanned) {
+    public ReviewDB(String id, String userId, String bookingId, String text, Integer stars, String state) {
         this.id = id;
         this.userId = userId;
         this.bookingId = bookingId;
         this.text = text;
         this.stars = stars;
-        this.isBanned = isBanned;
+        this.state = state;
     }
 }

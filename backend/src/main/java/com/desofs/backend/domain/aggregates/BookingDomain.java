@@ -2,16 +2,19 @@ package com.desofs.backend.domain.aggregates;
 
 import com.desofs.backend.domain.entities.PaymentEntity;
 import com.desofs.backend.domain.enums.BookingStatusEnum;
-import com.desofs.backend.domain.valueobjects.*;
+import com.desofs.backend.domain.valueobjects.Event;
+import com.desofs.backend.domain.valueobjects.Id;
+import com.desofs.backend.domain.valueobjects.IntervalTime;
 import com.desofs.backend.dtos.CreateBookingDto;
-import com.desofs.backend.dtos.FetchBookingDto;
 import com.desofs.backend.utils.ListUtils;
 import com.desofs.backend.utils.LocalDateTimeUtils;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang3.Validate.isTrue;
@@ -27,6 +30,7 @@ public class BookingDomain {
     private final IntervalTime intervalTime;
     private final List<Event> eventList;
     private ReviewDomain review;
+    @Getter
     private final LocalDateTime createdAt;
 
     // Constructors ----------------------------------------------------------------------------------------------------
@@ -46,23 +50,23 @@ public class BookingDomain {
         this.accountId = accountId.copy();
         this.payment = payment.copy();
         this.intervalTime = intervalTime.copy();
-        this.eventList = List.copyOf(eventList);
+        this.eventList = new ArrayList<>(eventList);
         this.review = review == null ? null : review.copy();
         this.createdAt = LocalDateTimeUtils.copyLocalDateTime(createdAt);
     }
 
-    public BookingDomain(CreateBookingDto dto, Id bookingId) {
+    public BookingDomain(CreateBookingDto dto, Id bookingId, String userId) {
         this(bookingId,
-                Id.create(dto.getAccountId()),
-                new PaymentEntity(dto.getPayment(), bookingId.value()), // todo: o booking id que foi criado agora
+                Id.create(userId),
+                new PaymentEntity(dto.getPayment(), bookingId.value()),
                 IntervalTime.create(dto.getIntervalTime().getFrom(), dto.getIntervalTime().getTo()),
-                List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED)),
+                new ArrayList<>(List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED))),
                 null,
                 LocalDateTime.now());
     }
 
     private static boolean eventListIsValid(List<Event> eventList) {
-        return !ListUtils.hasDuplicates(eventList);
+        return eventList.isEmpty() || !ListUtils.hasDuplicates(eventList);
     }
 
     // Getters ---------------------------------------------------------------------------------------------------------
@@ -91,82 +95,72 @@ public class BookingDomain {
         return this.review == null ? null : review.copy();
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public BookingStatusEnum getStatus() {
+        return this.eventList.stream().max(Comparator.comparing(Event::getDatetime)).stream().findFirst().get().getState();
     }
 
     // Domain methods --------------------------------------------------------------------------------------------------
 
-    public boolean isAlreadyCompleted() {
-        return !this.eventList.stream().filter(e -> e.getState() == BookingStatusEnum.COMPLETED).toList().isEmpty();
-    }
-
-    public boolean isAlreadyCancelled() {
-        return !this.eventList.stream().filter(e -> e.getState() == BookingStatusEnum.CANCELED).toList().isEmpty();
-    }
-
-    public boolean isAlreadyRefunded() {
-        return !this.eventList.stream().filter(e -> e.getState() == BookingStatusEnum.REFUNDED).toList().isEmpty();
-    }
-
     public boolean checkoutPassed() {
         Date now = new Date();
-        return (now.equals(this.intervalTime.getTo()) || now.before(this.intervalTime.getTo()));
+        return (now.equals(this.intervalTime.getTo()) || now.after(this.intervalTime.getTo()));
     }
 
     public int daysUntilCheckout() {
         Date now = new Date();
 
-        long differenceInMillis = now.getTime() - this.intervalTime.getTo().getTime();
+        long differenceInMillis = this.intervalTime.getTo().getTime() - now.getTime();
         return (int) TimeUnit.MILLISECONDS.toDays(differenceInMillis);
     }
 
     private void addEvent(Event event) {
         boolean alreadyExists = !this.eventList.stream().filter(e -> e.getState() == event.getState()).toList().isEmpty();
         if (alreadyExists) {
-            throw new IllegalArgumentException("The event type already exists");
+            throw new IllegalArgumentException("The event type already exists.");
         }
         this.eventList.add(event);
     }
 
-    /**
-     * @return If it's possible to do a refund or not
-     */
-    public boolean cancel() {
-        if (this.isAlreadyCompleted()) {
-            throw new IllegalArgumentException("The booking is already completed");
+    private void checkStatus() {
+        if (this.getStatus() == BookingStatusEnum.COMPLETED) {
+            throw new IllegalArgumentException("The booking is already completed.");
         }
 
-        if (this.isAlreadyCancelled()) {
-            throw new IllegalArgumentException("The booking is already cancelled");
+        if (this.getStatus() == BookingStatusEnum.CANCELLED) {
+            throw new IllegalArgumentException("The booking is already cancelled.");
         }
 
-        if (this.checkoutPassed()) {
-            throw new IllegalArgumentException("The checkout date has passed");
+        if (this.getStatus() == BookingStatusEnum.REFUNDED) {
+            throw new IllegalArgumentException("The booking it was already refunded.");
         }
-
-        this.addEvent(Event.create(LocalDateTime.now(), BookingStatusEnum.CANCELED));
-        return this.daysUntilCheckout() >= MAX_DAYS_TO_REFUND;
     }
 
-    public void refund() {
-        if (this.isAlreadyCompleted()) {
-            throw new IllegalArgumentException("The booking is already completed");
-        }
+    public BookingDomain cancel() {
+        this.checkStatus();
 
-        if (!this.isAlreadyCancelled()) {
-            throw new IllegalArgumentException("The booking must have a cancelled event before the refund");
-        }
-
-        if (this.isAlreadyRefunded()) {
-            throw new IllegalArgumentException("The booking it was already refunded");
+        if (this.checkoutPassed()) {
+            throw new IllegalArgumentException("The checkout date has passed.");
         }
 
         if (this.daysUntilCheckout() >= MAX_DAYS_TO_REFUND) {
-            throw new IllegalArgumentException("The refund acceptance date has passed");
+            this.addEvent(Event.create(LocalDateTime.now(), BookingStatusEnum.REFUNDED));
+        } else {
+            this.addEvent(Event.create(LocalDateTime.now(), BookingStatusEnum.CANCELLED));
         }
 
-        this.addEvent(Event.create(LocalDateTime.now(), BookingStatusEnum.REFUNDED));
+        return this;
+    }
+
+    public BookingDomain terminate() {
+        this.checkStatus();
+
+        if (!this.checkoutPassed()) {
+            throw new IllegalArgumentException("The checkout date did not passed yet.");
+        }
+
+        this.addEvent(Event.create(LocalDateTime.now(), BookingStatusEnum.COMPLETED));
+
+        return this;
     }
 
     public void writeReview(ReviewDomain review) {

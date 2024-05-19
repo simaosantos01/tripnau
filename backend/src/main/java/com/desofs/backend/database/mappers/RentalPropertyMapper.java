@@ -21,7 +21,8 @@ public class RentalPropertyMapper {
     public RentalPropertyDomain toDomainObject(RentalPropertyDB rentalProperty,
                                                List<PriceNightInterval> priceNightIntervals,
                                                List<BookingDomain> bookings) {
-        return new RentalPropertyDomain(Id.create(rentalProperty.getId()),
+        return new RentalPropertyDomain(
+                Id.create(rentalProperty.getId()),
                 Id.create(rentalProperty.getPropertyOwnerId()), PropertyName.create(rentalProperty.getPropertyName()),
                 Location.create(rentalProperty.getLat(), rentalProperty.getLon()),
                 PositiveInteger.create(rentalProperty.getMaxGuests()),
@@ -56,10 +57,12 @@ public class RentalPropertyMapper {
                 rentalProperty.getPropertyDescription().value(),
                 rentalProperty.getAmount().value(),
                 rentalProperty.getPriceNightIntervalList().stream().map(priceNightInterval -> {
-                    IntervalTimeDto tempIntervalTime = new IntervalTimeDto(priceNightInterval.value().getFrom(), priceNightInterval.value().getTo());
-                    return new PriceNightIntervalDto(priceNightInterval.getPrice().value(), tempIntervalTime);
+                    IntervalTimeDto tempIntervalTime = new IntervalTimeDto(priceNightInterval.getInterval().getFrom(),
+                            priceNightInterval.getInterval().getTo());
+                    return new PriceNightIntervalDto(rentalProperty.getId().value(),
+                            priceNightInterval.getPrice().value(), tempIntervalTime);
                 }).toList(),
-                rentalProperty.getBookingList().stream().map(bookingMapper::domainToDto).toList(),
+                rentalProperty.getBookingList().stream().map(booking -> bookingMapper.domainToDto(booking, rentalProperty.getId().value())).toList(),
                 rentalProperty.getIsActive());
     }
 }

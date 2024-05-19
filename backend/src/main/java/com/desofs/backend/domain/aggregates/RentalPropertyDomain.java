@@ -1,13 +1,17 @@
 package com.desofs.backend.domain.aggregates;
 
+import com.desofs.backend.domain.enums.BookingStatusEnum;
 import com.desofs.backend.domain.valueobjects.*;
 import com.desofs.backend.dtos.CreateRentalPropertyDto;
 import com.desofs.backend.dtos.PriceNightIntervalDto;
+import com.desofs.backend.dtos.UpdateRentalPropertyDto;
+import com.desofs.backend.utils.IntervalTimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.Validate.isTrue;
 import static org.apache.commons.lang3.Validate.notNull;
 
 public class RentalPropertyDomain {
@@ -21,8 +25,8 @@ public class RentalPropertyDomain {
     private final PropertyDescription propertyDescription;
     private final MoneyAmount amount;
     private final List<PriceNightInterval> priceNightIntervalList;
-    private List<BookingDomain> bookingList;
-    private final boolean isActive;
+    private final List<BookingDomain> bookingList;
+    private boolean isActive;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -42,6 +46,9 @@ public class RentalPropertyDomain {
         notNull(amount, "Amount must not be null.");
         notNull(priceNightIntervalList, "PriceNightIntervalList must not be null.");
         notNull(bookingList, "BookingList must not be null.");
+        isTrue(!IntervalTimeUtils.listHasOverlap(priceNightIntervalList.stream().map(intervalDto ->
+                        IntervalTime.create(intervalDto.getInterval().getFrom(), intervalDto.getInterval().getTo())).toList()),
+                "The time interval list contain overlaps.");
 
         this.id = id.copy();
         this.propertyOwner = propertyOwner.copy();
@@ -65,6 +72,9 @@ public class RentalPropertyDomain {
         notNull(dto.getPropertyDescription(), "PropertyDescription must not be null.");
         notNull(dto.getAmount(), "Amount must not be null.");
         notNull(dto.getPriceNightIntervalList(), "PriceNightIntervalList must not be null.");
+        isTrue(!IntervalTimeUtils.listHasOverlap(dto.getPriceNightIntervalList().stream().map(intervalDto ->
+                        IntervalTime.create(intervalDto.getInterval().getFrom(), intervalDto.getInterval().getTo())).toList()),
+                "The time interval contain overlaps.");
 
         this.id = Id.create(UUID.randomUUID().toString());
         this.propertyOwner = Id.create(userId);
@@ -75,16 +85,16 @@ public class RentalPropertyDomain {
         this.numBathrooms = PositiveInteger.create(dto.getNumBathrooms());
         this.propertyDescription = PropertyDescription.create(dto.getPropertyDescription());
         this.amount = MoneyAmount.create(dto.getAmount());
-        this.priceNightIntervalList = getPriceNightIntervalsList(dto);
+        this.priceNightIntervalList = getPriceNightIntervalsList(id, dto.getPriceNightIntervalList());
         this.bookingList = new ArrayList<>();
         this.isActive = true;
     }
 
-    private static List<PriceNightInterval> getPriceNightIntervalsList(CreateRentalPropertyDto dto){
-        return dto.getPriceNightIntervalList().stream().map(value -> {
+    private static List<PriceNightInterval> getPriceNightIntervalsList(Id id, List<PriceNightIntervalDto> dtoList) {
+        return dtoList.stream().map(value -> {
             MoneyAmount tempMoneyAmount = MoneyAmount.create(value.getPrice());
             IntervalTime tempIntervalTime = IntervalTime.create(value.getInterval().getFrom(), value.getInterval().getTo());
-            return PriceNightInterval.create(tempMoneyAmount, tempIntervalTime);
+            return new PriceNightInterval(id, tempMoneyAmount, tempIntervalTime);
         }).toList();
     }
 
@@ -140,23 +150,72 @@ public class RentalPropertyDomain {
 
     // Domain methods --------------------------------------------------------------------------------------------------
 
-    private boolean bookingAlreadyExists(BookingDomain bookingDomain) {
-        return !this.bookingList.stream().filter(b -> b.getId().value().equals(bookingDomain.getId().value()))
-                .toList()
-                .isEmpty();
+    /**
+     * Checks if the booked bookings has compatible intervals
+     */
+    private boolean canTimeIntervalsBeUpdate(List<PriceNightInterval> newList) {
+        return this.bookingList.stream()
+                .filter(bookingDomain -> bookingDomain.getStatus() == BookingStatusEnum.BOOKED)
+                .allMatch(booking ->
+                        newList.stream().anyMatch(newInterval ->
+                                IntervalTimeUtils.intervalsIntercept(newInterval.getInterval(), booking.getIntervalTime())
+                        )
+                );
     }
 
-    private boolean timeIntervalIntercepts(PriceNightInterval priceNightInterval) {
-        //todo
-        return false;
+    public RentalPropertyDomain update(UpdateRentalPropertyDto dto) {
+        if (!this.isActive) {
+            throw new IllegalArgumentException("The rental property is already deactivated.");
+        }
+
+        if (!this.canTimeIntervalsBeUpdate(getPriceNightIntervalsList(this.id, dto.getPriceNightIntervalList()))) {
+            throw new IllegalArgumentException("The intervals are not valid.");
+        }
+
+        return new RentalPropertyDomain(this.id.copy(),
+                this.propertyOwner.copy(),
+                PropertyName.create(dto.getPropertyName()),
+                Location.create(dto.getLocation().getLat(), dto.getLocation().getLon()),
+                PositiveInteger.create(dto.getMaxGuests()),
+                PositiveInteger.create(dto.getNumBedrooms()),
+                PositiveInteger.create(dto.getNumBathrooms()),
+                PropertyDescription.create(dto.getPropertyDescription()),
+                MoneyAmount.create(dto.getAmount()),
+                getPriceNightIntervalsList(this.id, dto.getPriceNightIntervalList()),
+                this.bookingList,
+                this.isActive);
+    }
+
+    private void bookingCanBeAdded(BookingDomain bookingDomain) {
+        if (!this.isActive) {
+            throw new IllegalArgumentException("The rental property is deactivated.");
+        }
+
+        boolean bookingIsUnique = this.bookingList.stream()
+                .filter(b -> b.getId().value().equals(bookingDomain.getId().value()))
+                .toList()
+                .isEmpty();
+
+        if (!bookingIsUnique) {
+            throw new IllegalArgumentException("The booking already exists.");
+        }
+
+        if (!this.timeIntervalIntercepts(bookingDomain.getIntervalTime())) {
+            throw new IllegalArgumentException("The booking hasn't compatible time intervals.");
+        }
+    }
+
+    private boolean timeIntervalIntercepts(IntervalTime priceNightInterval) {
+        return this.priceNightIntervalList.stream().anyMatch(existingInterval -> {
+            IntervalTime a = existingInterval.getInterval();
+            IntervalTime b = priceNightInterval;
+            return IntervalTimeUtils.intervalsIntercept(a, b);
+        });
     }
 
     public void addBooking(BookingDomain bookingDomain) {
-        if (bookingAlreadyExists(bookingDomain)) {
-            throw new IllegalArgumentException("There is already a booking with that id associated.");
-        }
+        bookingCanBeAdded(bookingDomain);
 
-        // todo: validar se o booking tem a info que encaixa na property (intervals, etc)
         this.bookingList.add(bookingDomain);
     }
 
@@ -164,11 +223,13 @@ public class RentalPropertyDomain {
         return this.bookingList.stream().mapToDouble(b -> b.getReview().getStars().value()).average().orElse(0.0);
     }
 
-    public void addPriceInterval(PriceNightInterval priceNightInterval) {
-        if (timeIntervalIntercepts(priceNightInterval)) {
-            throw new IllegalArgumentException("The time interval is not valid");
+    public RentalPropertyDomain deactivate() {
+        if (this.isActive) {
+            this.isActive = false;
+            return this;
+        } else {
+            throw new IllegalArgumentException("The rental property is already deactivated.");
         }
-        this.priceNightIntervalList.add(priceNightInterval);
     }
 
 }
