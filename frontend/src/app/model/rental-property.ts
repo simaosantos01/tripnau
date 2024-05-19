@@ -1,5 +1,5 @@
 import { Location } from "./location";
-import { PriceInterval } from "./price-interval";
+import { PriceInterval } from "./intervals";
 
 export interface RentalProperty {
     id: string,

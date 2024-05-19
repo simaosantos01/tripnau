@@ -4,6 +4,7 @@ import { RentalProperty } from '../../model/rental-property';
 import { Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { BookingService } from '../../services/booking.service';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +18,7 @@ import { CommonModule } from '@angular/common';
 export class HomeComponent implements OnInit {
 
   propertyService = inject(RentalPropertyService)
+  bookingService = inject(BookingService);
   router: Router = inject(Router);
   properties: RentalProperty[] = [];
   
@@ -25,15 +27,14 @@ export class HomeComponent implements OnInit {
   }
 
   initData() {
-    console.log('initData')
     this.propertyService.getAll().subscribe((data) => {
-      console.log(data);
       this.properties = data;
     }); 
   }
 
-  rentProperty() {
-    var propertyId = 1;
-    this.router.navigate(['/rent', 'propertyId']);
+  rentProperty(propertyId: any) {
+    this.bookingService.currentPropertyToBookIndex.next(propertyId);
+    this.bookingService.currentPropertyToBook.next(this.properties[propertyId]);
+    this.router.navigateByUrl(`/rent/${propertyId}`);
   }
 }
