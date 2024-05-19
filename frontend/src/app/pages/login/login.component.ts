@@ -14,7 +14,7 @@ import { MessagesService } from '../../services/messages.service';
 /**
  *  by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository 
  */
-const EMAIL_REGEXP = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$]]/;
+const EMAIL_REGEXP = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
 
 @Component({
   selector: 'app-login',
@@ -30,7 +30,7 @@ export class LoginComponent {
   messagesService = inject(MessagesService);
 
   form = this.fb.group({
-    email: ['', [Validators.email, Validators.required]],
+    email: ['', Validators.required],
     password: ['', Validators.required]
   });
 
