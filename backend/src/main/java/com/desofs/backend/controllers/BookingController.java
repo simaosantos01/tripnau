@@ -2,10 +2,8 @@ package com.desofs.backend.controllers;
 
 import com.desofs.backend.dtos.*;
 import com.desofs.backend.exceptions.DatabaseException;
-import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
 import com.desofs.backend.services.BookingService;
-import com.desofs.backend.services.RentalPropertyService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -26,6 +26,8 @@ public class RentalPropertyService {
 
     private final RentalPropertyMapper rentalPropertyMapper = new RentalPropertyMapper();
 
+    private final String rentalPropertyNotFoundMessage = "Rental property not found";
+
     @Transactional
     public FetchRentalPropertyDto create(CreateRentalPropertyDto createRentalPropertyDto, String userId)
             throws DatabaseException {
@@ -45,7 +47,7 @@ public class RentalPropertyService {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(id);
 
         if (rentalProperty == null) {
-            throw new NotFoundException("Rental property not found");
+            throw new NotFoundException(rentalPropertyNotFoundMessage);
         }
 
         return rentalPropertyMapper.domainToDto(rentalProperty);
@@ -63,7 +65,7 @@ public class RentalPropertyService {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(id);
 
         if (rentalProperty == null) {
-            throw new NotFoundException("Rental property not found");
+            throw new NotFoundException(rentalPropertyNotFoundMessage);
         }
 
         this.rentalPropertyRepository.update(rentalProperty.deactivate());
@@ -75,7 +77,7 @@ public class RentalPropertyService {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(id);
 
         if (rentalProperty == null) {
-            throw new NotFoundException("Rental property not found");
+            throw new NotFoundException(rentalPropertyNotFoundMessage);
         }
 
         RentalPropertyDomain updated =  this.rentalPropertyRepository.update(rentalProperty.update(dto));
