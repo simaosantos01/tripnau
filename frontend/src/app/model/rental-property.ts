@@ -10,4 +10,5 @@ export interface RentalProperty {
     propertyDescription: string,
     amount: number,
     priceIntervals: PriceInterval[],
+    imageIndex?: number
 }
