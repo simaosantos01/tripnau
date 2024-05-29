@@ -19,7 +19,7 @@
               <div class="property-max-guests">Max Guests: {{ property!.maxGuests }}</div>
             </div>
             <div>
-              <div class="property-price">${{ property!.amount }} / night</div>
+              <div class="property-price">{{ property!.amount }}€ / night</div>
               <button class="rent-button" (click)="rentProperty(i)">Rent</button>
             </div>
           </div>

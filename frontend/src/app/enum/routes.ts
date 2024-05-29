@@ -4,5 +4,6 @@ export enum ROUTE {
     LANDING = '/',
     RENTALPROPERTIES = '/rental_property/all',
     RENTALPROPERTIESBYUSER = '/rental_property/allByUser',
-    BOOKPROPERTY = '/booking/add'
+    BOOKPROPERTY = '/booking/add',
+    USER = '/user'
 }
