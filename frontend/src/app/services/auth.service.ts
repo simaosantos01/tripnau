@@ -8,7 +8,6 @@ import { LoginResponse } from '../model/login-response';
 import { RegisterRequest } from '../model/register-request';
 import { RegisterResponse } from '../model/register-response';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -32,24 +31,31 @@ export class AuthService {
       })
     )
   }
+
   register(user: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' + ROUTE.REGISTER, user);
   }
+
   getUser() {
     return this.user;
   }
+
   setUser(user: string) {
     this.user = user;
   }
+
   getEmail(): string {
     return this.email!;
   }
+
   setEmail(email: string): void {
     this.email = email
   }
+
   getToken() {
     return this.token
   }
+
   setToken(token: string) {
     try {
       this.parseToken(token);
@@ -60,6 +66,7 @@ export class AuthService {
       this.token = '';
     }
   }
+
   parseToken(token: string) {
     const parts = token.split('.');
     if (parts.length !== 3) {
@@ -71,12 +78,15 @@ export class AuthService {
     this.token = token;
     this.authenticated = true;
   }
+
   getRole(): string {
     return this.role!;
   }
+
   setRole(roles: string): void {
     this.role = roles;
   }
+
   isAuthenticated(): boolean {
     return this.authenticated;
   }
