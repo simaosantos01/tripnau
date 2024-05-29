@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { ROUTE } from '../../enum/routes';
 import { LoginRequest } from '../../model/login-request';
 import { LoginResponse } from '../../model/login-response';
 import { AuthService } from '../../services/auth.service';

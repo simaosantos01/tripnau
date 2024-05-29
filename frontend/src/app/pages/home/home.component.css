@@ -11,6 +11,10 @@ body {
     padding: 20px;
 }
 
+h1 {
+    margin-bottom: 15px;
+}
+
 .property-list {
     display: flex;
     flex-direction: column;
@@ -66,4 +70,5 @@ body {
     font-size: 16px;
     margin-top: 10px;
     cursor: pointer;
+    border-radius: 3px;
 }
