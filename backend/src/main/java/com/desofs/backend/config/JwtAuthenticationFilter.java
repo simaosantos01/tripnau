@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.desofs.backend.services.JwtService;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -27,6 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     private final JwtDecoder jwtDecoder;
+    
+    private final JwtService jwtService;
 
     private boolean isTokenValid(Jwt token) {
         return token != null && token.getExpiresAt() != null && token.getExpiresAt().isAfter(new Date().toInstant());
@@ -38,17 +42,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             if (request.getHeader("Authorization") != null) {
                 String jwtTokenRaw = request.getHeader("Authorization").substring(7);
-                Jwt jwtToken = jwtDecoder.decode(jwtTokenRaw);
-
-                if (isTokenValid(jwtToken)) {
-                    if (jwtToken.getClaimAsString("email") != null &&
-                            SecurityContextHolder.getContext().getAuthentication() == null) {
-                        UserDetails userDetails = userDetailsService.loadUserByUsername(jwtToken.getClaimAsString("email"));
-                        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
-                                null, userDetails.getAuthorities());
-
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
+                if(jwtService.validToken(jwtTokenRaw)) {
+                	
+	                Jwt jwtToken = jwtDecoder.decode(jwtTokenRaw);
+	
+	                if (isTokenValid(jwtToken)) {
+	                    if (jwtToken.getClaimAsString("email") != null &&
+	                            SecurityContextHolder.getContext().getAuthentication() == null) {
+	                        UserDetails userDetails = userDetailsService.loadUserByUsername(jwtToken.getClaimAsString("email"));
+	                        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
+	                                null, userDetails.getAuthorities());
+	
+	                        SecurityContextHolder.getContext().setAuthentication(authentication);
+	                    }
+	                }
                 }
             }
         } catch (Exception e) {
