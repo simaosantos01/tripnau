@@ -32,6 +32,17 @@ export class AuthService {
     )
   }
 
+  logout(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(environment.apiUrl + '/auth' + ROUTE.LOGOUT, credentials, { observe: 'response' }).pipe(
+      map((response: HttpResponse<LoginResponse>) => {
+        if (response.headers.get('Authorization')) {
+          this.setToken(response.headers.get('Authorization')!)
+        }
+        return response.body!;
+      })
+    )
+  }
+
   register(user: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' + ROUTE.REGISTER, user);
   }
