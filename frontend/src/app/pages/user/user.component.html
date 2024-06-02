@@ -1,1 +1,40 @@
-<p>user works!</p>
+<div class="user-page">
+  <h1>User Profile</h1>
+  <form (ngSubmit)="updateUser()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" [(ngModel)]="userBootstrap.name" name="name" required />
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        [(ngModel)]="userBootstrap.email"
+        name="email"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="bio">Bio</label>
+      <textarea id="bio" [(ngModel)]="userBootstrap.bio" name="bio"></textarea>
+    </div>
+    <button type="submit" class="btn">Update Profile</button>
+  </form>
+  
+  <h2>Change Password</h2>
+  <form (ngSubmit)="changePassword()">
+    <div class="form-group">
+      <label for="password">New Password</label>
+      <input
+        type="password"
+        id="password"
+        [(ngModel)]="userBootstrap.password"
+        name="password"
+        required
+      />
+    </div>
+    <button type="submit" class="btn">Change Password</button>
+  </form>
+  <button (click)="logout()" class="btn logout-btn">Logout</button>
+</div>
