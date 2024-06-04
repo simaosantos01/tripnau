@@ -1,0 +1,16 @@
+# RabbitMQ properties
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  rabbitmq:
+    exchange:
+      name: logs_exchange
+    queue:
+      name: logs_queue
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@127.0.0.1:27017/desofs-logging?authSource=admin
