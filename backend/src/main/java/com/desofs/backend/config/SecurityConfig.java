@@ -67,6 +67,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, rentalPropertyEndpoint).hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
 
                 .requestMatchers(HttpMethod.POST, "/booking/add").permitAll()
+                .requestMatchers(HttpMethod.POST, "/booking/stripe-webhook").permitAll()
                 .requestMatchers(HttpMethod.POST, "/booking/{id}").authenticated()
                 .requestMatchers(HttpMethod.POST, "/booking/getAllByUser/{id}").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/booking/{id}/cancel").authenticated()

@@ -1,11 +1,11 @@
 package com.desofs.backend.domain.aggregates;
 
-import com.desofs.backend.domain.entities.PaymentEntity;
 import com.desofs.backend.domain.enums.BookingStatusEnum;
 import com.desofs.backend.domain.valueobjects.Event;
 import com.desofs.backend.domain.valueobjects.Id;
 import com.desofs.backend.domain.valueobjects.IntervalTime;
 import com.desofs.backend.dtos.CreateBookingDto;
+import com.desofs.backend.dtos.IntervalTimeDto;
 import com.desofs.backend.utils.ListUtils;
 import com.desofs.backend.utils.LocalDateTimeUtils;
 import lombok.Getter;
@@ -26,7 +26,6 @@ public class BookingDomain {
 
     private final Id id;
     private final Id accountId;
-    private final PaymentEntity payment;
     private final IntervalTime intervalTime;
     private final List<Event> eventList;
     private ReviewDomain review;
@@ -35,11 +34,10 @@ public class BookingDomain {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public BookingDomain(Id id, Id accountId, PaymentEntity payment, IntervalTime intervalTime,
+    public BookingDomain(Id id, Id accountId, IntervalTime intervalTime,
                          List<Event> eventList, ReviewDomain review, LocalDateTime createdAt) {
         notNull(id, "Id must not be null.");
         notNull(accountId, "AccountId must not be null.");
-        notNull(payment, "Payment must not be null.");
         notNull(intervalTime, "IntervalTime must not be null.");
         notNull(eventList, "EventList must not be null.");
         isTrue(eventListIsValid(eventList), "EventList can't contain duplicates.");
@@ -48,18 +46,16 @@ public class BookingDomain {
 
         this.id = id.copy();
         this.accountId = accountId.copy();
-        this.payment = payment.copy();
         this.intervalTime = intervalTime.copy();
         this.eventList = new ArrayList<>(eventList);
         this.review = review == null ? null : review.copy();
         this.createdAt = LocalDateTimeUtils.copyLocalDateTime(createdAt);
     }
 
-    public BookingDomain(CreateBookingDto dto, Id bookingId, String userId) {
+    public BookingDomain(IntervalTimeDto intervalTime, Id bookingId, String userId) {
         this(bookingId,
                 Id.create(userId),
-                new PaymentEntity(dto.getPayment(), bookingId.value()),
-                IntervalTime.create(dto.getIntervalTime().getFrom(), dto.getIntervalTime().getTo()),
+                IntervalTime.create(intervalTime.getFrom(), intervalTime.getTo()),
                 new ArrayList<>(List.of(Event.create(LocalDateTime.now(), BookingStatusEnum.BOOKED))),
                 null,
                 LocalDateTime.now());
@@ -79,10 +75,6 @@ public class BookingDomain {
         return accountId.copy();
     }
 
-    public PaymentEntity getPayment() {
-        return payment.copy();
-    }
-
     public IntervalTime getIntervalTime() {
         return intervalTime.copy();
     }
@@ -97,7 +89,7 @@ public class BookingDomain {
 
     public BookingStatusEnum getStatus() {
         Event event = this.eventList.stream().max(Comparator.comparing(Event::getDatetime)).stream().findFirst().orElse(null);
-        if (event != null){
+        if (event != null) {
             return event.getState();
         }
         return BookingStatusEnum.BOOKED;

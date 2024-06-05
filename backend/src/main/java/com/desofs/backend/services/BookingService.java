@@ -8,18 +8,32 @@ import com.desofs.backend.database.repositories.RentalPropertyRepository;
 import com.desofs.backend.domain.aggregates.BookingDomain;
 import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
 import com.desofs.backend.domain.valueobjects.Id;
-import com.desofs.backend.dtos.CreateBookingDto;
-import com.desofs.backend.dtos.FetchBookingDto;
+import com.desofs.backend.domain.valueobjects.IntervalTime;
+import com.desofs.backend.domain.valueobjects.MoneyAmount;
+import com.desofs.backend.dtos.*;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotFoundException;
+import com.desofs.backend.exceptions.UnavailableTimeInterval;
+import com.desofs.backend.utils.IntervalTimeUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData;
+import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData.ProductData;
+import com.stripe.param.checkout.SessionCreateParams.PaymentIntentData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.time.Duration;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +49,9 @@ public class BookingService {
     private final BookingMapper bookingMapper;
 
     private final PaymentMapper paymentMapper;
+
+    @Value("${stripe.apiKey}")
+    private String StripeApiKey;
 
     /**
      * Gets the property or throws exception if not found
@@ -58,18 +75,75 @@ public class BookingService {
         return bookingDomain;
     }
 
+    private String requestCheckoutSession(long totalPrice, RentalPropertyDomain rentalProperty, String successUrl,
+                                          IntervalTimeDto intervalTime, String userId) throws StripeException, JsonProcessingException {
+
+        ProductData productData = PriceData.ProductData.builder()
+                .setName(rentalProperty.getPropertyName().value())
+                .build();
+
+        PriceData priceData = PriceData.builder()
+                .setCurrency("eur")
+                .setUnitAmount(totalPrice * 100)
+                .setProductData(productData)
+                .build();
+
+        CheckoutSessionMetadata metadata = new CheckoutSessionMetadata(rentalProperty.getId().value(), intervalTime, userId);
+        ObjectMapper objectMapper = new ObjectMapper();
+        PaymentIntentData paymentData = PaymentIntentData.builder()
+                .putMetadata("data", objectMapper.writeValueAsString(metadata)).build();
+
+        Stripe.apiKey = this.StripeApiKey;
+        SessionCreateParams params = SessionCreateParams.builder()
+                .setSuccessUrl(successUrl)
+                .addLineItem(SessionCreateParams.LineItem.builder().setPriceData(priceData).setQuantity(1L).build())
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setPaymentIntentData(paymentData)
+                .build();
+
+        Session session = Session.create(params);
+        return session.getUrl();
+    }
+
+    public FetchStripeSessionDto createStripeCheckoutSession(CreateStripeSessionDto createCheckoutDto, String userId)
+            throws NotFoundException, UnavailableTimeInterval, StripeException, JsonProcessingException {
+
+        RentalPropertyDomain rentalProperty = getPropertyThrowingError(createCheckoutDto.propertyId());
+        List<IntervalTime> unavailableIntervals = rentalProperty.getBookingList().stream()
+                .map(BookingDomain::getIntervalTime).toList();
+
+        // Check if requested date interval intercepts with any date already scheduled
+        Date from = createCheckoutDto.intervalTime().getFrom();
+        Date to = createCheckoutDto.intervalTime().getTo();
+        IntervalTime intervalToCompare = IntervalTime.create(from, to);
+        for (var interval : unavailableIntervals) {
+            if (IntervalTimeUtils.intervalsIntercept(interval, intervalToCompare)) {
+                throw new UnavailableTimeInterval();
+            }
+        }
+
+        // calculate price for the stay
+        MoneyAmount defaultNightPrice = rentalProperty.getDefaultNightPrice();
+        long days = Duration.between(intervalToCompare.getFrom().toInstant(), intervalToCompare.getTo().toInstant()).toDays();
+        long totalPrice = days * defaultNightPrice.getValue().longValue();
+
+        // create strip checkout session
+        String sessionUrl = requestCheckoutSession(totalPrice, rentalProperty, createCheckoutDto.successUrl(),
+                createCheckoutDto.intervalTime(), userId);
+        return new FetchStripeSessionDto(sessionUrl);
+    }
+
     @Transactional
-    public FetchBookingDto create(CreateBookingDto bookingDto, String userId) throws DatabaseException, NotFoundException {
-        RentalPropertyDomain rentalProperty = getPropertyThrowingError(bookingDto.getPropertyId());
+    public void create(PaymentIntent intent) throws DatabaseException, NotFoundException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CheckoutSessionMetadata metadata = objectMapper.readValue(intent.getMetadata().get("data"),
+                CheckoutSessionMetadata.class);
 
+        RentalPropertyDomain rentalProperty = getPropertyThrowingError(metadata.propertyId());
         Id bookingId = Id.create(UUID.randomUUID().toString());
-        BookingDomain bookingDomain = new BookingDomain(bookingDto, bookingId, userId);
+        BookingDomain bookingDomain = new BookingDomain(metadata.intervalTime(), bookingId, metadata.userId());
         rentalProperty.addBooking(bookingDomain);
-
         bookingRepository.create(bookingDomain, rentalProperty.getId());
-        paymentRepository.create(paymentMapper.dtoToDomain(bookingDto.getPayment(), bookingId.value()));
-
-        return this.bookingMapper.domainToDto(bookingDomain, rentalProperty.getId().value());
     }
 
     @Transactional

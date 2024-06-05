@@ -36,6 +36,10 @@ jwt:
   exp-property-owner: 604800 #86400
   exp-customer: 604800
 
+stripe:
+  apiKey: ${STRIPE_API_KEY}
+  webhookSecret: ${STRIPE_WEBHOOK_SECRET}
+
 management:
   endpoint:
     shutdown:
