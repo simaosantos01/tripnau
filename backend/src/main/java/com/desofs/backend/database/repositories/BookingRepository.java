@@ -79,9 +79,9 @@ public class BookingRepository {
 
                     if (reviewDB != null) {
                         List<ImageUrlDB> imagesUrlsDB = this.imageRepositoryJPA.findByReviewId(reviewDB.getId());
-                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, reviewDB, imagesUrlsDB, bookingDB.getEvents());
+                        return this.bookingMapper.dbToDomain(bookingDB, reviewDB, imagesUrlsDB, bookingDB.getEvents());
                     } else {
-                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, null, null, bookingDB.getEvents());
+                        return this.bookingMapper.dbToDomain(bookingDB, null, null, bookingDB.getEvents());
                     }
                 }
             }

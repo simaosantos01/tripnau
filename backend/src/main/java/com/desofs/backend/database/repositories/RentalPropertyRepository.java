@@ -122,9 +122,9 @@ public class RentalPropertyRepository {
                     ReviewDB reviewDB = this.reviewRepositoryJPA.findByBookingId(booking.getId());
                     if (reviewDB != null) {
                         List<ImageUrlDB> imagesUrlsDB = this.imageRepositoryJPA.findByReviewId(reviewDB.getId());
-                        return this.bookingMapper.dbToDomain(booking, paymentDB, reviewDB, imagesUrlsDB);
+                        return this.bookingMapper.dbToDomain(booking, reviewDB, imagesUrlsDB);
                     } else {
-                        return this.bookingMapper.dbToDomain(booking, paymentDB, null, null);
+                        return this.bookingMapper.dbToDomain(booking, null, null);
                     }
                 })
                 .collect(Collectors.toList());

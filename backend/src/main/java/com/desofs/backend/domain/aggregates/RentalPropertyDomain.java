@@ -23,7 +23,7 @@ public class RentalPropertyDomain {
     private final PositiveInteger numBedrooms;
     private final PositiveInteger numBathrooms;
     private final PropertyDescription propertyDescription;
-    private final MoneyAmount amount;
+    private final MoneyAmount defaultNightPrice;
     private final List<PriceNightInterval> priceNightIntervalList;
     private final List<BookingDomain> bookingList;
     private boolean isActive;
@@ -32,7 +32,7 @@ public class RentalPropertyDomain {
 
     public RentalPropertyDomain(Id id, Id propertyOwner, PropertyName propertyName, Location location,
                                 PositiveInteger maxGuests, PositiveInteger numBedrooms, PositiveInteger numBathrooms,
-                                PropertyDescription propertyDescription, MoneyAmount amount,
+                                PropertyDescription propertyDescription, MoneyAmount defaultNightPrice,
                                 List<PriceNightInterval> priceNightIntervalList, List<BookingDomain> bookingList,
                                 boolean isActive) {
         notNull(id, "Id must not be null.");
@@ -43,7 +43,7 @@ public class RentalPropertyDomain {
         notNull(numBedrooms, "NumBedrooms must not be null.");
         notNull(numBathrooms, "NumBathrooms must not be null.");
         notNull(propertyDescription, "PropertyDescription must not be null.");
-        notNull(amount, "Amount must not be null.");
+        notNull(defaultNightPrice, "Amount must not be null.");
         notNull(priceNightIntervalList, "PriceNightIntervalList must not be null.");
         notNull(bookingList, "BookingList must not be null.");
         isTrue(!IntervalTimeUtils.listHasOverlap(priceNightIntervalList.stream().map(intervalDto ->
@@ -58,7 +58,7 @@ public class RentalPropertyDomain {
         this.numBedrooms = numBedrooms.copy();
         this.numBathrooms = numBathrooms.copy();
         this.propertyDescription = propertyDescription.copy();
-        this.amount = amount.copy();
+        this.defaultNightPrice = defaultNightPrice.copy();
         this.priceNightIntervalList = priceNightIntervalList;
         this.bookingList = bookingList;
         this.isActive = isActive;
@@ -84,7 +84,7 @@ public class RentalPropertyDomain {
         this.numBedrooms = PositiveInteger.create(dto.getNumBedrooms());
         this.numBathrooms = PositiveInteger.create(dto.getNumBathrooms());
         this.propertyDescription = PropertyDescription.create(dto.getPropertyDescription());
-        this.amount = MoneyAmount.create(dto.getAmount());
+        this.defaultNightPrice = MoneyAmount.create(dto.getAmount());
         this.priceNightIntervalList = getPriceNightIntervalsList(id, dto.getPriceNightIntervalList());
         this.bookingList = new ArrayList<>();
         this.isActive = true;
@@ -132,8 +132,8 @@ public class RentalPropertyDomain {
         return propertyDescription.copy();
     }
 
-    public MoneyAmount getAmount() {
-        return amount.copy();
+    public MoneyAmount getDefaultNightPrice() {
+        return defaultNightPrice.copy();
     }
 
     public List<PriceNightInterval> getPriceNightIntervalList() {
@@ -199,18 +199,6 @@ public class RentalPropertyDomain {
         if (!bookingIsUnique) {
             throw new IllegalArgumentException("The booking already exists.");
         }
-
-        if (!this.timeIntervalIntercepts(bookingDomain.getIntervalTime())) {
-            throw new IllegalArgumentException("The booking hasn't compatible time intervals.");
-        }
-    }
-
-    private boolean timeIntervalIntercepts(IntervalTime priceNightInterval) {
-        return this.priceNightIntervalList.stream().anyMatch(existingInterval -> {
-            IntervalTime a = existingInterval.getInterval();
-            IntervalTime b = priceNightInterval;
-            return IntervalTimeUtils.intervalsIntercept(a, b);
-        });
     }
 
     public void addBooking(BookingDomain bookingDomain) {

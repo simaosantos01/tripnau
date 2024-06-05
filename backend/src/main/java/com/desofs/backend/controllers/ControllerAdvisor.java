@@ -3,6 +3,7 @@ package com.desofs.backend.controllers;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
+import com.desofs.backend.exceptions.UnavailableTimeInterval;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -103,6 +104,12 @@ public class ControllerAdvisor {
     public ResponseEntity<Object> handleForbiddenExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(this.createPayload(exception, HttpStatus.FORBIDDEN, request));
+    }
+
+    @ExceptionHandler({UnavailableTimeInterval.class})
+    public ResponseEntity<Object> handleUnavailableTimeIntervalExceptions(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(this.createPayload(exception, HttpStatus.CONFLICT, request));
     }
 
     @ExceptionHandler(Exception.class)

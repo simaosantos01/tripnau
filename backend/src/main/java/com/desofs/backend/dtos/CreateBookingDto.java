@@ -10,6 +10,5 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateBookingDto {
     private final String propertyId;
-    private CreatePaymentDto payment;
     private IntervalTimeDto intervalTime;
 }
