@@ -1,3 +1,4 @@
+name: 'desofs'
 services:
   mongodb:
     container_name: mongodb
@@ -9,10 +10,21 @@ services:
       - "27017:27017"
 
   rabbitmq:
+
     container_name: rabbitmq
     image: rabbitmq:3.13-management
     environment:
       - RABBITMQ_DEFAULT_PASS=guest
       - RABBITMQ_DEFAULT_USER=guest
     ports:
-      - "5672:5672"
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_go_net
+
+networks:
+  rabbitmq_go_net:
+    driver: bridge

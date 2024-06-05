@@ -1,22 +1,21 @@
-package com.desofs.logging.model;
+package com.desofs.logging.rabbitmq.events;
 
 import com.desofs.logging.enums.LogType;
-import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.UUID;
 
-@Document
+@Getter
+@ToString
 @Data
-@Builder
-public class Log {
+@NoArgsConstructor
+public class EventLogMessage {
 
-    @Id
-    private String id;
+    private String messageId;
     private String message;
     private LogType logType;
     private Date timestamp;

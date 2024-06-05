@@ -28,7 +28,6 @@ import static com.desofs.backend.config.UserDetailsConfig.hasAuthorization;
 public class RentalPropertyController {
 
     private final RentalPropertyService rentalPropertyService;
-
     private final UserService userService;
 
     @PostMapping("/create")
