@@ -1,15 +1,16 @@
 package com.desofs.backend.controllers;
 
+import com.desofs.backend.dtos.*;
+import com.desofs.backend.exceptions.*;
 import com.desofs.backend.domain.enums.Authority;
 import com.desofs.backend.dtos.AuthRequestDto;
 import com.desofs.backend.dtos.CreateUserDto;
 import com.desofs.backend.dtos.FetchUserDto;
 import com.desofs.backend.dtos.LoginRequestDto;
 import com.desofs.backend.exceptions.DatabaseException;
-import com.desofs.backend.exceptions.NotAuthorizedException;
-import com.desofs.backend.exceptions.NotFoundException;
 import com.desofs.backend.services.LoggerService;
 import com.desofs.backend.services.UserService;
+import com.mailersend.sdk.exceptions.MailerSendException;
 import com.twilio.Twilio;
 import com.twilio.rest.verify.v2.service.Verification;
 import com.twilio.rest.verify.v2.service.VerificationCheck;
@@ -188,4 +189,13 @@ public class AuthController {
             throw ex;
         }
     }
+
+    @PostMapping("/update-password")
+    public ResponseEntity<Void> updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto, Authentication authentication)
+            throws MailerSendException, UpdatePasswordException {
+
+        this.userService.updatePassword(updatePasswordDto, authentication.getName());
+        return ResponseEntity.ok().build();
+    }
+
 }
