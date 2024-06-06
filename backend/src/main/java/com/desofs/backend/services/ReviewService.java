@@ -47,10 +47,10 @@ public class ReviewService {
                 throw new NotFoundException("Review not found");
             }
 
-            logger.info("Review " + reviewId + " found");
+            logger.info("Review ID " + reviewId + " found");
             return reviewMapper.domainToDto(reviewDomain);
         } catch (NotFoundException e) {
-            logger.warn("Review " + reviewId + " not found: " + e.getMessage());
+            logger.warn("Review of ID " + reviewId + " not found: " + e.getMessage());
             throw e;
         } catch (Exception e) {
             logger.error("Error finding review " + reviewId + ": " + e.getMessage());

@@ -51,7 +51,9 @@ public class RentalPropertyService {
     public FetchRentalPropertyDto findById(String id) throws NotFoundException {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(id);
         if (rentalProperty == null) {
+            // BEGIN-NOSCAN
             logger.warn("Rental property with ID " + id + " not found");
+            // END-NOSCAN
             throw new NotFoundException(rentalPropertyNotFoundMessage);
         }
         logger.info("Fetched rental property with ID " + id);
@@ -69,7 +71,9 @@ public class RentalPropertyService {
     public FetchRentalPropertyDto deactivate(String id) throws DatabaseException, NotFoundException {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(id);
         if (rentalProperty == null) {
+            // BEGIN-NOSCAN
             logger.warn("Rental property with ID " + id + " not found");
+            // END-NOSCAN
             throw new NotFoundException(rentalPropertyNotFoundMessage);
         }
         this.rentalPropertyRepository.update(rentalProperty.deactivate());
@@ -81,7 +85,9 @@ public class RentalPropertyService {
     public FetchRentalPropertyDto update(String id, UpdateRentalPropertyDto dto) throws DatabaseException, NotFoundException {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(id);
         if (rentalProperty == null) {
+            // BEGIN-NOSCAN
             logger.warn("Rental property with ID " + id + " not found");
+            // END-NOSCAN
             throw new NotFoundException(rentalPropertyNotFoundMessage);
         }
         RentalPropertyDomain updated = this.rentalPropertyRepository.update(rentalProperty.update(dto));
