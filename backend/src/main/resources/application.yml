@@ -80,3 +80,5 @@ twilio:
   account_sid: ${TWILIO_ACCOUNT_SID}
   auth_token: ${TWILIO_AUTH_TOKEN}
   service_sid: ${TWILIO_SERVICE_SID}
+
+mailSenderApiKey: ${MAIL_SENDER_API_KEY}

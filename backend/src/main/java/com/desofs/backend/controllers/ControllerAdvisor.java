@@ -1,9 +1,6 @@
 package com.desofs.backend.controllers;
 
-import com.desofs.backend.exceptions.DatabaseException;
-import com.desofs.backend.exceptions.NotAuthorizedException;
-import com.desofs.backend.exceptions.NotFoundException;
-import com.desofs.backend.exceptions.UnavailableTimeInterval;
+import com.desofs.backend.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -110,6 +107,12 @@ public class ControllerAdvisor {
     public ResponseEntity<Object> handleUnavailableTimeIntervalExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(this.createPayload(exception, HttpStatus.CONFLICT, request));
+    }
+
+    @ExceptionHandler(UpdatePasswordException.class)
+    public ResponseEntity<Object> handleWrongPasswordExceptions(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
     }
 
     @ExceptionHandler(Exception.class)
