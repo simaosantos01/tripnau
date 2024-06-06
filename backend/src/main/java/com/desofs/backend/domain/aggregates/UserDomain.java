@@ -1,9 +1,6 @@
 package com.desofs.backend.domain.aggregates;
 
-import com.desofs.backend.domain.valueobjects.Email;
-import com.desofs.backend.domain.valueobjects.Id;
-import com.desofs.backend.domain.valueobjects.Name;
-import com.desofs.backend.domain.valueobjects.Password;
+import com.desofs.backend.domain.valueobjects.*;
 import com.desofs.backend.dtos.UserDto;
 import lombok.Getter;
 import lombok.ToString;
@@ -21,35 +18,40 @@ public class UserDomain {
     private final Password password;
     @Getter
     private String role;
+    private PhoneNumber phoneNumber;
     @Getter
     private boolean isBanned;
 
-    public UserDomain(Id id, Name name, Email email, Password password, String role, boolean isBanned) {
+    public UserDomain(Id id, Name name, Email email, Password password, PhoneNumber phoneNumber, String role, boolean isBanned) {
         notNull(id, "Id must not be null.");
         notNull(name, "Name must not be null.");
         notNull(email, "Email must not be null.");
         notNull(password, "Password must not be null.");
+        notNull(phoneNumber, "Phone number must not be null.");
         notNull(role, "Role must not be null.");
 
         this.id = id.copy();
         this.name = name.copy();
         this.email = email.copy();
         this.password = password.copy();
+        this.phoneNumber = phoneNumber.copy();
         this.role = role;
         this.isBanned = isBanned;
     }
 
     // Used to create a user
-    public UserDomain(Name name, Email email, Password password, String role) {
+    public UserDomain(Name name, Email email, Password password, PhoneNumber phoneNumber, String role) {
         notNull(name, "Name must not be null.");
         notNull(email, "Email must not be null.");
         notNull(password, "Password must not be null.");
+        notNull(phoneNumber, "Phone Number must not be null.");
         notNull(role, "Role must not be null.");
 
         this.id = Id.create(UUID.randomUUID().toString());
         this.name = name.copy();
         this.email = email.copy();
         this.password = password.copy();
+        this.phoneNumber = phoneNumber.copy();
         this.role = role;
         this.isBanned = false;
     }
@@ -60,6 +62,7 @@ public class UserDomain {
                 Name.create(userDto.getName()),
                 Email.create(userDto.getEmail()),
                 Password.create(userDto.getPassword()),
+                PhoneNumber.create(userDto.getPhoneNumber()),
                 userDto.getRole(),
                 userDto.isBanned());
     }
@@ -87,5 +90,9 @@ public class UserDomain {
 
     public Password getPassword() {
         return this.password.copy();
+    }
+
+    public PhoneNumber getPhoneNumber() {
+        return this.phoneNumber.copy();
     }
 }

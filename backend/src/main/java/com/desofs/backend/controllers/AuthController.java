@@ -1,13 +1,20 @@
 package com.desofs.backend.controllers;
 
+import com.desofs.backend.dtos.LoginRequestDto;
+import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.domain.enums.Authority;
 import com.desofs.backend.dtos.AuthRequestDto;
 import com.desofs.backend.dtos.CreateUserDto;
 import com.desofs.backend.dtos.FetchUserDto;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotAuthorizedException;
+import com.desofs.backend.exceptions.NotFoundException;
 import com.desofs.backend.services.LoggerService;
 import com.desofs.backend.services.UserService;
+import com.twilio.Twilio;
+import com.twilio.rest.verify.v2.service.VerificationCheck;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -23,11 +30,16 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.*;
+import com.twilio.rest.verify.v2.service.Verification;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.desofs.backend.config.UserDetailsConfig.hasAuthorization;
 import static java.lang.String.format;
@@ -43,6 +55,18 @@ public class AuthController {
     private final UserService userService;
     private final LoggerService logger;
 
+    @Value("${twilio.account_sid}")
+    private String twilio_account_sid;
+
+    @Value("${twilio.auth_token}")
+    private String twilio_auth_token;
+
+    @Value("${twilio.service_sid}")
+    private String twilio_service_sid;
+
+    @Value("${jwt.public.key}")
+    private String rsaPublicKeyString;
+
     @Value("${jwt.exp-business-admin}")
     private Long expBusinessAdmin;
 
@@ -52,16 +76,63 @@ public class AuthController {
     @Value("${jwt.exp-customer}")
     private Long expCustomer;
 
+    @PostMapping(value = "/login/generateOTP")
+    public ResponseEntity<?> generateOTP(@RequestBody @Valid final AuthRequestDto request)
+            throws NotFoundException {
+
+        FetchUserDto user = userService.findByEmail(request.getEmail());
+
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        Twilio.init(twilio_account_sid, twilio_auth_token);
+
+        Verification verification = Verification.creator(
+                        twilio_service_sid,
+                        "+351" + user.getPhoneNumber(),
+                        "sms")
+                .create();
+
+        System.out.println(verification.getStatus());
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "The OTP has been sent to the phone number");
+        return ResponseEntity.ok().body(responseBody);
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequestDto request) throws BadCredentialsException {
+    public ResponseEntity<?> login(
+            @RequestBody @Valid final LoginRequestDto request) throws BadCredentialsException {
+
         try {
-            final Authentication authentication = this.authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            Twilio.init(twilio_account_sid, twilio_auth_token);
+
+            try {
+                VerificationCheck verificationCheck = VerificationCheck.creator(
+                                twilio_service_sid)
+                        .setTo("+351" + request.getPhoneNumber())
+                        .setCode(request.getCode())
+                        .create();
+
+                System.out.println(verificationCheck.getStatus());
+
+                if (!Objects.equals(verificationCheck.getStatus(), "approved")) {
+                    throw new IllegalArgumentException("Wrong code");
+                }
+
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Verification failed");
+            }
+
+            final Authentication authentication = this.authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
             User user = (User) authentication.getPrincipal();
 
             List<String> stringAuthorities = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority).toList();
+
             final long expiry;
 
             if (stringAuthorities.contains(Authority.BUSINESSADMIN)) {
@@ -87,6 +158,7 @@ public class AuthController {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("token", token);
             logger.info("User logged in: " + user.getUsername());
+
             return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(responseBody);
         } catch (BadCredentialsException ex) {
             logger.error("Login failed for email: " + request.getEmail());
@@ -99,6 +171,11 @@ public class AuthController {
     public ResponseEntity<FetchUserDto> register(@RequestBody CreateUserDto createUserDto,
                                                  Authentication authentication)
             throws DatabaseException, NotAuthorizedException {
+
+        if (authentication != null && createUserDto.getRole().equals(Authority.BUSINESSADMIN) &&
+                !hasAuthorization(authentication, Authority.BUSINESSADMIN)) {
+            throw new NotAuthorizedException("You're not authorized!");
+        }
         try {
             if (authentication != null
                     && createUserDto.getRole().equals(Authority.BUSINESSADMIN)
@@ -109,6 +186,7 @@ public class AuthController {
 
             FetchUserDto user = this.userService.create(createUserDto);
             logger.info("User registered: " + user.getEmail());
+
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (DatabaseException | NotAuthorizedException ex) {
             logger.error("Error occurred while registering user: " + ex.getMessage());

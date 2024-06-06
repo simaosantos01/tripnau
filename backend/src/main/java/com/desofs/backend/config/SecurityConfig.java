@@ -54,6 +54,7 @@ public class SecurityConfig {
         http.addFilterAfter(ipFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests(requests -> requests
+                .requestMatchers(HttpMethod.POST, "/auth/login/generateOTP").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 

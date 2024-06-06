@@ -1,5 +1,6 @@
 package com.desofs.backend.services;
 
+import com.desofs.backend.domain.valueobjects.PhoneNumber;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.database.repositories.UserRepository;
 import com.desofs.backend.domain.aggregates.UserDomain;
@@ -24,15 +25,17 @@ public class UserService {
     @Transactional
     public FetchUserDto create(CreateUserDto createUserDTO) throws DatabaseException {
         UserDomain user = new UserDomain(Name.create(createUserDTO.getName()), Email.create(createUserDTO.getEmail()),
-                Password.create(createUserDTO.getPassword()), createUserDTO.getRole());
+                Password.create(createUserDTO.getPassword()), PhoneNumber.create(createUserDTO.getPhoneNumber()),
+                createUserDTO.getRole());
 
         UserDomain userToCreate = new UserDomain(user.getId(), user.getName(), user.getEmail(),
-                Password.create(encoder.encode(user.getPassword().value())), user.getRole(), user.isBanned());
+                Password.create(encoder.encode(user.getPassword().value())), user.getPhoneNumber(), user.getRole(),
+                user.isBanned());
 
         this.userRepository.create(userToCreate);
         logger.info("User " + createUserDTO.getEmail() + " registered");
         return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
-                user.getRole(), user.isBanned());
+                user.getPhoneNumber().value(), user.getRole(), user.isBanned());
     }
 
     @Transactional
@@ -40,7 +43,7 @@ public class UserService {
         UserDomain user = this.userRepository.findByEmail(email);
         if (user != null) {
             return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
-                    user.getRole(), user.isBanned());
+                    user.getPhoneNumber().value(), user.getRole(), user.isBanned());
         } else {
             return null;
         }
@@ -51,7 +54,7 @@ public class UserService {
         UserDomain user = this.userRepository.findById(id);
         if (user != null) {
             return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
-                    user.getRole(), user.isBanned());
+                    user.getPhoneNumber().value(), user.getRole(), user.isBanned());
         } else {
             return null;
         }
