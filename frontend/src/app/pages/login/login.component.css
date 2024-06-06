@@ -61,3 +61,12 @@
 .submit {
     cursor: pointer;
 }
+
+.password-input {
+    display: flex;
+    align-items: center;
+}
+
+.show-password {
+    margin-left: 10px;
+}
