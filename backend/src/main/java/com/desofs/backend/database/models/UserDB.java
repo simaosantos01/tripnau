@@ -25,6 +25,9 @@ public class UserDB {
     private String password;
 
     @Column(nullable = false)
+    private String phoneNumber;
+
+    @Column(nullable = false)
     private String role;
 
     @Column(nullable = false)
@@ -34,11 +37,12 @@ public class UserDB {
     }
 
     public UserDB(final String id, final String name, final String email, final String password,
-                  final String role, final boolean isBanned) {
+                  final String phoneNumber, final String role, final boolean isBanned) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
         this.role = role;
         this.isBanned = isBanned;
     }

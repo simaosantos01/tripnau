@@ -20,6 +20,7 @@ class UserDomainTest {
                 "John Doe One",
                 "john.doe1@example.com",
                 "Abcdef123!@#1",
+                "910123123",
                 Authority.CUSTOMER,
                 true);
 
@@ -39,7 +40,8 @@ class UserDomainTest {
         Name name = Name.create("John Doe Two");
         Email email = Email.create("john.doe2@example.com");
         Password password = Password.create("Abcdef123!@2");
-        UserDomain user = new UserDomain(id, name, email, password, Authority.CUSTOMER, false);
+        PhoneNumber phoneNumber = PhoneNumber.create("910123123");
+        UserDomain user = new UserDomain(id, name, email, password, phoneNumber, Authority.CUSTOMER, false);
         assertTrue(user.banUser());
         assertTrue(user.isBanned());
     }
@@ -51,7 +53,8 @@ class UserDomainTest {
         Name name = Name.create("John Doe Three");
         Email email = Email.create("john.doe3@example.com");
         Password password = Password.create("Abcdef123!@#3");
-        UserDomain user = new UserDomain(id, name, email, password, Authority.CUSTOMER, false);
+        PhoneNumber phoneNumber = PhoneNumber.create("911123123");
+        UserDomain user = new UserDomain(id, name, email, password, phoneNumber, Authority.CUSTOMER, false);
         user.banUser();
         assertFalse(user.banUser());
         assertTrue(user.isBanned());
