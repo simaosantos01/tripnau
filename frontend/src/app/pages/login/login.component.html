@@ -6,7 +6,13 @@
     </div>
     <form class="form-group" [formGroup]="form" (ngSubmit)="onSubmit()">
         <input type="email" name="email" placeholder="Email" formControlName="email">
-        <input type="password" name="password" placeholder="Password" formControlName="password">
+        <div class="password-input">
+            <input [type]="showPassword ? 'text' : 'password'" name="password" placeholder="Password" formControlName="password">
+            <label class="show-password">
+                <input type="checkbox" (change)="togglePasswordVisibility()">
+            </label>
+        </div>
+
         <input class="submit" type="submit" value="Login">
     </form>
     <div class="card-terms">

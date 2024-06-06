@@ -44,9 +44,10 @@ export class LoginComponent {
   // total attempts (number of times the one above was equal to three)
   totalFailedAttempts: number = 0;
 
-  // if the login button should be disabled
   disabled: boolean = false;
   submitted: boolean = false;
+
+  showPassword: boolean = false;
 
   constructor() {
     this.form.valueChanges.subscribe(() => this.submitted = false)
@@ -110,5 +111,9 @@ export class LoginComponent {
     } else {
       this.messagesService.error('Take a breather', 'Rate Limit Exceeded')
     }
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }
