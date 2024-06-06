@@ -102,7 +102,7 @@ public class BookingService {
                 .build();
 
         Session session = Session.create(params);
-        logger.info("Checkout session requested with ID " + session.getId() + " for rental property with ID " + rentalProperty.getId());
+        logger.info("Checkout session requested for rental property with ID " + rentalProperty.getId());
         return session.getUrl();
     }
 

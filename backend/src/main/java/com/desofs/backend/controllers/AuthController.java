@@ -78,6 +78,7 @@ public class AuthController {
             throw new NotFoundException("User not found");
         }
 
+        /*
         Twilio.init(twilio_account_sid, twilio_auth_token);
 
         Verification verification = Verification.creator(
@@ -87,6 +88,7 @@ public class AuthController {
                 .create();
 
         System.out.println(verification.getStatus());
+         */
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "The OTP has been sent to the phone number");
