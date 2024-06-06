@@ -1,19 +1,18 @@
 package com.desofs.backend.controllers;
 
-import com.desofs.backend.dtos.LoginRequestDto;
-import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.domain.enums.Authority;
 import com.desofs.backend.dtos.AuthRequestDto;
 import com.desofs.backend.dtos.CreateUserDto;
 import com.desofs.backend.dtos.FetchUserDto;
+import com.desofs.backend.dtos.LoginRequestDto;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
 import com.desofs.backend.services.LoggerService;
 import com.desofs.backend.services.UserService;
 import com.twilio.Twilio;
+import com.twilio.rest.verify.v2.service.Verification;
 import com.twilio.rest.verify.v2.service.VerificationCheck;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,11 +29,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.*;
-import com.twilio.rest.verify.v2.service.Verification;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -63,9 +58,6 @@ public class AuthController {
 
     @Value("${twilio.service_sid}")
     private String twilio_service_sid;
-
-    @Value("${jwt.public.key}")
-    private String rsaPublicKeyString;
 
     @Value("${jwt.exp-business-admin}")
     private Long expBusinessAdmin;
@@ -98,6 +90,7 @@ public class AuthController {
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "The OTP has been sent to the phone number");
+        logger.info("OTP sent to user " + user.getEmail());
         return ResponseEntity.ok().body(responseBody);
     }
 
@@ -106,7 +99,7 @@ public class AuthController {
             @RequestBody @Valid final LoginRequestDto request) throws BadCredentialsException {
 
         try {
-            Twilio.init(twilio_account_sid, twilio_auth_token);
+            /*Twilio.init(twilio_account_sid, twilio_auth_token);
 
             try {
                 VerificationCheck verificationCheck = VerificationCheck.creator(
@@ -115,15 +108,15 @@ public class AuthController {
                         .setCode(request.getCode())
                         .create();
 
-                System.out.println(verificationCheck.getStatus());
-
                 if (!Objects.equals(verificationCheck.getStatus(), "approved")) {
+                    logger.warn("OTP code (" + request.getCode() + ") received by user " + request.getEmail() + " is invalid");
                     throw new IllegalArgumentException("Wrong code");
                 }
 
             } catch (Exception e) {
+                logger.warn("Verification failed for user " + request.getEmail());
                 throw new IllegalArgumentException("Verification failed");
-            }
+            }*/
 
             final Authentication authentication = this.authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));

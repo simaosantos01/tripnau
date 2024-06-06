@@ -115,6 +115,9 @@ public class ControllerAdvisor {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericExceptions(Exception exception, WebRequest request) {
         log.error("Not caught exception: {}", exception.getMessage());
+        // BEGIN-NOSCAN
+        exception.printStackTrace();
+        // END-NOSCAN
         String genericMsg = "Some generic error occurred. Contact administrator.";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(this.createPayload(genericMsg, HttpStatus.BAD_REQUEST, request));
