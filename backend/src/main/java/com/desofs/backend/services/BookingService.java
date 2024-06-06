@@ -42,6 +42,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final LoggerService logger;
+    private final EncryptionService encryptionService;
 
     @Value("${stripe.apiKey}")
     private String StripeApiKey;
@@ -71,7 +72,7 @@ public class BookingService {
     }
 
     private String requestCheckoutSession(long totalPrice, RentalPropertyDomain rentalProperty, String successUrl,
-                                          IntervalTimeDto intervalTime, String userId) throws StripeException, JsonProcessingException {
+                                          IntervalTimeDto intervalTime, String userId) throws Exception {
 
         ProductData productData = PriceData.ProductData.builder()
                 .setName(rentalProperty.getPropertyName().value())
@@ -85,8 +86,12 @@ public class BookingService {
 
         CheckoutSessionMetadata metadata = new CheckoutSessionMetadata(rentalProperty.getId().value(), intervalTime, userId);
         ObjectMapper objectMapper = new ObjectMapper();
+        String encryptedMetadata = encryptionService.encryptMessage(objectMapper.writeValueAsString(metadata));
+        int middleOfEncryptedString = 324;
         PaymentIntentData paymentData = PaymentIntentData.builder()
-                .putMetadata("data", objectMapper.writeValueAsString(metadata)).build();
+                .putMetadata("firstChunk", encryptedMetadata.substring(0, middleOfEncryptedString))
+                .putMetadata("secondChunk", encryptedMetadata.substring(middleOfEncryptedString, encryptedMetadata.length()))
+                .build();
 
         Stripe.apiKey = this.StripeApiKey;
         SessionCreateParams params = SessionCreateParams.builder()
@@ -101,7 +106,7 @@ public class BookingService {
     }
 
     public FetchStripeSessionDto createStripeCheckoutSession(CreateStripeSessionDto createCheckoutDto, String userId)
-            throws NotFoundException, UnavailableTimeInterval, StripeException, JsonProcessingException {
+            throws Exception {
 
         RentalPropertyDomain rentalProperty = getPropertyThrowingError(createCheckoutDto.propertyId());
         List<IntervalTime> unavailableIntervals = rentalProperty.getBookingList().stream()
@@ -129,10 +134,12 @@ public class BookingService {
     }
 
     @Transactional
-    public void create(PaymentIntent intent) throws DatabaseException, NotFoundException, JsonProcessingException {
+    public void create(PaymentIntent intent) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        CheckoutSessionMetadata metadata = objectMapper.readValue(intent.getMetadata().get("data"),
-                CheckoutSessionMetadata.class);
+        String firstChunk = intent.getMetadata().get("firstChunk");
+        String secondChunk = intent.getMetadata().get("secondChunk");
+        String decryptedMedataAsString = encryptionService.decryptMessage(firstChunk + secondChunk);
+        CheckoutSessionMetadata metadata = objectMapper.readValue(decryptedMedataAsString, CheckoutSessionMetadata.class);
 
         RentalPropertyDomain rentalProperty = getPropertyThrowingError(metadata.propertyId());
         Id bookingId = Id.create(UUID.randomUUID().toString());
