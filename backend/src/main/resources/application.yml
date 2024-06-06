@@ -19,6 +19,15 @@ spring:
     url: jdbc:mysql://localhost:3306/database
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+  rabbitmq:
+    exchange:
+      name: logs_exchange
+    queue:
+      name: logs_queue
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 springdoc:
   api-docs:
@@ -39,6 +48,10 @@ jwt:
 stripe:
   apiKey: ${STRIPE_API_KEY}
   webhookSecret: ${STRIPE_WEBHOOK_SECRET}
+
+logs:
+  private-key: ${RSA_LOGS_PRIVATE_KEY}
+  public-key: ${RSA_LOGS_PUBLIC_KEY}
 
 management:
   endpoint:

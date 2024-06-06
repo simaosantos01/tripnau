@@ -9,9 +9,7 @@ import com.desofs.backend.domain.valueobjects.Password;
 import com.desofs.backend.dtos.CreateUserDto;
 import com.desofs.backend.dtos.FetchUserDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder encoder;
+    private final LoggerService logger;
 
     @Transactional
     public FetchUserDto create(CreateUserDto createUserDTO) throws DatabaseException {
@@ -32,6 +30,7 @@ public class UserService {
                 Password.create(encoder.encode(user.getPassword().value())), user.getRole(), user.isBanned());
 
         this.userRepository.create(userToCreate);
+        logger.info("User " + createUserDTO.getEmail() + " registered");
         return new FetchUserDto(user.getId().value(), user.getName().value(), user.getEmail().value(),
                 user.getRole(), user.isBanned());
     }

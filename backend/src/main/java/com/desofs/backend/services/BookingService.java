@@ -1,9 +1,7 @@
 package com.desofs.backend.services;
 
 import com.desofs.backend.database.mappers.BookingMapper;
-import com.desofs.backend.database.mappers.PaymentMapper;
 import com.desofs.backend.database.repositories.BookingRepository;
-import com.desofs.backend.database.repositories.PaymentRepository;
 import com.desofs.backend.database.repositories.RentalPropertyRepository;
 import com.desofs.backend.domain.aggregates.BookingDomain;
 import com.desofs.backend.domain.aggregates.RentalPropertyDomain;
@@ -26,29 +24,24 @@ import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData;
 import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData.ProductData;
 import com.stripe.param.checkout.SessionCreateParams.PaymentIntentData;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BookingService {
 
     private final RentalPropertyRepository rentalPropertyRepository;
-
-    private final PaymentRepository paymentRepository;
-
     private final BookingRepository bookingRepository;
-
     private final BookingMapper bookingMapper;
-
-    private final PaymentMapper paymentMapper;
+    private final LoggerService logger;
 
     @Value("${stripe.apiKey}")
     private String StripeApiKey;
@@ -59,6 +52,7 @@ public class BookingService {
     private RentalPropertyDomain getPropertyThrowingError(String propertyId) throws NotFoundException {
         RentalPropertyDomain rentalProperty = this.rentalPropertyRepository.findById(propertyId);
         if (rentalProperty == null) {
+            logger.warn("Rental property with ID " + propertyId + " not found");
             throw new NotFoundException("Rental property not found");
         }
         return rentalProperty;
@@ -70,6 +64,7 @@ public class BookingService {
     private BookingDomain getBookingThrowingError(String bookingId) throws NotFoundException {
         BookingDomain bookingDomain = this.bookingRepository.findById(bookingId);
         if (bookingDomain == null) {
+            logger.warn("Booking with ID " + bookingId + " not found");
             throw new NotFoundException("Booking not found");
         }
         return bookingDomain;
@@ -144,6 +139,8 @@ public class BookingService {
         BookingDomain bookingDomain = new BookingDomain(metadata.intervalTime(), bookingId, metadata.userId());
         rentalProperty.addBooking(bookingDomain);
         bookingRepository.create(bookingDomain, rentalProperty.getId());
+
+        logger.info("Booking created with ID " + bookingId.value() + " with payment intent with ID " + intent.getId());
     }
 
     @Transactional
@@ -152,8 +149,9 @@ public class BookingService {
         RentalPropertyDomain rentalPropertyDomain = this.bookingRepository.findRentalProperty(bookingId);
 
         bookingDomain = bookingDomain.cancel();
-
         bookingRepository.updateEvents(bookingDomain);
+
+        logger.info("Booking with ID " + bookingId + " has been cancelled");
 
         return this.bookingMapper.domainToDto(bookingDomain, rentalPropertyDomain.getId().value());
     }
@@ -161,6 +159,8 @@ public class BookingService {
     @Transactional
     public List<FetchBookingDto> findAllByUserId(String userId) throws NotFoundException {
         List<BookingDomain> bookingDomain = this.bookingRepository.findAllByUserId(userId);
+
+        logger.info("Fetched all bookings for user " + userId);
 
         return bookingDomain.stream().map(booking -> {
             RentalPropertyDomain rentalPropertyDomain;
@@ -178,6 +178,8 @@ public class BookingService {
         BookingDomain bookingDomain = getBookingThrowingError(bookingId);
         RentalPropertyDomain rentalPropertyDomain = this.bookingRepository.findRentalProperty(bookingId);
 
+        logger.info("Fetched booking with ID " + bookingId);
+
         return bookingMapper.domainToDto(bookingDomain, rentalPropertyDomain.getId().value());
     }
 
@@ -185,8 +187,9 @@ public class BookingService {
     public void checkBookingsThatCheckoutPassed() {
         try {
             var count = this.bookingRepository.clearBookingWhereCheckoutDatePassed();
-        } catch (Exception ignored) {
+            logger.info("Cleared " + count + " bookings where checkout date has passed");
+        } catch (Exception e) {
+            logger.error("Error clearing bookings where checkout date has passed");
         }
     }
-
 }
