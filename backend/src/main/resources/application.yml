@@ -53,6 +53,10 @@ jwt:
   exp-property-owner: 604800 #86400
   exp-customer: 604800
 
+xss:
+  endpoints-to-ignore: 'auth/login, rental_property/all, booking/getAllByUser'
+  fields-to-ignore: 'password, Id'
+
 stripe:
   apiKey: ${STRIPE_API_KEY}
   webhookSecret: ${STRIPE_WEBHOOK_SECRET}

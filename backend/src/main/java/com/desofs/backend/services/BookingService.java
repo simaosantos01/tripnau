@@ -102,6 +102,7 @@ public class BookingService {
                 .build();
 
         Session session = Session.create(params);
+        logger.info("Checkout session requested with ID " + session.getId() + " for rental property with ID " + rentalProperty.getId());
         return session.getUrl();
     }
 
@@ -118,6 +119,7 @@ public class BookingService {
         IntervalTime intervalToCompare = IntervalTime.create(from, to);
         for (var interval : unavailableIntervals) {
             if (IntervalTimeUtils.intervalsIntercept(interval, intervalToCompare)) {
+                logger.warn("Requested date interval conflicts with an existing booking for property with ID " + rentalProperty.getId());
                 throw new UnavailableTimeInterval();
             }
         }
@@ -130,6 +132,7 @@ public class BookingService {
         // create strip checkout session
         String sessionUrl = requestCheckoutSession(totalPrice, rentalProperty, createCheckoutDto.successUrl(),
                 createCheckoutDto.intervalTime(), userId);
+        logger.info("Stripe checkout session created successfully for property ID " + rentalProperty.getId());
         return new FetchStripeSessionDto(sessionUrl);
     }
 

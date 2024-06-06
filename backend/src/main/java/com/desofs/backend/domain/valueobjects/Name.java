@@ -15,7 +15,7 @@ public class Name {
         isTrue(name != null && !name.trim().isEmpty(),
                 "Name must not be null or empty.");
         matchesPattern(name,
-                "^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$", // by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository
+                "^[\\p{L}]+((['., -][\\p{L} ])?[\\p{L}]*)*$", // by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository
                 "Name must contain only letters, spaces, hyphens, and apostrophes.");
         return new Name(new String(name));
     }

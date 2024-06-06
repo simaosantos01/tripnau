@@ -39,6 +39,8 @@ public class SecurityConfig {
 
     private final RemoteIpFilter ipFilter;
 
+    private final XSSFilter xssFilter;
+
     @Value("${springdoc.api-docs.path}")
     private String restApiDocPath;
 
@@ -63,6 +65,11 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable);
 
+        http.headers(headers -> {
+            headers.xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK));
+            headers.contentSecurityPolicy(cps -> cps.policyDirectives("script-src 'self'"));
+        });
+
         http.sessionManagement(sessionSpec -> sessionSpec.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.exceptionHandling(exceptions -> {
@@ -72,6 +79,7 @@ public class SecurityConfig {
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(ipFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(xssFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(HttpMethod.POST, "/auth/login/generateOTP").permitAll()
