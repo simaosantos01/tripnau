@@ -57,7 +57,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<FetchStripeSessionDto> createCheckout(@RequestBody final CreateStripeSessionDto createCheckoutDto,
                                                                 Authentication authentication)
-            throws NotFoundException, StripeException, UnavailableTimeInterval, JsonProcessingException {
+            throws Exception {
 
         String userId = authentication.getName();
         FetchStripeSessionDto sessionDto = this.bookingService.createStripeCheckoutSession(createCheckoutDto, userId);
@@ -67,7 +67,7 @@ public class BookingController {
     @PostMapping("/stripe-webhook")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<FetchBookingDto> create(final HttpServletRequest request)
-            throws DatabaseException, NotFoundException, IOException, SignatureVerificationException {
+            throws Exception {
 
         String payload = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         String sigHeader = request.getHeader("Stripe-Signature");
