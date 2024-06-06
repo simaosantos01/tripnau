@@ -11,57 +11,79 @@ import com.desofs.backend.dtos.FetchReviewDto;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotAuthorizedException;
 import com.desofs.backend.exceptions.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-@Component("ReviewService")
+@Service
+@RequiredArgsConstructor
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-
     private final ReviewMapper reviewMapper;
-
-    public ReviewService(ReviewRepository reviewRepository, ReviewMapper reviewMapper) {
-        this.reviewRepository = reviewRepository;
-        this.reviewMapper = reviewMapper;
-    }
+    private final LoggerService logger;
 
     @Transactional
     public FetchReviewDto create(CreateReviewDto createReviewDto, String userId) throws DatabaseException, NotAuthorizedException {
-        ReviewDomain reviewDomain = new ReviewDomain(createReviewDto, userId);
+        try {
+            ReviewDomain reviewDomain = new ReviewDomain(createReviewDto, userId);
+            this.reviewRepository.create(reviewDomain, createReviewDto.getBookingId(), userId);
 
-        this.reviewRepository.create(reviewDomain, createReviewDto.getBookingId(), userId);
-
-        return reviewMapper.domainToDto(reviewDomain);
+            logger.info("Review created by user " + userId + " for booking " + createReviewDto.getBookingId());
+            return reviewMapper.domainToDto(reviewDomain);
+        } catch (Exception e) {
+            logger.error("Failed to create review by user " + userId + ": " + e.getMessage());
+            throw e;
+        }
     }
 
     @Transactional
     public FetchReviewDto findById(String reviewId) throws NotFoundException {
-        ReviewDomain reviewDomain = this.reviewRepository.findById(reviewId);
-        if (reviewDomain == null) {
-            throw new NotFoundException("Review not found");
-        }
+        try {
+            ReviewDomain reviewDomain = this.reviewRepository.findById(reviewId);
+            if (reviewDomain == null) {
+                throw new NotFoundException("Review not found");
+            }
 
-        return reviewMapper.domainToDto(reviewDomain);
+            logger.info("Review ID " + reviewId + " found");
+            return reviewMapper.domainToDto(reviewDomain);
+        } catch (NotFoundException e) {
+            logger.warn("Review of ID " + reviewId + " not found: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error finding review " + reviewId + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
     public FetchReviewDto changeState(String reviewId, String state) throws NotFoundException, DatabaseException {
-        ReviewDomain reviewDomain = this.reviewRepository.findById(reviewId);
+        try {
+            ReviewDomain reviewDomain = this.reviewRepository.findById(reviewId);
+            if (reviewDomain == null) {
+                throw new NotFoundException("Review not found");
+            }
 
-        if (reviewDomain == null) {
-            throw new NotFoundException("Review not found");
+            if (!EnumUtils.isValidEnum(ReviewState.class, state)) {
+                throw new NotFoundException("State is not valid");
+            }
+
+            reviewDomain.changeState(ReviewState.valueOf(state));
+            this.reviewRepository.update(reviewDomain);
+
+            logger.info("Review " + reviewId + " state changed to " + state);
+            return this.reviewMapper.domainToDto(reviewDomain);
+        } catch (NotFoundException e) {
+            logger.warn("Failed to change state for review " + reviewId + ": " + e.getMessage());
+            throw e;
+        } catch (DatabaseException e) {
+            logger.error("Database error changing state for review " + reviewId + ": " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error changing state for review " + reviewId + ": " + e.getMessage());
+            throw new RuntimeException(e);
         }
-
-        if (!EnumUtils.isValidEnum(ReviewState.class, state)) {
-            throw new NotFoundException("State is not valid");
-        }
-
-        reviewDomain.changeState(ReviewState.valueOf(state));
-        this.reviewRepository.update(reviewDomain);
-
-        return this.reviewMapper.domainToDto(reviewDomain);
     }
 }
