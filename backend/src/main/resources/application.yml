@@ -1,3 +1,11 @@
+server:
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: classpath:keystore/desofs.p12
+    key-store-password: ${P12_CERT_PASSWORD}
+    key-alias: desofs
+
 spring:
   config:
     import: optional:file:.env[.properties]
@@ -44,6 +52,10 @@ jwt:
   exp-business-admin: 604800 #3600
   exp-property-owner: 604800 #86400
   exp-customer: 604800
+
+xss:
+  endpoints-to-ignore: 'auth/login, rental_property/all, booking/getAllByUser'
+  fields-to-ignore: 'password, Id'
 
 stripe:
   apiKey: ${STRIPE_API_KEY}

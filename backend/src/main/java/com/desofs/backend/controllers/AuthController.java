@@ -98,6 +98,7 @@ public class AuthController {
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "The OTP has been sent to the phone number");
+        logger.info("OTP sent to user " + user.getEmail());
         return ResponseEntity.ok().body(responseBody);
     }
 
@@ -115,13 +116,13 @@ public class AuthController {
                         .setCode(request.getCode())
                         .create();
 
-                System.out.println(verificationCheck.getStatus());
-
                 if (!Objects.equals(verificationCheck.getStatus(), "approved")) {
+                    logger.warn("OTP code (" + request.getCode() + ") received by user " + request.getEmail() + " is invalid");
                     throw new IllegalArgumentException("Wrong code");
                 }
 
             } catch (Exception e) {
+                logger.warn("Verification failed for user " + request.getEmail());
                 throw new IllegalArgumentException("Verification failed");
             }
 

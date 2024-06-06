@@ -23,13 +23,17 @@ public class LoggerService {
 
     private void sendLog(String message, LogType logType) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String name = "N/A";
 
+        String name = "N/A";
         if (authentication != null) {
             name = authentication.getName();
         }
 
         String ipAddress = getClientIp();
+        if (ipAddress == null) {
+            ipAddress = "N/A";
+        }
+
         EventLogMessage eventLogMessage = new EventLogMessage(message, logType, "BACKEND", ipAddress, name);
         try {
             String objectString = objectMapper.writeValueAsString(eventLogMessage);
