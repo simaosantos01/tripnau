@@ -6,6 +6,7 @@
     <form class="form-group" [formGroup]="form" (ngSubmit)="onSubmit()">
         <input type="text" name="name" placeholder="Name" formControlName="name">
         <input type="email" name="email" placeholder="Email" formControlName="email">
+        <input type="text" name="phoneNumber" placeholder="Phone Number" formControlName="phoneNumber">
         <div style="display: flex;">
             <input type="radio" id="burro" name="role" value="CUSTOMER" formControlName="role">
             <label for="burro" style="font-size: 13px;">Customer</label>

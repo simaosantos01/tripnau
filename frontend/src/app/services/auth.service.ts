@@ -101,4 +101,8 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.authenticated;
   }
+
+  updatePassword(oldPassword: string, newPassword: string): string {
+    return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' + ROUTE.REGISTER, user);
+  }
 }

@@ -81,7 +81,7 @@ export class LoginComponent {
 
   handleLoginResponse(response: LoginResponse) {
     if (response.token) {
-      this.router.navigateByUrl('/home');
+      this.router.navigateByUrl('/loginOTP');
     } else {
       this.failedAttempts += 1;
       if (this.failedAttempts === 3) {

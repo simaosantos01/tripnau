@@ -1,4 +1,5 @@
 export enum ROUTE {
+    GENERATEOTP = '/login/generateOTP',
     LOGIN = '/login',
     LOGOUT = '/logout',
     REGISTER = '/register',
@@ -8,4 +9,7 @@ export enum ROUTE {
     BOOKPROPERTY = '/booking/add',
     USER = '/user',
     USERBYEMAIL = '/userEmail',
+    UPDATEPASSWORD = '/update-password',
+    FORGOTPASSWORD = '/forgot-password',
+    RESTPASSWORD = '/reset-password',
 }
