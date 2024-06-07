@@ -198,4 +198,15 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) throws Exception {
+        this.userService.forgotPassword(forgotPasswordDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody ForgotPasswordNewDto forgotPasswordNewDto) throws Exception {
+        this.userService.resetPassword(forgotPasswordNewDto);
+        return ResponseEntity.ok().build();
+    }
 }

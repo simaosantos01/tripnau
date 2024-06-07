@@ -115,6 +115,12 @@ public class ControllerAdvisor {
                 .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
     }
 
+    @ExceptionHandler(ResetPasswordExpiredToken.class)
+    public ResponseEntity<Object> handleResetPasswordExpiredTokenExceptions(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericExceptions(Exception exception, WebRequest request) {
         log.error("Not caught exception: {}", exception.getMessage());
