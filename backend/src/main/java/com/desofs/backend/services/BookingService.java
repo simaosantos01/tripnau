@@ -9,14 +9,11 @@ import com.desofs.backend.domain.valueobjects.Id;
 import com.desofs.backend.domain.valueobjects.IntervalTime;
 import com.desofs.backend.domain.valueobjects.MoneyAmount;
 import com.desofs.backend.dtos.*;
-import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.exceptions.NotFoundException;
 import com.desofs.backend.exceptions.UnavailableTimeInterval;
 import com.desofs.backend.utils.IntervalTimeUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -150,7 +147,7 @@ public class BookingService {
         rentalProperty.addBooking(bookingDomain);
         bookingRepository.create(bookingDomain, rentalProperty.getId());
 
-        logger.info("Booking created with ID " + bookingId.value() + " with payment intent with ID " + intent.getId());
+        logger.info("Booking created with ID " + bookingId.value() + " with payment intent");
     }
 
     @Transactional
