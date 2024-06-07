@@ -70,7 +70,7 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String sanitizeInput(String fieldName, String input) {
-        if (fieldsToIgnore.stream().anyMatch(fieldName::contains)) {
+        if (fieldName != null && fieldsToIgnore.stream().anyMatch(fieldName::contains)) {
             return input;
         }
         return Encode.forHtml(input);

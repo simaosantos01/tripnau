@@ -32,10 +32,10 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     private final RemoteIpFilter ipFilter;
-
     private final XSSFilter xssFilter;
+    private final RequestSizeFilter requestSizeFilter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     @Value("${springdoc.api-docs.path}")
     private String restApiDocPath;
@@ -73,7 +73,9 @@ public class SecurityConfig {
             exceptions.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
         });
 
+        http.addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(requestSizeFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(ipFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(xssFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -96,7 +98,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/booking/{id}").authenticated()
                 .requestMatchers(HttpMethod.POST, "/booking/getAllByUser/{id}").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/booking/{id}/cancel").authenticated()
-                .requestMatchers(HttpMethod.POST, "/review/add").permitAll()
+                .requestMatchers(HttpMethod.POST, "/review/add").authenticated()
                 .requestMatchers(HttpMethod.POST, "/review/change_state").hasAuthority(Authority.BUSINESSADMIN)
                 .requestMatchers(restApiDocPath + "/**").permitAll()
                 .requestMatchers(swaggerPath + "/**").permitAll()

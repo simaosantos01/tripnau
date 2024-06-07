@@ -54,8 +54,12 @@ jwt:
   exp-customer: 604800
 
 xss:
-  endpoints-to-ignore: 'auth/login, rental_property/all, booking/getAllByUser'
+  endpoints-to-ignore: '/auth/login, /rental_property/all, /booking/getAllByUser'
   fields-to-ignore: 'password, Id'
+
+http-size-request:
+  limit-mb: 2
+  endpoints-to-ignore: '/review/add'
 
 stripe:
   apiKey: ${STRIPE_API_KEY}
