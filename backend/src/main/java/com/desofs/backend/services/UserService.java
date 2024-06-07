@@ -33,6 +33,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final LoggerService logger;
     private final EncryptionService encryptionService;
+    private final PwnedPasswordChecker passwordChecker;
 
     @Value("${mailSenderApiKey}")
     private String mailSenderApiKey;
@@ -76,6 +77,10 @@ public class UserService {
     }
 
     private void updateUserPassword(UserDomain user, String newPassword) throws MailerSendException {
+        if (passwordChecker.passwordHasBeenPwned(newPassword)) {
+            throw new IllegalArgumentException("The password it was found on the pwned database!");
+        }
+
         UserDomain updatedUser = new UserDomain(user.getId(), user.getName(), user.getEmail(),
                 Password.create(encoder.encode(newPassword)), user.getPhoneNumber(), user.getRole(),
                 user.isBanned());

@@ -9,6 +9,7 @@ import com.desofs.backend.dtos.FetchUserDto;
 import com.desofs.backend.dtos.LoginRequestDto;
 import com.desofs.backend.exceptions.DatabaseException;
 import com.desofs.backend.services.LoggerService;
+import com.desofs.backend.services.PwnedPasswordChecker;
 import com.desofs.backend.services.UserService;
 import com.mailersend.sdk.exceptions.MailerSendException;
 import com.twilio.Twilio;
@@ -50,6 +51,7 @@ public class AuthController {
     private final JwtEncoder jwtEncoder;
     private final UserService userService;
     private final LoggerService logger;
+    private final PwnedPasswordChecker passwordChecker;
 
     @Value("${twilio.account_sid}")
     private String twilio_account_sid;
@@ -180,13 +182,17 @@ public class AuthController {
                 throw new NotAuthorizedException("You're not authorized!");
             }
 
+            if (passwordChecker.passwordHasBeenPwned(createUserDto.getPassword())) {
+                throw new IllegalArgumentException("The password it was found on the pwned database! We cannot accept that ...");
+            }
+
             FetchUserDto user = this.userService.create(createUserDto);
             logger.info("User registered: " + user.getEmail());
 
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        } catch (DatabaseException | NotAuthorizedException ex) {
-            logger.error("Error occurred while registering user: " + ex.getMessage());
-            throw ex;
+        } catch (DatabaseException | NotAuthorizedException e) {
+            logger.error("Error occurred while registering user");
+            throw e;
         }
     }
 
