@@ -79,6 +79,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(HttpMethod.POST, "/auth/login/generateOTP").permitAll()
+                .requestMatchers(HttpMethod.POST, "/auth/forgot-password").permitAll()
+                .requestMatchers(HttpMethod.POST, "/auth/reset-password").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/rental_property/all").permitAll()
