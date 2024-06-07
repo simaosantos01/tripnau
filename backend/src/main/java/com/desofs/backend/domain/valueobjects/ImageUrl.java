@@ -16,8 +16,6 @@ public class ImageUrl {
         notNull(url, "Id must not be null.");
         notNull(url, "URL must not be null.");
         notEmpty(url.trim(), "URL must not be empty.");
-        matchesPattern(url.trim(), "^(https?|http)://([a-zA-Z0-9]+\\.)*[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[a-zA-Z]{2,}(\\:[0-9]{1,5})?(\\/[a-zA-Z0-9]+)*(\\/[a-zA-Z0-9]+\\.[a-zA-Z0-9]{1,})?$", // by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository
-                "Invalid URL format.");
 
         return new ImageUrl(id, new String(url.trim()));
     }

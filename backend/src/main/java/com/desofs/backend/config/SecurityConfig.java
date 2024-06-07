@@ -100,6 +100,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/booking/{id}/cancel").authenticated()
                 .requestMatchers(HttpMethod.POST, "/review/add").authenticated()
                 .requestMatchers(HttpMethod.POST, "/review/change_state").hasAuthority(Authority.BUSINESSADMIN)
+                .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                 .requestMatchers(restApiDocPath + "/**").permitAll()
                 .requestMatchers(swaggerPath + "/**").permitAll()
                 .anyRequest().authenticated()

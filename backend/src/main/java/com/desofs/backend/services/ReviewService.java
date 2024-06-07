@@ -13,6 +13,18 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.ImageInputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +35,26 @@ public class ReviewService {
     private final LoggerService logger;
 
     @Transactional
-    public FetchReviewDto create(CreateReviewDto createReviewDto, String userId) throws DatabaseException, NotAuthorizedException {
+    public FetchReviewDto create(CreateReviewDto createReviewDto, String userId)
+            throws DatabaseException, NotAuthorizedException, IOException {
+
+        if (createReviewDto.getText().chars().count() > 250){
+            logger.error("User with ID " + userId + " tried to add a too long review text");
+            throw new IllegalArgumentException("Review text is too long");
+        }
+
+        if (!areImagesValid(createReviewDto.getImageUrlList())){
+            logger.error("User with ID " + userId + " tried to upload invalid images");
+            throw new IllegalArgumentException("Images are invalid");
+        }
+
         try {
-            ReviewDomain reviewDomain = new ReviewDomain(createReviewDto, userId);
-            this.reviewRepository.create(reviewDomain, createReviewDto.getBookingId(), userId);
+            List<String> uuids = createReviewDto.getImageUrlList().stream()
+                    .map(image -> UUID.randomUUID().toString())
+                    .toList();
+
+            ReviewDomain reviewDomain = new ReviewDomain(createReviewDto, createReviewDto.getImageUrlList(), uuids, userId);
+            this.reviewRepository.create(reviewDomain, createReviewDto.getImageUrlList(), uuids, createReviewDto.getBookingId(), userId);
 
             logger.info("Review created by user " + userId + " for booking " + createReviewDto.getBookingId());
             return reviewMapper.domainToDto(reviewDomain);
@@ -82,5 +110,66 @@ public class ReviewService {
             logger.error("Unexpected error changing state for review " + reviewId);
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean areImagesValid(List<MultipartFile> images) {
+        if (images.size() > 5) {
+            return false;
+        }
+
+        for (MultipartFile image : images) {
+            if ((image.getSize() > 1024 * 1024) || !isValidImageMetadata(image)) { // 1MB
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isValidImageMetadata(MultipartFile image) {
+        try {
+            try (ImageInputStream iis = ImageIO.createImageInputStream(image.getInputStream())) {
+                Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
+                if (!imageReaders.hasNext()) {
+                    return false;
+                }
+                ImageReader reader = imageReaders.next();
+                reader.setInput(iis);
+                IIOMetadata metadata = reader.getImageMetadata(0);
+
+                if (containsExecutableCode(metadata)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    private boolean containsExecutableCode(IIOMetadata metadata) {
+        String[] metadataFormats = metadata.getMetadataFormatNames();
+        for (String format : metadataFormats) {
+            Node rootNode = metadata.getAsTree(format);
+            if (containsScriptNode(rootNode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsScriptNode(Node node) {
+        if (node.getNodeType() == Node.TEXT_NODE) {
+            String textContent = node.getTextContent();
+            return textContent.contains("script") || textContent.contains("<script>");
+        } else {
+            NodeList children = node.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                if (containsScriptNode(children.item(i))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

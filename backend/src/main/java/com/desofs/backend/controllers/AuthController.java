@@ -11,6 +11,8 @@ import com.desofs.backend.services.LoggerService;
 import com.desofs.backend.services.PwnedPasswordChecker;
 import com.desofs.backend.services.UserService;
 import com.mailersend.sdk.exceptions.MailerSendException;
+import com.twilio.Twilio;
+import com.twilio.rest.verify.v2.service.Verification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,6 +73,8 @@ public class AuthController {
     @PostMapping(value = "/login/generateOTP")
     public ResponseEntity<?> generateOTP(@RequestBody @Valid final AuthRequestDto request)
             throws NotFoundException {
+
+        // TODO: verify password
 
         FetchUserDto user = userService.findByEmail(request.getEmail());
 
