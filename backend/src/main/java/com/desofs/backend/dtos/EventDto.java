@@ -14,5 +14,4 @@ public class EventDto {
     private final LocalDateTime datetime;
 
     private final BookingStatusEnum state;
-
 }

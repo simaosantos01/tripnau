@@ -90,7 +90,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Authority.PROPERTYOWNER)
                 .requestMatchers(HttpMethod.GET, rentalPropertyEndpoint).permitAll()
                 .requestMatchers(HttpMethod.POST, "/rental_property/create").hasAuthority(Authority.PROPERTYOWNER)
-                .requestMatchers(HttpMethod.GET, "/rental_property/allByUser/{id}").hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
+                .requestMatchers(HttpMethod.GET, "/rental_property/allByUser/{id}").authenticated()
                 .requestMatchers(HttpMethod.DELETE, rentalPropertyEndpoint).hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
                 .requestMatchers(HttpMethod.PUT, rentalPropertyEndpoint).hasAnyAuthority(Authority.PROPERTYOWNER, Authority.BUSINESSADMIN)
                 .requestMatchers(HttpMethod.POST, "/booking/add").permitAll()

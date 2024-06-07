@@ -113,7 +113,7 @@ public class ReviewService {
     }
 
     private boolean areImagesValid(List<MultipartFile> images) {
-        if (images.size() > 5) {
+        if (images.size() > 3) {
             return false;
         }
 
