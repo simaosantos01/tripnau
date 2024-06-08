@@ -1,8 +1,6 @@
 package com.desofs.backend.controllers;
 
-import com.desofs.backend.exceptions.DatabaseException;
-import com.desofs.backend.exceptions.NotAuthorizedException;
-import com.desofs.backend.exceptions.NotFoundException;
+import com.desofs.backend.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -105,9 +103,30 @@ public class ControllerAdvisor {
                 .body(this.createPayload(exception, HttpStatus.FORBIDDEN, request));
     }
 
+    @ExceptionHandler({UnavailableTimeInterval.class})
+    public ResponseEntity<Object> handleUnavailableTimeIntervalExceptions(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(this.createPayload(exception, HttpStatus.CONFLICT, request));
+    }
+
+    @ExceptionHandler(UpdatePasswordException.class)
+    public ResponseEntity<Object> handleWrongPasswordExceptions(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
+    }
+
+    @ExceptionHandler(ResetPasswordExpiredToken.class)
+    public ResponseEntity<Object> handleResetPasswordExpiredTokenExceptions(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericExceptions(Exception exception, WebRequest request) {
         log.error("Not caught exception: {}", exception.getMessage());
+        // BEGIN-NOSCAN
+        exception.printStackTrace();
+        // END-NOSCAN
         String genericMsg = "Some generic error occurred. Contact administrator.";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(this.createPayload(genericMsg, HttpStatus.BAD_REQUEST, request));

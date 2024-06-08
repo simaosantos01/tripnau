@@ -37,7 +37,7 @@ public class RentalPropertyMapper {
     }
 
     public RentalPropertyDB toDatabaseObject(RentalPropertyDomain rentalProperty) {
-        return new RentalPropertyDB(rentalProperty.getId().value(), rentalProperty.getAmount().value().toString(),
+        return new RentalPropertyDB(rentalProperty.getId().value(), rentalProperty.getDefaultNightPrice().value().toString(),
                 rentalProperty.getPropertyOwner().value(), rentalProperty.getPropertyName().value(),
                 rentalProperty.getLocation().getLat(), rentalProperty.getLocation().getLon(),
                 rentalProperty.getMaxGuests().value(), rentalProperty.getNumBedrooms().value(),
@@ -55,7 +55,7 @@ public class RentalPropertyMapper {
                 rentalProperty.getNumBedrooms().value(),
                 rentalProperty.getNumBathrooms().value(),
                 rentalProperty.getPropertyDescription().value(),
-                rentalProperty.getAmount().value(),
+                rentalProperty.getDefaultNightPrice().value(),
                 rentalProperty.getPriceNightIntervalList().stream().map(priceNightInterval -> {
                     IntervalTimeDto tempIntervalTime = new IntervalTimeDto(priceNightInterval.getInterval().getFrom(),
                             priceNightInterval.getInterval().getTo());

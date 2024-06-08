@@ -2,10 +2,7 @@ package com.desofs.backend.database.mappers;
 
 import com.desofs.backend.database.models.UserDB;
 import com.desofs.backend.domain.aggregates.UserDomain;
-import com.desofs.backend.domain.valueobjects.Email;
-import com.desofs.backend.domain.valueobjects.Id;
-import com.desofs.backend.domain.valueobjects.Name;
-import com.desofs.backend.domain.valueobjects.Password;
+import com.desofs.backend.domain.valueobjects.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +14,7 @@ public class UserMapper {
                 Name.create(user.getName()),
                 Email.create(user.getEmail()),
                 Password.create(user.getPassword()),
+                PhoneNumber.create(user.getPhoneNumber()),
                 user.getRole(),
                 user.isBanned());
     }
@@ -26,6 +24,7 @@ public class UserMapper {
                 user.getName().value(),
                 user.getEmail().value(),
                 user.getPassword().value(),
+                user.getPhoneNumber().value(),
                 user.getRole(),
                 user.isBanned());
     }
