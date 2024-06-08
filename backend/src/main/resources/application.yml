@@ -82,3 +82,5 @@ twilio:
   service_sid: ${TWILIO_SERVICE_SID}
 
 mailSenderApiKey: ${MAIL_SENDER_API_KEY}
+
+rate_limit: 60
