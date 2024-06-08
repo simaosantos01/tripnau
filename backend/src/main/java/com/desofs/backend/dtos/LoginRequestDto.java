@@ -5,21 +5,24 @@ import lombok.Getter;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @AllArgsConstructor
 @Getter
 public class LoginRequestDto {
 
-    @NotNull
-    @Email
-    String email;
+    @NotNull(message = "Email is required")
+    @Email(message = "Email should be valid")
+    private String email;
 
-    @NotNull
-    String password;
+    @NotNull(message = "Password is required")
+    private String password;
 
-    @NotNull
-    String phoneNumber;
+    @NotNull(message = "Phone number is required")
+    private String phoneNumber;
 
-    @NotNull
-    String code;
+    @NotNull(message = "Code is required")
+    @Size(min = 6, max = 6, message = "Code must be 6 characters")
+    private String code;
 }

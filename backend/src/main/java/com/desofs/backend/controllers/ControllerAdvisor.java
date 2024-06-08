@@ -31,7 +31,7 @@ public class ControllerAdvisor {
         private String path;
     }
 
-    private String getPath(WebRequest request) {
+    private static String getPath(WebRequest request) {
         if (request instanceof ServletWebRequest) {
             HttpServletRequest servletRequest = ((ServletWebRequest) request).getRequest();
             return servletRequest.getRequestURI();
@@ -39,22 +39,30 @@ public class ControllerAdvisor {
         return "";
     }
 
-    private ErrorPayloadMessage createPayload(String message, HttpStatus status, WebRequest request) {
+    private static ErrorPayloadMessage createPayload(String message, HttpStatus status, String path) {
         ErrorPayloadMessage errorResponse = new ErrorPayloadMessage();
         errorResponse.setTimestamp(LocalDateTime.now());
         errorResponse.setStatus(status.value());
         errorResponse.setError(status.getReasonPhrase());
         errorResponse.setMessage(message);
-        errorResponse.setPath(this.getPath(request));
+        errorResponse.setPath(path);
         return errorResponse;
     }
 
-    private ErrorPayloadMessage createPayload(Exception exception, HttpStatus status, WebRequest request) {
+    private static ErrorPayloadMessage createPayload(String message, HttpStatus status, WebRequest request) {
+        return createPayload(message, status, getPath(request));
+    }
+
+    public static ErrorPayloadMessage createPayload(Exception exception, HttpStatus status, WebRequest request) {
         return createPayload(exception.getMessage(), status, request);
     }
 
+    public static ErrorPayloadMessage createPayload(Exception exception, HttpStatus status, String path) {
+        return createPayload(exception.getMessage(), status, path);
+    }
+
     private ErrorPayloadMessage createPayload(Exception exception, WebRequest request, HttpStatus status, String msg) {
-        ErrorPayloadMessage errorResponse = this.createPayload(exception, status, request);
+        ErrorPayloadMessage errorResponse = createPayload(exception, status, request);
         errorResponse.setMessage(msg);
         return errorResponse;
     }
@@ -89,37 +97,43 @@ public class ControllerAdvisor {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(this.createPayload(exception, HttpStatus.NOT_FOUND, request));
+                .body(createPayload(exception, HttpStatus.NOT_FOUND, request));
     }
 
     @ExceptionHandler({IllegalArgumentException.class, DatabaseException.class})
     public ResponseEntity<Object> handleBadRequestExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
+                .body(createPayload(exception, HttpStatus.BAD_REQUEST, request));
     }
 
     @ExceptionHandler({BadCredentialsException.class, NotAuthorizedException.class})
     public ResponseEntity<Object> handleForbiddenExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(this.createPayload(exception, HttpStatus.FORBIDDEN, request));
+                .body(createPayload(exception, HttpStatus.FORBIDDEN, request));
     }
 
     @ExceptionHandler({UnavailableTimeInterval.class})
     public ResponseEntity<Object> handleUnavailableTimeIntervalExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(this.createPayload(exception, HttpStatus.CONFLICT, request));
+                .body(createPayload(exception, HttpStatus.CONFLICT, request));
     }
 
     @ExceptionHandler(UpdatePasswordException.class)
     public ResponseEntity<Object> handleWrongPasswordExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
+                .body(createPayload(exception, HttpStatus.BAD_REQUEST, request));
     }
 
     @ExceptionHandler(ResetPasswordExpiredToken.class)
     public ResponseEntity<Object> handleResetPasswordExpiredTokenExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(this.createPayload(exception, HttpStatus.BAD_REQUEST, request));
+                .body(createPayload(exception, HttpStatus.BAD_REQUEST, request));
+    }
+
+    @ExceptionHandler(RequestSizeLimitException.class)
+    public ResponseEntity<Object> handleRequestSizeLimitException(RuntimeException exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(createPayload(exception, HttpStatus.PAYLOAD_TOO_LARGE, request));
     }
 
     @ExceptionHandler(RateLimitException.class)

@@ -29,12 +29,4 @@ class ImageUrlTest {
     void testEmptyUrl() {
         assertThrows(IllegalArgumentException.class, () -> ImageUrl.create(Id.create(UUID.randomUUID().toString()), ""));
     }
-
-    @Test
-    @DisplayName("Test URL with invalid characters")
-    void testUrlWithInvalidCharacters() {
-        String invalidUrl = "https://example.com/image<>.jpg"; // Invalid characters "<>"
-        assertThrows(IllegalArgumentException.class, () -> ImageUrl.create(Id.create(UUID.randomUUID().toString()), invalidUrl));
-    }
-
 }

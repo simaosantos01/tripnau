@@ -20,7 +20,6 @@ import java.util.List;
 @Component
 public class BookingMapper {
 
-    private final PaymentMapper paymentMapper = new PaymentMapper();
     private final ReviewMapper reviewMapper = new ReviewMapper();
     private final EventMapper eventMapper = new EventMapper();
 

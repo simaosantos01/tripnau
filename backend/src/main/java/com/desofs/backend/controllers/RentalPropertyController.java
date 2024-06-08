@@ -53,18 +53,12 @@ public class RentalPropertyController {
     }
 
     @GetMapping("/allByUser/{id}")
-    public ResponseEntity<List<FetchRentalPropertyDto>> getAllByUser(@PathVariable final String id,
-                                                                     final Authentication authentication)
-            throws NotFoundException, NotAuthorizedException {
+    public ResponseEntity<List<FetchRentalPropertyDto>> getAllByUser(@PathVariable final String id)
+            throws NotFoundException {
 
         FetchUserDto user = userService.findById(id);
         if (user == null) {
             throw new NotFoundException("User not found.");
-        }
-
-        // if the user is trying to access a rental property of another user without being a admin
-        if (!authentication.getName().equals(user.getId()) && !hasAuthorization(authentication, Authority.BUSINESSADMIN)) {
-            throw new NotAuthorizedException("Trying to access a property of another user.");
         }
 
         List<FetchRentalPropertyDto> rentalProperty = this.rentalPropertyService.findAllByUserId(id);
