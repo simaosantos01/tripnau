@@ -1,20 +1,16 @@
 package com.desofs.backend.controllers;
 
-import com.desofs.backend.dtos.*;
-import com.desofs.backend.exceptions.*;
 import com.desofs.backend.domain.enums.Authority;
-import com.desofs.backend.dtos.AuthRequestDto;
-import com.desofs.backend.dtos.CreateUserDto;
-import com.desofs.backend.dtos.FetchUserDto;
-import com.desofs.backend.dtos.LoginRequestDto;
+import com.desofs.backend.dtos.*;
 import com.desofs.backend.exceptions.DatabaseException;
+import com.desofs.backend.exceptions.NotAuthorizedException;
+import com.desofs.backend.exceptions.NotFoundException;
+import com.desofs.backend.exceptions.UpdatePasswordException;
+import com.desofs.backend.services.JwtService;
 import com.desofs.backend.services.LoggerService;
 import com.desofs.backend.services.PwnedPasswordChecker;
 import com.desofs.backend.services.UserService;
 import com.mailersend.sdk.exceptions.MailerSendException;
-import com.twilio.Twilio;
-import com.twilio.rest.verify.v2.service.Verification;
-import com.twilio.rest.verify.v2.service.VerificationCheck;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +32,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.desofs.backend.config.UserDetailsConfig.hasAuthorization;
 import static java.lang.String.format;
@@ -52,6 +47,7 @@ public class AuthController {
     private final UserService userService;
     private final LoggerService logger;
     private final PwnedPasswordChecker passwordChecker;
+    private final JwtService jwtService;
 
     @Value("${twilio.account_sid}")
     private String twilio_account_sid;
@@ -61,6 +57,7 @@ public class AuthController {
 
     @Value("${twilio.service_sid}")
     private String twilio_service_sid;
+
 
     @Value("${jwt.exp-business-admin}")
     private Long expBusinessAdmin;
@@ -152,6 +149,7 @@ public class AuthController {
                     .build();
 
             final String token = this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+            jwtService.addToken(token);
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("token", token);
@@ -213,6 +211,13 @@ public class AuthController {
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(@RequestBody ForgotPasswordNewDto forgotPasswordNewDto) throws Exception {
         this.userService.resetPassword(forgotPasswordNewDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        jwtService.removeToken(token.substring(7));
         return ResponseEntity.ok().build();
     }
 }
