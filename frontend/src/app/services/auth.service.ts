@@ -71,7 +71,7 @@ export class AuthService {
     try {
       this.parseToken(token);
       if (this.getRole() != 'BUSINESSADMIN') {
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
       }
     } catch (e) {
       this.token = '';
