@@ -26,8 +26,6 @@ interface PasswordRequirement {
 })
 export class RegisterComponent {
 
-
-
   authService = inject(AuthService);
   router = inject(Router);
   messagesService = inject(MessagesService);

@@ -8,7 +8,6 @@ import { LoginResponse } from '../model/login-response';
 import { RegisterRequest } from '../model/register-request';
 import { RegisterResponse } from '../model/register-response';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -54,7 +53,7 @@ export class AuthService {
     try {
       this.parseToken(token);
       if (this.getRole() != 'BUSINESSADMIN') {
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
       }
     } catch (e) {
       this.token = '';
