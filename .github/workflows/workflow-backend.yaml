@@ -28,6 +28,9 @@ jobs:
     runs-on: self-hosted
     needs: [Checkout]
     steps:
+      - working-directory: backend
+        run: rm .env
+        continue-on-error: true
       - run: |
           NOW=$(date +'%Y-%m-%d_%Hh%Mm%Ss')
           SHA_SHORT=$(git rev-parse --short HEAD)
@@ -78,9 +81,83 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-  DependencyAnalysis:
+  BuildDotEnv:
     runs-on: self-hosted
     needs: [SonarQubeScan]
+    steps:
+      - working-directory: backend
+        run: touch .env
+      - uses: DamianReeves/write-file-action@master
+        with:
+          path: backend/.env
+          write-mode: overwrite
+          contents: |
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+
+            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+            RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
+            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+            P12_CERT_PASSWORD=${{ secrets.P12_CERT_PASSWORD }}
+            MYSQL_HOST=mysql
+            RABBITMQ_HOST=rabbit
+
+            RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}
+            RSA_PUBLIC_KEY=${{ secrets.RSA_PUBLIC_KEY }}
+            RSA_LOGS_PRIVATE_KEY=${{ secrets.RSA_LOGS_PRIVATE_KEY }}
+            RSA_LOGS_PUBLIC_KEY=${{ secrets.RSA_LOGS_PUBLIC_KEY }}
+
+            TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }}
+            TWILIO_SERVICE_SID=${{ secrets.TWILIO_SERVICE_SID }}
+
+            MAIL_SENDER_API_KEY=${{ secrets.MAIL_SENDER_API_KEY }}        
+
+  BuildDockerImage:
+    runs-on: self-hosted
+    needs: [BuildDotEnv]
+    steps:
+      - working-directory: backend
+        run: |
+          mvn install -DskipTests 
+          docker build -t simaosantos1230212/desofs-backend:test . 
+
+  ApiTesting:
+    runs-on: self-hosted  
+    needs: [BuildDockerImage]  
+    steps:
+      - run: docker rm mysql
+        continue-on-error: true
+      - working-directory: backend
+        run: BACKEND_VERSION=test RABBITMQ_DEFAULT_PASS=${{ secrets.RABBITMQ_DEFAULT_PASS }} RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }} docker compose -f docker-compose-test-env.yml up -d  
+      - run: sleep 30s
+      - working-directory: backend  
+        run: postman collection run api_tests.postman_collection.json --insecure
+      - run: | 
+          docker stop mysql   
+          docker stop rabbit
+          docker stop backend
+
+  ShutdownContainers:
+    runs-on: self-hosted
+    needs: [ApiTesting]
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    steps:
+      - run: docker stop mysql
+        continue-on-error: true
+      - run: docker stop rabbit
+        continue-on-error: true
+      - run: docker stop backend
+        continue-on-error: true
+
+  DependencyAnalysis:
+    runs-on: self-hosted
+    needs: [ApiTesting]
     steps:
       - working-directory: backend
         run: dependency-check.sh --out ../ --scan .

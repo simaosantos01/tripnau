@@ -24,7 +24,7 @@ spring:
     transactionManager: org.springframework.orm.jpa.JpaTransactionManager
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/database
+    url: jdbc:mysql://${MYSQL_HOST}:3306/database
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   rabbitmq:
@@ -32,7 +32,7 @@ spring:
       name: logs_exchange
     queue:
       name: logs_queue
-    host: localhost
+    host: ${RABBITMQ_HOST}
     port: 5672
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
