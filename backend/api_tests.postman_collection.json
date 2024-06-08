@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "0c42740a-4955-43e3-9a63-67636e4a281f",
+		"name": "DESOFS TESTS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36001433",
+		"_collection_link": "https://desofs.postman.co/workspace/DESFOS~5c87cd01-1d1b-4342-8e93-9e1edd24b8fe/collection/36001433-0c42740a-4955-43e3-9a63-67636e4a281f?action=share&source=collection_link&creator=36001433"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should succeed\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"antonio\",\r\n    \"email\": \"antonio@mail.com\",\r\n    \"password\": \"6a8eE83IV0vdvkC\",\r\n    \"role\": \"PROPERTYOWNER\",\r\n    \"phoneNumber\": \"912365478\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/register",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should succeed\", function() {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.collectionVariables.set(\"token\", pm.response.json().token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"antonio@mail.com\",\r\n    \"password\":\"6a8eE83IV0vdvkC\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "sql injection",
+			"item": [
+				{
+					"name": "Get Rental Property By User - SQL Injection Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 404 - Not Found\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/rental_property/allByUser/01'SELECT%20*%20USERS",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"allByUser",
+								"01'SELECT%20*%20USERS"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "https://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
