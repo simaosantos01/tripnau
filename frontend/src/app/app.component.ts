@@ -29,8 +29,8 @@ export class AppComponent implements OnInit {
   messagesService = inject(MessagesService);
 
   ngOnInit(): void {
-    if (localStorage.getItem('token')) {
-      this.authService.setToken(localStorage.getItem('token')!);
+    if (sessionStorage.getItem('token')) {
+      this.authService.setToken(sessionStorage.getItem('token')!);
     }
     this.messagesService.getMessages().subscribe((message) => this.messageService.add(message))
   }
