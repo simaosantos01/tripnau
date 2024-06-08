@@ -32,6 +32,9 @@ jobs:
     runs-on: self-hosted
     needs: [Checkout]
     steps:
+      - working-directory: backend
+        run: rm .env
+        continue-on-error: true
       - run: |
           NOW=$(date +'%Y-%m-%d_%Hh%Mm%Ss')
           SHA_SHORT=$(git rev-parse --short HEAD)
@@ -152,7 +155,6 @@ jobs:
           path: "${{ github.workspace }}/dependency-check-report.html"
 
   MakeTagString:
-    if: github.ref == 'refs/heads/main'
     runs-on: self-hosted
     needs: [Backend-DependencyAnalysis]
     outputs:
@@ -200,28 +202,101 @@ jobs:
           name: frontend-trivy-results
           path: "${{ github.workspace }}/frontend-trivy-results.sarif"
 
-  Backend-BuildDockerImage:
-    if: github.ref == 'refs/heads/main'
+  BuildDotEnv:
     runs-on: self-hosted
     needs: [Frontend-ContainerAnalysis]
+    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'skipped') || contains(needs.*.result, 'success')) }}
     outputs:
       now: ${{ needs.Frontend-ContainerAnalysis.outputs.now }}
       sha_short: ${{ needs.Frontend-ContainerAnalysis.outputs.sha_short }}
     steps:
       - working-directory: backend
-        run: docker build -t simaosantos1230212/desofs-backend:${{ needs.Frontend-ContainerAnalysis.outputs.sha_short }}_${{ needs.Frontend-ContainerAnalysis.outputs.now }} .
+        run: touch .env
+      - uses: DamianReeves/write-file-action@master
+        with:
+          path: backend/.env
+          write-mode: overwrite
+          contents: |
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+
+            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+            RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
+            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+            P12_CERT_PASSWORD=${{ secrets.P12_CERT_PASSWORD }}
+            MYSQL_HOST=mysql
+            RABBITMQ_HOST=rabbit
+
+            RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}
+            RSA_PUBLIC_KEY=${{ secrets.RSA_PUBLIC_KEY }}
+            RSA_LOGS_PRIVATE_KEY=${{ secrets.RSA_LOGS_PRIVATE_KEY }}
+            RSA_LOGS_PUBLIC_KEY=${{ secrets.RSA_LOGS_PUBLIC_KEY }}
+
+            TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }}
+            TWILIO_SERVICE_SID=${{ secrets.TWILIO_SERVICE_SID }}
+
+            MAIL_SENDER_API_KEY=${{ secrets.MAIL_SENDER_API_KEY }} 
+
+  Backend-BuildDockerImage:
+    runs-on: self-hosted
+    needs: [BuildDotEnv]
+    if: ${{ always() && contains(needs.*.result, 'success') }}
+    outputs:
+      now: ${{ needs.BuildDotEnv.outputs.now }}
+      sha_short: ${{ needs.BuildDotEnv.outputs.sha_short }}
+    steps:
+      - working-directory: backend
+        run: docker build -t simaosantos1230212/desofs-backend:${{ needs.BuildDotEnv.outputs.sha_short }}_${{ needs.BuildDotEnv.outputs.now }} .
+
+  ApiTesting:
+    runs-on: self-hosted  
+    needs: [Backend-BuildDockerImage]
+    if: ${{ always() && contains(needs.*.result, 'success') }}
+    outputs:
+      now: ${{ needs.Backend-BuildDockerImage.outputs.now }}
+      sha_short: ${{ needs.Backend-BuildDockerImage.outputs.sha_short }}  
+    steps:
+      - run: docker rm mysql
+        continue-on-error: true
+      - working-directory: backend
+        run: BACKEND_VERSION=${{ needs.Backend-BuildDockerImage.outputs.sha_short }}_${{ needs.Backend-BuildDockerImage.outputs.now }} RABBITMQ_DEFAULT_PASS=${{ secrets.RABBITMQ_DEFAULT_PASS }} RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }} docker compose -f docker-compose-test-env.yml up -d  
+      - run: sleep 30s
+      - working-directory: backend  
+        run: postman collection run api_tests.postman_collection.json --insecure
+      - run: | 
+          docker stop mysql   
+          docker stop rabbit
+          docker stop backend
+
+  ShutdownContainers:
+    runs-on: self-hosted
+    needs: [ApiTesting]
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    steps:
+      - run: docker stop mysql
+        continue-on-error: true
+      - run: docker stop rabbit
+        continue-on-error: true
+      - run: docker stop backend
+        continue-on-error: true
 
   Backend-ContainerAnalysis:
     if: github.ref == 'refs/heads/main'
     runs-on: self-hosted
     outputs:
-      now: ${{ needs.Backend-BuildDockerImage.outputs.now }}
-      sha_short: ${{ needs.Backend-BuildDockerImage.outputs.sha_short }}
-    needs: [Backend-BuildDockerImage]
+      now: ${{ needs.ApiTesting.outputs.now }}
+      sha_short: ${{ needs.ApiTesting.outputs.sha_short }}
+    needs: [ApiTesting]
     steps:
       - uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "simaosantos1230212/desofs-backend:${{ needs.Backend-BuildDockerImage.outputs.sha_short }}_${{ needs.Backend-BuildDockerImage.outputs.now }}"
+          image-ref: "simaosantos1230212/desofs-backend:${{ needs.ApiTesting.outputs.sha_short }}_${{ needs.ApiTesting.outputs.now }}"
           scan-type: image
           format: "sarif"
           output: "backend-trivy-results.sarif"
