@@ -50,8 +50,11 @@ export class AuthService {
       )
       .pipe(
         map((response: HttpResponse<LoginResponse>) => {
-          if (response.headers.get('Authorization')) {
-            this.setToken(response.headers.get('Authorization')!);
+          console.log(response);
+          console.log(response.headers)
+          if (response.body!.token) {
+            console.log('set token')
+            this.setToken(response.body!.token);
           }
           return response.body!;
         })
@@ -114,11 +117,14 @@ export class AuthService {
   }
 
   parseToken(token: string) {
+    console.log(token);
     const parts = token.split('.');
-    if (parts.length !== 3) {
-      throw new Error('Invalid token format');
-    }
+    console.log(parts);
+    // if (parts.length !== 3) {
+    //   throw new Error('Invalid token format');
+    // }
     const payload = JSON.parse(atob(parts[1]));
+    console.log(payload);
     this.email = payload.email;
     this.role = payload.roles;
     this.token = token;
