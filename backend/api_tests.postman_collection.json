@@ -152,6 +152,225 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Unauthorized",
+			"item": [
+				{
+					"name": "Create Rental Property - No Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 400 - Unauthorized\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propertyName\": \"Beautiful Villa 2\",\r\n    \"location\": {\r\n        \"lat\": 40.712776,\r\n        \"lon\": -74.005974\r\n    },\r\n    \"maxGuests\": 5,\r\n    \"numBedrooms\": 3,\r\n    \"numBathrooms\": 2,\r\n    \"propertyDescription\": \"A beautiful villa in the heart of the city.\",\r\n    \"amount\": 200.00,\r\n    \"priceNightIntervalList\":[\r\n        {\r\n            \"price\": 200.00,\r\n            \"interval\": {\r\n                \"from\": \"2025-12-20\",\r\n                \"to\": \"2025-12-21\"\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/rental_property/create",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Every endpoint that requires authorization should be here and tested to see if a request without token in headers will be rejected with a [<code>401 Unauthorized</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401)",
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Poison Message",
+			"item": [
+				{
+					"name": "Create Booking - Poison",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 400 - Payload too large\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propertyId\": \"632438b2-8e2b-4bc9-b893-5878a0dfe958\",\r\n    \"payment\": {\r\n        \"moneyAmount\": 200,\r\n        \"creditCardNumber\": \"4111111111111111\",\r\n        \"cardVerificationCode\": \"111\",\r\n        \"expirationDate\": \"2025-12-30T00:00\",\r\n        \"email\": \"propertyowner@mail.com\",\r\n        \"personName\": {{$randomLoremParagraphs}},\r\n        \"createdAt\": \"2024-10-15T00:00\"\r\n    },\r\n    \"intervalTime\": {\r\n        \"from\": \"2025-12-20T00:00:00.000+00:00\",\r\n        \"to\": \"2025-12-21T00:00:00.000+00:00\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/booking/add",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"booking",
+								"add"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This folder tests that all endpoints should be defended from poison messages - Requests with large amounts of data should be rejected with [<code>413 Payload Too Large</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "XSS",
+			"item": [
+				{
+					"name": "Cancel Booking - XSS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 400 - Payload too large\", function() {",
+									"    pm.response.to.have.status(404);",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": \"1a1a1a1a-1a1a-1a1a-1a1a-1a1a1a1a1a1a\",\r\n    \"propertyId\": \"d554f904-dc86-4448-b7be-ac70c37bd082\",\r\n    \"payment\": {\r\n        \"moneyAmount\": 200,\r\n        \"creditCardNumber\": \"4111111111111111\",\r\n        \"cardVerificationCode\": \"111\",\r\n        \"expirationDate\": \"2025-12-30T00:00\",\r\n        \"email\": \"<script>alert('I'm a xss attack')</script>\",\r\n        \"personName\": \"Property Owner\",\r\n        \"createdAt\": \"2024-10-15T00:00\"\r\n    },\r\n    \"intervalTime\": {\r\n        \"from\": \"2026-12-25\",\r\n        \"to\": \"2026-12-28\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/booking/6403207a-8381-4db3-a961-f4e38e86ab06/cancel",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"booking",
+								"6403207a-8381-4db3-a961-f4e38e86ab06",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "For suspected malicious requests, the status [<code>400 Bad Request</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) should be returned. This includes SQLi and XSS."
 		}
 	],
 	"event": [
