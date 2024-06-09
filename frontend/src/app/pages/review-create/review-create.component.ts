@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ReviewService } from '../../services/review.service';
@@ -41,10 +41,9 @@ export class ReviewCreateComponent {
         formData.append('images', file, file.name);
       });
 
-      this.reviewService.createReview(formData).subscribe(response => {
-        this.router.navigateByUrl('/userBookings');
-      }, error => {
-        console.error('Error submitting review', error);
+      this.reviewService.createReview(formData).subscribe({ 
+        next: (response: any) => this.router.navigateByUrl('/userBookings'),
+        error: (error: HttpErrorResponse | HttpResponse<any>) =>  console.error('Error submitting review', error)
       });
     }
   }
