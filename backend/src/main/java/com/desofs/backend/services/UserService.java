@@ -146,5 +146,10 @@ public class UserService {
         UserDomain userDomain = this.userRepository.findByEmail(metadata.email());
         this.updateUserPassword(userDomain, forgotPasswordNewDto.newPassword());
     }
+
+    public boolean isPasswordValid(String email, String password) {
+        UserDomain user = this.userRepository.findByEmail(email);
+        return encoder.matches(password, user.getPassword().value());
+    }
 }
 

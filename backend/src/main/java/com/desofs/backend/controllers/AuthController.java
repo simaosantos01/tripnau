@@ -13,6 +13,7 @@ import com.desofs.backend.services.UserService;
 import com.mailersend.sdk.exceptions.MailerSendException;
 import com.twilio.Twilio;
 import com.twilio.rest.verify.v2.service.Verification;
+import com.twilio.rest.verify.v2.service.VerificationCheck;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -34,6 +36,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.desofs.backend.config.UserDetailsConfig.hasAuthorization;
 import static java.lang.String.format;
@@ -50,6 +53,7 @@ public class AuthController {
     private final LoggerService logger;
     private final PwnedPasswordChecker passwordChecker;
     private final JwtService jwtService;
+    private final PasswordEncoder encoder;
 
     @Value("${twilio.account_sid}")
     private String twilio_account_sid;
@@ -59,7 +63,6 @@ public class AuthController {
 
     @Value("${twilio.service_sid}")
     private String twilio_service_sid;
-
 
     @Value("${jwt.exp-business-admin}")
     private Long expBusinessAdmin;
@@ -74,25 +77,26 @@ public class AuthController {
     public ResponseEntity<?> generateOTP(@RequestBody @Valid final AuthRequestDto request)
             throws NotFoundException {
 
-        // TODO: verify password
-
         FetchUserDto user = userService.findByEmail(request.getEmail());
 
         if (user == null) {
+            logger.info("Error generating OTP: user not found");
             throw new NotFoundException("User not found");
         }
 
-        /*
-        Twilio.init(twilio_account_sid, twilio_auth_token);
+        if (!userService.isPasswordValid(request.getEmail(), request.getPassword())) {
+            logger.info("Error generating OTP for " + user.getEmail() + ". Password is invalid");
+            throw new IllegalArgumentException("current password is wrong");
+        }
 
-        Verification verification = Verification.creator(
+        /*Twilio.init(twilio_account_sid, twilio_auth_token);
+
+
+        Verification.creator(
                         twilio_service_sid,
                         "+351" + user.getPhoneNumber(),
                         "sms")
-                .create();
-
-        System.out.println(verification.getStatus());
-         */
+                .create();*/
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "The OTP has been sent to the phone number");
@@ -220,7 +224,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+    public ResponseEntity<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         jwtService.removeToken(token.substring(7));
         return ResponseEntity.ok().build();
     }
