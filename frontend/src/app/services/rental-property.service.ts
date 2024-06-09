@@ -16,6 +16,10 @@ export class RentalPropertyService {
     return this.http.get<RentalProperty[]>(environment.apiUrl + ROUTE.RENTALPROPERTIES);
   }
 
+  getById(id: string): Observable<RentalProperty> {
+    return this.http.get<RentalProperty>(environment.apiUrl + ROUTE.RENTALPROPERTYBYID + '/' + id);
+  }
+
   getUserRentalProperties(userId: number): Observable<RentalProperty[]> {
     return this.http.get<RentalProperty[]>(environment.apiUrl + ROUTE.RENTALPROPERTIESBYUSER + '/' + userId);
   }

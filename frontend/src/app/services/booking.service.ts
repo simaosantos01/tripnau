@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { ROUTE } from '../enum/routes';
 import { BookPropertyRequest } from '../model/book-property-request';
 import { BookPropertyResponse } from '../model/book-property-response';
+import { BookedPropertyResponse } from '../model/booked-property-response';
 
 @Injectable({
   providedIn: 'root'
@@ -19,5 +20,13 @@ export class BookingService {
   
   bookProperty(request: BookPropertyRequest): Observable<BookPropertyResponse> {
     return this.http.post<BookPropertyResponse>(environment.apiUrl + ROUTE.BOOKPROPERTY, request);
+  }
+
+  getBookingsByUser(userId: string): Observable<BookedPropertyResponse[]> {
+    return this.http.get<BookedPropertyResponse[]>(environment.apiUrl + ROUTE.BOOKINGSBYUSER + '/' + userId);
+  }
+
+  cancelBooking(bookingId: string): Observable<void> {
+    return this.http.put<void>(environment.apiUrl + ROUTE.CANCELBOOKING + '/' + bookingId + "/cancel", { bookingId });
   }
 }

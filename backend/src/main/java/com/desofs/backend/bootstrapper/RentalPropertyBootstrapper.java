@@ -52,7 +52,7 @@ public class RentalPropertyBootstrapper {
         this.rentalPropertyRepository.create(rentalProperty2);
 
         RentalPropertyDomain rentalProperty3 = new RentalPropertyDomain(
-                Id.create(UUID.randomUUID().toString()),
+                Id.create("ccb0198d-1e52-4587-98a6-a5cf8eab0c5c"),
                 Id.create(userId),
                 PropertyName.create("Property 3"),
                 Location.create(51.507351, -0.127758),

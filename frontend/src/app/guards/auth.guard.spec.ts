@@ -1,9 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { CanActivateFn } from '@angular/router';
-
+import { CanActivateFn, Router } from '@angular/router';
 import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
 
 describe('authGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>
@@ -44,8 +42,6 @@ describe('authGuard', () => {
   xit('should allow access if user has required role', () => {
     authService.isAuthenticated.and.returnValue(true);
     authService.getRole.and.returnValue('admin');
-    const guard = authGuard(['admin']);
-    // const canActivate = guard();
 
     expect(executeGuard).toBeTrue();
     expect(router.navigateByUrl).not.toHaveBeenCalled();
@@ -54,8 +50,6 @@ describe('authGuard', () => {
   xit('should deny access if user does not have required role', () => {
     authService.isAuthenticated.and.returnValue(true);
     authService.getRole.and.returnValue('user');
-    const guard = authGuard(['admin']);
-    // const canActivate = guard();
 
     expect(executeGuard).toBeFalse();
     expect(router.navigateByUrl).toHaveBeenCalledWith('/login');

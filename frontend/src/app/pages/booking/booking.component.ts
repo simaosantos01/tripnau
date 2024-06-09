@@ -48,7 +48,7 @@ export class BookingComponent implements OnInit{
   ngOnInit(): void {
     this.bookingService.currentPropertyToBook.subscribe((property) => {
       this.property = property;
-      this.form.controls.propertyId.setValue(this.property!.id);
+      this.form.controls.propertyId.setValue(this.property.id);
     });
 
     this.bookingService.currentPropertyToBookIndex.subscribe((propertyId) => {
@@ -65,21 +65,19 @@ export class BookingComponent implements OnInit{
       if (this.form.valid) {
         this.form.setErrors({});
         
-        var interval: Interval = {
+        let interval: Interval = {
           from: this.form.controls.from.value!,
           to: this.form.controls.to.value!
         };
 
         const bookingRequest: BookPropertyRequest = {
-          accountId: this.form.controls.accountId.value!,
           propertyId: this.form.controls.propertyId.value!,
-          payment: this.form.controls.payment.value!,
-          intervalTime: interval
+          intervalTime: interval,
+          successUrl: 'http://localhost:4200/paymentSuccess'
         }
 
-        console.log(bookingRequest);
         this.bookingService.bookProperty(bookingRequest).subscribe((response) => {
-          this.router.navigateByUrl(`/home`);
+          this.router.navigateByUrl(`/userBookings`);
         });
       }
   }

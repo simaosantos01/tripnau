@@ -1,8 +1,18 @@
 export enum ROUTE {
+    GENERATEOTP = '/login/generateOTP',
     LOGIN = '/login',
+    LOGOUT = '/logout',
     REGISTER = '/register',
     LANDING = '/',
+    USER = '/user',
+    UPDATEPASSWORD = '/update-password',
+    FORGOTPASSWORD = '/forgot-password',
+    RESETPASSWORD = '/reset-password',
     RENTALPROPERTIES = '/rental_property/all',
+    RENTALPROPERTYBYID = '/rental_property',
     RENTALPROPERTIESBYUSER = '/rental_property/allByUser',
-    BOOKPROPERTY = '/booking/add'
+    BOOKPROPERTY = '/booking/stripe-checkout',
+    BOOKINGSBYUSER = '/booking/getAllByUser',
+    CANCELBOOKING = '/booking',
+    CREATEREVIEW = '/review/add',
 }

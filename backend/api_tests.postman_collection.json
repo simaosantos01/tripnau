@@ -1,0 +1,534 @@
+{
+	"info": {
+		"_postman_id": "0c42740a-4955-43e3-9a63-67636e4a281f",
+		"name": "DESOFS TESTS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18536007",
+		"_collection_link": "https://desofs.postman.co/workspace/DESFOS~5c87cd01-1d1b-4342-8e93-9e1edd24b8fe/collection/36001433-0c42740a-4955-43e3-9a63-67636e4a281f?action=share&source=collection_link&creator=18536007"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should succeed\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"antonio\",\r\n    \"email\": \"antonio@mail.com\",\r\n    \"password\": \"6a8eE83IV0vdvkC\",\r\n    \"role\": \"PROPERTYOWNER\",\r\n    \"phoneNumber\": \"912365478\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/register",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should succeed\", function() {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.collectionVariables.set(\"token\", pm.response.json().token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"antonio@mail.com\",\r\n    \"password\":\"6a8eE83IV0vdvkC\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sql injection",
+			"item": [
+				{
+					"name": "Get Rental Property By User - SQL Injection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 404 - Not Found\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/rental_property/allByUser/01'SELECT%20*%20USERS",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"allByUser",
+								"01'SELECT%20*%20USERS"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Unauthorized",
+			"item": [
+				{
+					"name": "Create Rental Property - No Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 400 - Unauthorized\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "invalid_token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propertyName\": \"Beautiful Villa 2\",\r\n    \"location\": {\r\n        \"lat\": 40.712776,\r\n        \"lon\": -74.005974\r\n    },\r\n    \"maxGuests\": 5,\r\n    \"numBedrooms\": 3,\r\n    \"numBathrooms\": 2,\r\n    \"propertyDescription\": \"A beautiful villa in the heart of the city.\",\r\n    \"amount\": 200.00,\r\n    \"priceNightIntervalList\":[\r\n        {\r\n            \"price\": 200.00,\r\n            \"interval\": {\r\n                \"from\": \"2025-12-20\",\r\n                \"to\": \"2025-12-21\"\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/rental_property/create",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Every endpoint that requires authorization should be here and tested to see if a request without token in headers will be rejected with a [<code>401 Unauthorized</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401)",
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "XSS",
+			"item": [
+				{
+					"name": "Create Rental Property - XSS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should have a successful status code\", function() {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response should be in JSON format\", function() {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test(\"Response should contain a sanitized property description\", function() {",
+									"    const propertyDescription = pm.response.json().propertyDescription;",
+									"    pm.expect(propertyDescription).to.be.a(\"string\").and.not.be.empty;",
+									"    pm.expect(propertyDescription).to.not.include(\"<script>\");",
+									"    pm.expect(propertyDescription).to.not.include(\">\");",
+									"    pm.expect(propertyDescription).to.include(\"&gt;\");",
+									"    pm.expect(propertyDescription).to.include(\"&lt;script&gt;\");",
+									"    pm.expect(propertyDescription).to.include(\"&#39;\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propertyName\": \"Beautiful Villa 2\",\r\n    \"location\": {\r\n        \"lat\": 40.712776,\r\n        \"lon\": -74.005974\r\n    },\r\n    \"maxGuests\": 5,\r\n    \"numBedrooms\": 3,\r\n    \"numBathrooms\": 2,\r\n    \"propertyDescription\": \"<script>alert('Unsafe action')</script>\",\r\n    \"amount\": 200.00,\r\n    \"priceNightIntervalList\":[\r\n        {\r\n            \"price\": 200.00,\r\n            \"interval\": {\r\n                \"from\": \"2025-12-20\",\r\n                \"to\": \"2025-12-21\"\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/rental_property/create",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "For suspected malicious requests, the status [<code>400 Bad Request</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) should be returned. This includes SQLi and XSS."
+		},
+		{
+			"name": "Poison Message (Payload too large)",
+			"item": [
+				{
+					"name": "Create Rental Property - Payload Too Large < 2MB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should be successful when payload is less thant 2MB\", function() {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var body = {",
+									"    \"propertyName\": \"Beautiful Villa\",",
+									"    \"location\": {",
+									"        \"lat\": 40.712776,",
+									"        \"lon\": -74.005974",
+									"    },",
+									"    \"maxGuests\": 5,",
+									"    \"numBedrooms\": 3,",
+									"    \"numBathrooms\": 2,",
+									"    \"propertyDescription\": \"Mock description\",",
+									"    \"amount\": 200.00,",
+									"    \"priceNightIntervalList\": [",
+									"        {",
+									"            \"price\": 200.00,",
+									"            \"interval\": {",
+									"                \"from\": \"2025-12-20\",",
+									"                \"to\": \"2025-12-21\"",
+									"            }",
+									"        }",
+									"    ]",
+									"};",
+									"",
+									"// Stringify the body",
+									"var body_str = JSON.stringify(body);",
+									"",
+									"// Save the stringified body as an environment variable",
+									"pm.environment.set('request_body', body_str);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/rental_property/create",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rental Property - Payload Too Large > 2MB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should include status 413 when request exceeds 2MB\", function() {",
+									"    pm.response.to.have.status(413);",
+									"    ",
+									"    const responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.have.property(\"status\").that.eql(413);",
+									"    pm.expect(responseBody).to.have.property(\"error\").that.includes(\"Payload Too Large\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const largeData = \"Lorem \".repeat(2 * 1024 * 1024); // Generating ~2MB of data",
+									"",
+									"pm.variables.set(\"largeData\", largeData);",
+									"",
+									"// Build the body in the form of a JSON object",
+									"var body = {",
+									"    \"propertyName\": \"Beautiful Villa 2\",",
+									"    \"location\": {",
+									"        \"lat\": 40.712776,",
+									"        \"lon\": -74.005974",
+									"    },",
+									"    \"maxGuests\": 5,",
+									"    \"numBedrooms\": 3,",
+									"    \"numBathrooms\": 2,",
+									"    \"propertyDescription\": pm.variables.get(\"largeData\"),",
+									"    \"amount\": 200.00,",
+									"    \"priceNightIntervalList\": [",
+									"        {",
+									"            \"price\": 200.00,",
+									"            \"interval\": {",
+									"                \"from\": \"2025-12-20\",",
+									"                \"to\": \"2025-12-21\"",
+									"            }",
+									"        }",
+									"    ]",
+									"};",
+									"",
+									"// Stringify the body",
+									"var body_str = JSON.stringify(body);",
+									"",
+									"// Save the stringified body as an environment variable",
+									"pm.environment.set('request_body', body_str);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/rental_property/create",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "For suspected malicious requests, the status [<code>400 Bad Request</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) should be returned. This includes SQLi and XSS."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "https://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}

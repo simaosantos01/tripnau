@@ -72,17 +72,13 @@ public class BookingRepository {
             BookingDB bookingDB = this.bookingRepositoryJPA.findById(bookingId).orElse(null);
 
             if (bookingDB != null) {
-                PaymentDB paymentDB = this.paymentRepositoryJPA.findByBookingId(bookingId).orElse(null);
+                ReviewDB reviewDB = this.reviewRepositoryJPA.findByBookingId(bookingId);
 
-                if (paymentDB != null) {
-                    ReviewDB reviewDB = this.reviewRepositoryJPA.findByBookingId(bookingId);
-
-                    if (reviewDB != null) {
-                        List<ImageUrlDB> imagesUrlsDB = this.imageRepositoryJPA.findByReviewId(reviewDB.getId());
-                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, reviewDB, imagesUrlsDB, bookingDB.getEvents());
-                    } else {
-                        return this.bookingMapper.dbToDomain(bookingDB, paymentDB, null, null, bookingDB.getEvents());
-                    }
+                if (reviewDB != null) {
+                    List<ImageUrlDB> imagesUrlsDB = this.imageRepositoryJPA.findByReviewId(reviewDB.getId());
+                    return this.bookingMapper.dbToDomain(bookingDB, reviewDB, imagesUrlsDB, bookingDB.getEvents());
+                } else {
+                    return this.bookingMapper.dbToDomain(bookingDB, null, null, bookingDB.getEvents());
                 }
             }
         } catch (Exception e) {
@@ -120,7 +116,7 @@ public class BookingRepository {
     public RentalPropertyDomain findRentalProperty(String bookingId) throws NotFoundException {
         BookingDB bookingDB = this.bookingRepositoryJPA.findById(bookingId).orElse(null);
 
-        if(bookingDB == null){
+        if (bookingDB == null) {
             throw new NotFoundException("Booking not found");
         }
 

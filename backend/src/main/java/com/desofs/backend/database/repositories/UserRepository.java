@@ -60,4 +60,7 @@ public class UserRepository {
         return null;
     }
 
+    public void update(UserDomain user) {
+        this.userRepository.save(this.mapper.toDatabaseObject(user));
+    }
 }

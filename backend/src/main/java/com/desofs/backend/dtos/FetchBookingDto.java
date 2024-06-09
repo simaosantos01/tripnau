@@ -12,12 +12,18 @@ import java.util.List;
 public class FetchBookingDto {
 
     private final String id;
+
     private final String accountId;
+
     private final String propertyId;
-    private PaymentDto payment;
+
     private IntervalTimeDto intervalTime;
+
     private List<EventDto> eventList;
+
     private BookingStatusEnum status;
+
     private FetchReviewDto review;
+
     private LocalDateTime createdAt;
 }
