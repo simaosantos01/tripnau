@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { GenerateOTPRequest } from '../../model/generate-otp.request';
 import { LoginRequest } from '../../model/login-request';
@@ -39,7 +39,7 @@ export class LoginOTPComponent {
 
   onSubmit() {
 
-    var credentialsWithCode: LoginRequest = {
+    let credentialsWithCode: LoginRequest = {
       email: this.credentials!.email,
       password: this.credentials!.password,
       phoneNumber: '918589899', // * It's the only one that works welelellele

@@ -48,7 +48,7 @@ export class BookingComponent implements OnInit{
   ngOnInit(): void {
     this.bookingService.currentPropertyToBook.subscribe((property) => {
       this.property = property;
-      this.form.controls.propertyId.setValue(this.property!.id);
+      this.form.controls.propertyId.setValue(this.property.id);
     });
 
     this.bookingService.currentPropertyToBookIndex.subscribe((propertyId) => {
@@ -65,7 +65,7 @@ export class BookingComponent implements OnInit{
       if (this.form.valid) {
         this.form.setErrors({});
         
-        var interval: Interval = {
+        let interval: Interval = {
           from: this.form.controls.from.value!,
           to: this.form.controls.to.value!
         };

@@ -5,7 +5,6 @@ import { ToastModule } from 'primeng/toast';
 import { HeaderComponent } from './components/header/header.component';
 import { AuthService } from './services/auth.service';
 import { MessagesService } from './services/messages.service';
-import { HomeComponent } from './pages/home/home.component';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -25,8 +25,6 @@ export class UserComponent {
 
   user!: User;
 
-  constructor() {}
-
   ngOnInit(): void {
     this.user = {
       id: '',
@@ -52,12 +50,10 @@ export class UserComponent {
   changePassword() {
     if (this.currentPassword !== this.confirmCurrentPassword) {
       alert('Current passwords do not match!');
-      return;
     } else if (this.newPassword !== this.confirmNewPassword) {
       alert('New passwords do not match!');
-      return;
     } else {
-      var updatePasswordRequest: UpdatePasswordRequest = {
+      let updatePasswordRequest: UpdatePasswordRequest = {
         oldPassword: this.currentPassword,
         newPassword: this.newPassword,
       }

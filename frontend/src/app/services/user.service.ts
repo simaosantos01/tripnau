@@ -14,8 +14,6 @@ export class UserService {
 
   currentUser: User | undefined;
 
-  constructor() { }
-
   getUserInfoByEmail(email: string): Observable<User> {
     return this.http.get<User>(environment.apiUrl + ROUTE.USER + '/' + email);
   }

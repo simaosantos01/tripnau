@@ -10,8 +10,6 @@ export class ReviewService {
 
   http = inject(HttpClient)
 
-  constructor() { }
-
   createReview(formData: FormData) {
     return this.http.post<void>(environment.apiUrl + ROUTE.CREATEREVIEW, { formData});
   }

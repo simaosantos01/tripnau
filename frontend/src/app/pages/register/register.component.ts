@@ -80,7 +80,7 @@ export class RegisterComponent {
     this.showOverlay = false;
   }
 
-  validateInputs(): Boolean {
+  validateInputs(): boolean {
     let valid = true;
     if (this.form.controls.password.value != this.form.controls.confirmPassword.value) {
       this.form.setErrors({ matchingPasswords: true })

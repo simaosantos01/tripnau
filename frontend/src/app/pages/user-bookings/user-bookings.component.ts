@@ -26,7 +26,7 @@ export class UserBookingsComponent {
   bookingsByUserProperties: RentalProperty[] = [];
 
   ngOnInit() {
-    var id: string = '';
+    let id: string = '';
     this.userService
       .getUserInfoByEmail(this.authService.getEmail())
       .subscribe((data) => {

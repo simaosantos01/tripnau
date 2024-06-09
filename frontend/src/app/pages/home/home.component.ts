@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit {
     if(index) {
       return `../../assets/images/RentalProperty${index}.jpg`;
     } else {
-      var randomIndex = this.getRandomNumber();
+      let randomIndex = this.getRandomNumber();
       return `../../assets/images/RentalProperty${randomIndex}.jpg`;
     }
   }

@@ -53,7 +53,7 @@ export class LoginComponent {
     this.form.valueChanges.subscribe(() => this.submitted = false)
   }
 
-  validateInputs(): Boolean {
+  validateInputs(): boolean {
     let valid = true;
     if (!EMAIL_REGEXP.test(this.form.controls.email.value!)) {
       this.form.controls.email.setErrors({ email: true })
