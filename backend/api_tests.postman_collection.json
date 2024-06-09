@@ -3,12 +3,12 @@
 		"_postman_id": "0c42740a-4955-43e3-9a63-67636e4a281f",
 		"name": "DESOFS TESTS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36001433",
-		"_collection_link": "https://desofs.postman.co/workspace/DESFOS~5c87cd01-1d1b-4342-8e93-9e1edd24b8fe/collection/36001433-0c42740a-4955-43e3-9a63-67636e4a281f?action=share&source=collection_link&creator=36001433"
+		"_exporter_id": "18536007",
+		"_collection_link": "https://desofs.postman.co/workspace/DESFOS~5c87cd01-1d1b-4342-8e93-9e1edd24b8fe/collection/36001433-0c42740a-4955-43e3-9a63-67636e4a281f?action=share&source=collection_link&creator=18536007"
 	},
 	"item": [
 		{
-			"name": "auth",
+			"name": "Auth",
 			"item": [
 				{
 					"name": "Register",
@@ -106,10 +106,10 @@
 			]
 		},
 		{
-			"name": "sql injection",
+			"name": "Sql injection",
 			"item": [
 				{
-					"name": "Get Rental Property By User - SQL Injection Copy",
+					"name": "Get Rental Property By User - SQL Injection",
 					"event": [
 						{
 							"listen": "test",
@@ -174,7 +174,14 @@
 					],
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "invalid_token",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -229,18 +236,33 @@
 			]
 		},
 		{
-			"name": "Poison Message",
+			"name": "XSS",
 			"item": [
 				{
-					"name": "Create Booking - Poison",
+					"name": "Create Rental Property - XSS",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Should return 400 - Payload too large\", function() {\r",
-									"    pm.response.to.have.status(400);\r",
-									"})"
+									"pm.test(\"Response should have a successful status code\", function() {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response should be in JSON format\", function() {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test(\"Response should contain a sanitized property description\", function() {",
+									"    const propertyDescription = pm.response.json().propertyDescription;",
+									"    pm.expect(propertyDescription).to.be.a(\"string\").and.not.be.empty;",
+									"    pm.expect(propertyDescription).to.not.include(\"<script>\");",
+									"    pm.expect(propertyDescription).to.not.include(\">\");",
+									"    pm.expect(propertyDescription).to.include(\"&gt;\");",
+									"    pm.expect(propertyDescription).to.include(\"&lt;script&gt;\");",
+									"    pm.expect(propertyDescription).to.include(\"&#39;\");",
+									"});",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -262,7 +284,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"propertyId\": \"632438b2-8e2b-4bc9-b893-5878a0dfe958\",\r\n    \"payment\": {\r\n        \"moneyAmount\": 200,\r\n        \"creditCardNumber\": \"4111111111111111\",\r\n        \"cardVerificationCode\": \"111\",\r\n        \"expirationDate\": \"2025-12-30T00:00\",\r\n        \"email\": \"propertyowner@mail.com\",\r\n        \"personName\": {{$randomLoremParagraphs}},\r\n        \"createdAt\": \"2024-10-15T00:00\"\r\n    },\r\n    \"intervalTime\": {\r\n        \"from\": \"2025-12-20T00:00:00.000+00:00\",\r\n        \"to\": \"2025-12-21T00:00:00.000+00:00\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"propertyName\": \"Beautiful Villa 2\",\r\n    \"location\": {\r\n        \"lat\": 40.712776,\r\n        \"lon\": -74.005974\r\n    },\r\n    \"maxGuests\": 5,\r\n    \"numBedrooms\": 3,\r\n    \"numBathrooms\": 2,\r\n    \"propertyDescription\": \"<script>alert('Unsafe action')</script>\",\r\n    \"amount\": 200.00,\r\n    \"priceNightIntervalList\":[\r\n        {\r\n            \"price\": 200.00,\r\n            \"interval\": {\r\n                \"from\": \"2025-12-20\",\r\n                \"to\": \"2025-12-21\"\r\n            }\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -270,63 +292,71 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/booking/add",
+							"raw": "{{host}}/rental_property/create",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"booking",
-								"add"
-							],
-							"query": [
-								{
-									"key": "",
-									"value": null,
-									"disabled": true
-								}
+								"rental_property",
+								"create"
 							]
 						}
 					},
 					"response": []
 				}
 			],
-			"description": "This folder tests that all endpoints should be defended from poison messages - Requests with large amounts of data should be rejected with [<code>413 Payload Too Large</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413)",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"packages": {},
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"packages": {},
-						"exec": [
-							""
-						]
-					}
-				}
-			]
+			"description": "For suspected malicious requests, the status [<code>400 Bad Request</code>](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) should be returned. This includes SQLi and XSS."
 		},
 		{
-			"name": "XSS",
+			"name": "Poison Message (Payload too large)",
 			"item": [
 				{
-					"name": "Cancel Booking - XSS",
+					"name": "Create Rental Property - Payload Too Large < 2MB",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Should return 400 - Payload too large\", function() {",
-									"    pm.response.to.have.status(404);",
-									"})"
+									"pm.test(\"Response should be successful when payload is less thant 2MB\", function() {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var body = {",
+									"    \"propertyName\": \"Beautiful Villa\",",
+									"    \"location\": {",
+									"        \"lat\": 40.712776,",
+									"        \"lon\": -74.005974",
+									"    },",
+									"    \"maxGuests\": 5,",
+									"    \"numBedrooms\": 3,",
+									"    \"numBathrooms\": 2,",
+									"    \"propertyDescription\": \"Mock description\",",
+									"    \"amount\": 200.00,",
+									"    \"priceNightIntervalList\": [",
+									"        {",
+									"            \"price\": 200.00,",
+									"            \"interval\": {",
+									"                \"from\": \"2025-12-20\",",
+									"                \"to\": \"2025-12-21\"",
+									"            }",
+									"        }",
+									"    ]",
+									"};",
+									"",
+									"// Stringify the body",
+									"var body_str = JSON.stringify(body);",
+									"",
+									"// Save the stringified body as an environment variable",
+									"pm.environment.set('request_body', body_str);",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -344,11 +374,11 @@
 								}
 							]
 						},
-						"method": "PUT",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"accountId\": \"1a1a1a1a-1a1a-1a1a-1a1a-1a1a1a1a1a1a\",\r\n    \"propertyId\": \"d554f904-dc86-4448-b7be-ac70c37bd082\",\r\n    \"payment\": {\r\n        \"moneyAmount\": 200,\r\n        \"creditCardNumber\": \"4111111111111111\",\r\n        \"cardVerificationCode\": \"111\",\r\n        \"expirationDate\": \"2025-12-30T00:00\",\r\n        \"email\": \"<script>alert('I'm a xss attack')</script>\",\r\n        \"personName\": \"Property Owner\",\r\n        \"createdAt\": \"2024-10-15T00:00\"\r\n    },\r\n    \"intervalTime\": {\r\n        \"from\": \"2026-12-25\",\r\n        \"to\": \"2026-12-28\"\r\n    }\r\n}",
+							"raw": "{{request_body}}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -356,14 +386,109 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/booking/6403207a-8381-4db3-a961-f4e38e86ab06/cancel",
+							"raw": "{{host}}/rental_property/create",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"booking",
-								"6403207a-8381-4db3-a961-f4e38e86ab06",
-								"cancel"
+								"rental_property",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rental Property - Payload Too Large > 2MB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should include status 413 when request exceeds 2MB\", function() {",
+									"    pm.response.to.have.status(413);",
+									"    ",
+									"    const responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.have.property(\"status\").that.eql(413);",
+									"    pm.expect(responseBody).to.have.property(\"error\").that.includes(\"Payload Too Large\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const largeData = \"Lorem \".repeat(2 * 1024 * 1024); // Generating ~2MB of data",
+									"",
+									"pm.variables.set(\"largeData\", largeData);",
+									"",
+									"// Build the body in the form of a JSON object",
+									"var body = {",
+									"    \"propertyName\": \"Beautiful Villa 2\",",
+									"    \"location\": {",
+									"        \"lat\": 40.712776,",
+									"        \"lon\": -74.005974",
+									"    },",
+									"    \"maxGuests\": 5,",
+									"    \"numBedrooms\": 3,",
+									"    \"numBathrooms\": 2,",
+									"    \"propertyDescription\": pm.variables.get(\"largeData\"),",
+									"    \"amount\": 200.00,",
+									"    \"priceNightIntervalList\": [",
+									"        {",
+									"            \"price\": 200.00,",
+									"            \"interval\": {",
+									"                \"from\": \"2025-12-20\",",
+									"                \"to\": \"2025-12-21\"",
+									"            }",
+									"        }",
+									"    ]",
+									"};",
+									"",
+									"// Stringify the body",
+									"var body_str = JSON.stringify(body);",
+									"",
+									"// Save the stringified body as an environment variable",
+									"pm.environment.set('request_body', body_str);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/rental_property/create",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rental_property",
+								"create"
 							]
 						}
 					},
