@@ -107,11 +107,14 @@ export class AuthService {
   }
 
   parseToken(token: string) {
+    console.log(token);
     const parts = token.split('.');
-    if (parts.length !== 3) {
-      throw new Error('Invalid token format');
-    }
+    console.log(parts);
+    // if (parts.length !== 3) {
+    //   throw new Error('Invalid token format');
+    // }
     const payload = JSON.parse(atob(parts[1]));
+    console.log(payload);
     this.email = payload.email;
     this.role = payload.roles;
     this.token = token;
