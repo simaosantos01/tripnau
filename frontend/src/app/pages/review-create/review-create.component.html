@@ -1,1 +1,23 @@
-<p>review-create works!</p>
+<div class="review-form-container">
+    <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+      <div class="form-group">
+        <label for="rating">Rating (1-5 stars):</label>
+        <select formControlName="rating" id="rating">
+          <option *ngFor="let rating of [1, 2, 3, 4, 5]" [value]="rating">{{ rating }} Star{{ rating > 1 ? 's' : '' }}</option>
+        </select>
+      </div>
+  
+      <div class="form-group">
+        <label for="text">Review:</label>
+        <textarea formControlName="text" id="text" rows="4"></textarea>
+      </div>
+  
+      <div class="form-group">
+        <label for="images">Upload Images:</label>
+        <input type="file" id="images" (change)="onFileChange($event)" multiple>
+      </div>
+  
+      <button type="submit" [disabled]="reviewForm.invalid">Submit Review</button>
+    </form>
+  </div>
+  

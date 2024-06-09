@@ -7,6 +7,8 @@ import { BookingComponent } from './pages/booking/booking.component';
 import { UserComponent } from './pages/user/user.component';
 import { LoginOTPComponent } from './pages/login-otp/login-otp.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { UserBookingsComponent } from './pages/user-bookings/user-bookings.component';
+import { ReviewCreateComponent } from './pages/review-create/review-create.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [authGuard([])] },
@@ -17,6 +19,8 @@ export const routes: Routes = [
     { path: 'resetPassword', component: ResetPasswordComponent },
     { path: 'home', component: HomeComponent, canActivate: [authGuard([])] },
     { path: 'user', component: UserComponent, canActivate: [authGuard([])] },
-    { path: 'admin', component: HomeComponent, canActivate: [authGuard(['ADMIN'])] },
+    { path: 'userBookings', component: UserBookingsComponent, canActivate: [authGuard([])] },
     { path: 'rent/:id', component: BookingComponent, canActivate: [authGuard([])] },
+    { path: 'review/:id', component: ReviewCreateComponent, canActivate: [authGuard([])] },
+    { path: 'admin', component: HomeComponent, canActivate: [authGuard(['ADMIN'])] },
 ];
