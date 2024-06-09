@@ -81,6 +81,7 @@ export class LoginComponent {
 
   handleLoginResponse(response: GenerateOTPResponse) {
     if (response) {
+      this.authService.credentials.next({ email: this.form.controls.email.value!, password: this.form.controls.password.value! });
       this.router.navigateByUrl('/loginOTP');
     } else {
       this.failedAttempts += 1;

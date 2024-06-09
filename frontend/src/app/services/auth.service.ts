@@ -1,6 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ROUTE } from '../enum/routes';
 import { LoginRequest } from '../model/login-request';
@@ -20,6 +20,8 @@ export class AuthService {
   role: string | undefined;
   email: string | undefined;
   authenticated = false;
+
+  credentials: BehaviorSubject<GenerateOTPRequest> = new BehaviorSubject<GenerateOTPRequest>({email: '', password: ''});
 
   http = inject(HttpClient);
 
