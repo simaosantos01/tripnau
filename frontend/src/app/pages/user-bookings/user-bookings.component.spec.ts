@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReviewCreateComponent } from './review-create.component';
+import { UserBookingsComponent } from './user-bookings.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { routes } from '../../app.routes';
 
-describe('ReviewCreateComponent', () => {
-  let component: ReviewCreateComponent;
-  let fixture: ComponentFixture<ReviewCreateComponent>;
+describe('UserBookingsComponent', () => {
+  let component: UserBookingsComponent;
+  let fixture: ComponentFixture<UserBookingsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReviewCreateComponent],
+      imports: [UserBookingsComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -21,7 +21,7 @@ describe('ReviewCreateComponent', () => {
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ReviewCreateComponent);
+    fixture = TestBed.createComponent(UserBookingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

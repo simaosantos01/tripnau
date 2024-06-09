@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { User } from '../../model/user';
+import { UpdatePasswordRequest } from '../../model/update-password-request';
 
 @Component({
   selector: 'app-user',
@@ -24,13 +25,6 @@ export class UserComponent {
 
   user!: User;
 
-  userBootstrap = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    bio: 'Software Developer at OpenAI',
-    password: '',
-  };
-
   constructor() {}
 
   ngOnInit(): void {
@@ -38,6 +32,7 @@ export class UserComponent {
       id: '',
       name: '',
       email: '',
+      phoneNumber: '',
       role: '',
       isBanned: false,
     };
@@ -54,11 +49,6 @@ export class UserComponent {
       });
   }
 
-  updateUser() {
-    // Logic to update user details
-    alert('User details updated!');
-  }
-
   changePassword() {
     if (this.currentPassword !== this.confirmCurrentPassword) {
       alert('Current passwords do not match!');
@@ -67,13 +57,19 @@ export class UserComponent {
       alert('New passwords do not match!');
       return;
     } else {
-      // Change password logic
-      console.log('Password changed to:', this.newPassword);
+      var updatePasswordRequest: UpdatePasswordRequest = {
+        oldPassword: this.currentPassword,
+        newPassword: this.newPassword,
+      }
+      this.authService.updatePassword(updatePasswordRequest).subscribe((response: any) => {
+        if(response) {
+          this.router.navigateByUrl('/user');
+        }
+      });
     }
   }
 
   logout() {
-    // Logic to log out the user
-    alert('Logged out!');
+    this.authService.logout().subscribe();
   }
 }

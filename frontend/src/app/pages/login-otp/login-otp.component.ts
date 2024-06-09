@@ -9,6 +9,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { MessagesService } from '../../services/messages.service';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-login-otp',
@@ -21,11 +22,11 @@ export class LoginOTPComponent {
   fb = inject(FormBuilder);
   router = inject(Router);
   messagesService = inject(MessagesService);
-
-  credentials: GenerateOTPRequest | undefined;
-
+  userService = inject(UserService);
   authService = inject(AuthService);
 
+  credentials: GenerateOTPRequest | undefined;
+  
   form = this.fb.group({
     twoFactorCode: ['', Validators.required],
   });
@@ -33,7 +34,6 @@ export class LoginOTPComponent {
   ngOnInit(): void {
     this.authService.credentials.subscribe((credentials: GenerateOTPRequest | undefined) => {
       this.credentials = credentials;
-      console.log(this.credentials)
     });
   }
 
@@ -54,7 +54,6 @@ export class LoginOTPComponent {
 
   handleLoginResponse(response: LoginResponse) {
     if (response) {
-      console.log(this.authService.isAuthenticated(), this.authService.getToken())
       this.router.navigateByUrl('/home');
     }
   }
