@@ -60,7 +60,12 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(environment.apiUrl + '/auth' + ROUTE.LOGOUT, this.getToken(), {observe: 'response',})
+    return this.http
+      .post<void>(
+        environment.apiUrl + '/auth' + ROUTE.LOGOUT,
+        this.getToken(),
+        { observe: 'response' }
+      )
       .pipe(
         map((response: HttpResponse<void>) => {
           return response.body!;
@@ -139,6 +144,20 @@ export class AuthService {
       )
       .pipe(
         map((response: HttpResponse<boolean>) => {
+          return response.body!;
+        })
+      );
+  }
+
+  forgotPassword(email: string): any {
+    return this.http
+      .post<void>(
+        environment.apiUrl + '/auth' + ROUTE.FORGOTPASSWORD,
+        { email },
+        { observe: 'response' }
+      )
+      .pipe(
+        map((response: HttpResponse<void>) => {
           return response.body!;
         })
       );

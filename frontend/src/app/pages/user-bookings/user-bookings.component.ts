@@ -27,23 +27,30 @@ export class UserBookingsComponent {
 
   ngOnInit() {
     var id: string = '';
-    this.userService.getUserInfoByEmail(this.authService.getEmail()).subscribe((data) => {
-      id = data.id;
-    });
-    this.bookingService.getBookingsByUser(id).subscribe({
-        next: (response) => {this.bookingsByUser = response;
-          this.bookingsByUser.forEach((booking) => {
-            this.rentalPropertyService.getById(booking.propertyId).subscribe((property) => {
-              this.bookingsByUserProperties.push(property);
+    this.userService
+      .getUserInfoByEmail(this.authService.getEmail())
+      .subscribe((data) => {
+        id = data.id;
+        this.bookingService.getBookingsByUser(id).subscribe({
+          next: (response) => {
+            this.bookingsByUser = response;
+            this.bookingsByUser.forEach((booking) => {
+              this.rentalPropertyService
+                .getById(booking.propertyId)
+                .subscribe((property) => {
+                  this.bookingsByUserProperties.push(property);
+                });
             });
-          });
-         },
-        error:(error) => console.log(error)
+          },
+          error: (error) => console.log(error),
+        });
       });
   }
 
   getPropertyDetails(propertyId: string): RentalProperty | undefined {
-    return this.bookingsByUserProperties.find(property => property.id === propertyId);
+    return this.bookingsByUserProperties.find(
+      (property) => property.id === propertyId
+    );
   }
 
   isBeforeCurrentDate(date: Date): boolean {

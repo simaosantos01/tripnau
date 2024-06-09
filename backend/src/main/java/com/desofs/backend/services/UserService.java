@@ -124,7 +124,7 @@ public class UserService {
         String encryptedMetadata = encryptionService.encryptMessage(objectMapper.writeValueAsString(meta));
         com.mailersend.sdk.emails.Email email = new com.mailersend.sdk.emails.Email();
         email.subject = "TripNau - Request to reset password";
-        email.text = "Press this link to reset your password " + encryptedMetadata;
+        email.text = "Press this link to reset your password " + "http://localhost:4200/resetForgottenPassword/" + encryptedMetadata;
         email.addRecipient(user.getName(), user.getEmail());
         email.setFrom("desofs-TripNau", "desofs@trial-0p7kx4x85qmg9yjr.mlsender.net");
 

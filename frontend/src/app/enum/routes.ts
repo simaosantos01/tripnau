@@ -11,7 +11,7 @@ export enum ROUTE {
     RENTALPROPERTIES = '/rental_property/all',
     RENTALPROPERTYBYID = '/rental_property',
     RENTALPROPERTIESBYUSER = '/rental_property/allByUser',
-    BOOKPROPERTY = '/booking/add',
+    BOOKPROPERTY = '/booking/stripe-checkout',
     BOOKINGSBYUSER = '/booking/getAllByUser',
     CANCELBOOKING = '/booking',
     CREATEREVIEW = '/review/add',
