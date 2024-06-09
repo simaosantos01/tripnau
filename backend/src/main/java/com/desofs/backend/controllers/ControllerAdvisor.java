@@ -1,7 +1,6 @@
 package com.desofs.backend.controllers;
 
 import com.desofs.backend.exceptions.*;
-import com.stripe.exception.RateLimitException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

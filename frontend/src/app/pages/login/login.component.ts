@@ -5,11 +5,10 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { ROUTE } from '../../enum/routes';
-import { LoginRequest } from '../../model/login-request';
-import { LoginResponse } from '../../model/login-response';
 import { AuthService } from '../../services/auth.service';
 import { MessagesService } from '../../services/messages.service';
+import { GenerateOTPResponse } from '../../model/generate-otp-response';
+import { GenerateOTPRequest } from '../../model/generate-otp.request';
 
 /**
  *  by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository 
@@ -45,15 +44,16 @@ export class LoginComponent {
   // total attempts (number of times the one above was equal to three)
   totalFailedAttempts: number = 0;
 
-  // if the login button should be disabled
   disabled: boolean = false;
   submitted: boolean = false;
+
+  showPassword: boolean = false;
 
   constructor() {
     this.form.valueChanges.subscribe(() => this.submitted = false)
   }
 
-  validateInputs(): Boolean {
+  validateInputs(): boolean {
     let valid = true;
     if (!EMAIL_REGEXP.test(this.form.controls.email.value!)) {
       this.form.controls.email.setErrors({ email: true })
@@ -67,21 +67,22 @@ export class LoginComponent {
     if (this.validateInputs()) {
       if (this.form.valid) {
         this.form.setErrors({});
-        const credentials: LoginRequest = {
+        const credentials: GenerateOTPRequest = {
           email: this.form.controls.email.value!,
           password: this.form.controls.password.value!
         }
-        this.authService.login(credentials).subscribe({
-          next: (response: LoginResponse) => this.handleLoginResponse(response),
-          error: (error: HttpErrorResponse | HttpResponse<LoginResponse>) => this.handleError(error)
+        this.authService.generateOTP(credentials).subscribe({
+          next: (response: GenerateOTPResponse) => this.handleLoginResponse(response),
+          error: (error: HttpErrorResponse | HttpResponse<GenerateOTPResponse>) => this.handleError(error)
         })
       }
     }
   }
 
-  handleLoginResponse(response: LoginResponse) {
-    if (response.token) {
-      this.router.navigateByUrl('/home');
+  handleLoginResponse(response: GenerateOTPResponse) {
+    if (response) {
+      this.authService.credentials.next({ email: this.form.controls.email.value!, password: this.form.controls.password.value! });
+      this.router.navigateByUrl('/loginOTP');
     } else {
       this.failedAttempts += 1;
       if (this.failedAttempts === 3) {
@@ -111,5 +112,9 @@ export class LoginComponent {
     } else {
       this.messagesService.error('Take a breather', 'Rate Limit Exceeded')
     }
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

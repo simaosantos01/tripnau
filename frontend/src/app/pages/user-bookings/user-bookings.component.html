@@ -1,0 +1,28 @@
+<div class="bookings-container">
+  <span *ngIf="!bookingsByUser.length">No bookings recorded</span>
+  <div *ngIf="bookingsByUser.length > 0">
+    <div *ngFor="let booking of bookingsByUser" class="booking-card">
+      <div *ngIf="getPropertyDetails(booking.propertyId) as property">
+        <h2>{{ property.propertyName }}</h2>
+        <p>{{ property.propertyDescription }}</p>
+        <p>Location: {{ property.location }}</p>
+        <p>Max Guests: {{ property.maxGuests }}</p>
+        <p>Number of Bathrooms: {{ property.numBathrooms }}</p>
+        <p>Booking Status: {{ booking.status }}</p>
+        <p>Booked on: {{ booking.createdAt }}</p>
+        <button
+          *ngIf="isBeforeCurrentDate(booking.intervalTime.from)"
+          (click)="cancelBooking(booking.id)"
+        >
+          Cancel Booking
+        </button>
+        <button
+          *ngIf="isBeforeCurrentDate(booking.intervalTime.to)"
+          (click)="leaveReview(booking.id)"
+        >
+          Leave a Review
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

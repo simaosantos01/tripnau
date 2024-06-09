@@ -26,8 +26,6 @@ interface PasswordRequirement {
 })
 export class RegisterComponent {
 
-
-
   authService = inject(AuthService);
   router = inject(Router);
   messagesService = inject(MessagesService);
@@ -35,6 +33,7 @@ export class RegisterComponent {
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required]),
+    phoneNumber : new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
     confirmPassword: new FormControl('', [Validators.required]),
     role: new FormControl('', Validators.required)
@@ -81,7 +80,7 @@ export class RegisterComponent {
     this.showOverlay = false;
   }
 
-  validateInputs(): Boolean {
+  validateInputs(): boolean {
     let valid = true;
     if (this.form.controls.password.value != this.form.controls.confirmPassword.value) {
       this.form.setErrors({ matchingPasswords: true })
@@ -102,6 +101,7 @@ export class RegisterComponent {
         const body: RegisterRequest = {
           name: this.form.controls.name.value!,
           email: this.form.controls.email.value!,
+          phoneNumber: "918589899", // * Only number that works lol
           password: this.form.controls.password.value!,
           role: this.form.controls.role.value!
         }

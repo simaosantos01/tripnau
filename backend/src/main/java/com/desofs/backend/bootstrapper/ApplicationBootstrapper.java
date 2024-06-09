@@ -14,10 +14,13 @@ public class ApplicationBootstrapper implements CommandLineRunner {
 
     private final RentalPropertyBootstrapper rentalPropertyBootstrapper;
 
+    private final BookingBootstrapper bookingBootstrapper;
+
     @Override
     public void run(String... args) throws Exception {
         this.userBootstrapper.run();
         this.rentalPropertyBootstrapper.run();
+        this.bookingBootstrapper.run();
     }
 }
 
