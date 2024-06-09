@@ -41,7 +41,7 @@ public class RentalPropertyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FetchRentalPropertyDto> getById(@PathVariable final String id) throws NotFoundException {
+    public ResponseEntity<FetchRentalPropertyDto> getById (@PathVariable final String id) throws NotFoundException {
         FetchRentalPropertyDto rentalProperty = this.rentalPropertyService.findById(id);
         return ResponseEntity.ok().body(rentalProperty);
     }

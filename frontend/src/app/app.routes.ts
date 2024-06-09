@@ -9,6 +9,7 @@ import { LoginOTPComponent } from './pages/login-otp/login-otp.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { UserBookingsComponent } from './pages/user-bookings/user-bookings.component';
 import { ReviewCreateComponent } from './pages/review-create/review-create.component';
+import { PaymentSucessComponent } from './pages/payment-sucess/payment-sucess.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [authGuard([])] },
@@ -23,4 +24,5 @@ export const routes: Routes = [
     { path: 'rent/:id', component: BookingComponent, canActivate: [authGuard([])] },
     { path: 'review/:id', component: ReviewCreateComponent, canActivate: [authGuard([])] },
     { path: 'admin', component: HomeComponent, canActivate: [authGuard(['ADMIN'])] },
+    { path: 'paymentSuccess', component: PaymentSucessComponent, canActivate: [authGuard([])] },
 ];
