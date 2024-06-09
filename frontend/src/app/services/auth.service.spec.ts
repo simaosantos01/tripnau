@@ -55,7 +55,7 @@ describe('AuthService', () => {
 
   // BEGIN-NOSCAN
   it('should register', () => {
-    const registerRequest: RegisterRequest = { name: 'Cristiano Reinaldo', email: 'rei@naldo.pt', password: 'somethingsomething', role: 'BUSINESSOWNER' };
+    const registerRequest: RegisterRequest = { name: 'Cristiano Reinaldo', email: 'rei@naldo.pt', phoneNumber: '918589899', password: 'somethingsomething', role: 'BUSINESSOWNER' };
     const registerResponse: RegisterResponse = { success: true };
 
     service.register(registerRequest).subscribe((response) => {
@@ -78,7 +78,7 @@ describe('AuthService', () => {
 
   // BEGIN-NOSCAN
   it('should login and set token', () => {
-    const loginRequest: LoginRequest = { email: 'test@example.com', password: 'somethingsomething' };
+    const loginRequest: LoginRequest = { email: 'test@example.com', phoneNumber: '918589899', password: 'somethingsomething', code: 'lololol' };
     const loginResponse: LoginResponse = { token: mockToken };
 
     service.login(loginRequest).subscribe((response) => {

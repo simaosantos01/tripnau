@@ -4,7 +4,6 @@
             <ul>
                 <li style="margin-right: auto"><a class="tripnau" routerLink="/" routerLinkActive="active"
                         ariaCurrentWhenActive="page">TripNau</a></li>
-                <li><button class="my-button">Language</button></li>
                 @if(!authService.isAuthenticated()) {
                     <span class="header-buttons">
                         <li><a class="register" routerLink="/register" routerLinkActive="active"
@@ -16,9 +15,11 @@
                         </li>
                     </span>
                 }  @else {
-                <span>
+                <span class="header-user-buttons">
                     <li><a class="user" routerLink="/user" routerLinkActive="active"
                         ariaCurrentWhenActive="page">User</a></li>
+                    <li><a class="userBookings" routerLink="/userBookings" routerLinkActive="active"
+                        ariaCurrentWhenActive="page">Bookings</a></li>
                 </span>
                 }
             </ul>

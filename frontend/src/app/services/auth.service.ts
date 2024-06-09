@@ -21,7 +21,8 @@ export class AuthService {
   email: string | undefined;
   authenticated = false;
 
-  credentials: BehaviorSubject<GenerateOTPRequest> = new BehaviorSubject<GenerateOTPRequest>({email: '', password: ''});
+  credentials: BehaviorSubject<GenerateOTPRequest> =
+    new BehaviorSubject<GenerateOTPRequest>({ email: '', password: '' });
 
   http = inject(HttpClient);
 
@@ -50,10 +51,7 @@ export class AuthService {
       )
       .pipe(
         map((response: HttpResponse<LoginResponse>) => {
-          console.log(response);
-          console.log(response.headers)
           if (response.body!.token) {
-            console.log('set token')
             this.setToken(response.body!.token);
           }
           return response.body!;
@@ -61,18 +59,10 @@ export class AuthService {
       );
   }
 
-  logout(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(
-        environment.apiUrl + '/auth' + ROUTE.LOGOUT,
-        credentials,
-        { observe: 'response' }
-      )
+  logout(): Observable<void> {
+    return this.http.post<void>(environment.apiUrl + '/auth' + ROUTE.LOGOUT, this.getToken(), {observe: 'response',})
       .pipe(
-        map((response: HttpResponse<LoginResponse>) => {
-          if (response.headers.get('Authorization')) {
-            this.setToken(response.headers.get('Authorization')!);
-          }
+        map((response: HttpResponse<void>) => {
           return response.body!;
         })
       );
@@ -117,14 +107,11 @@ export class AuthService {
   }
 
   parseToken(token: string) {
-    console.log(token);
     const parts = token.split('.');
-    console.log(parts);
-    // if (parts.length !== 3) {
-    //   throw new Error('Invalid token format');
-    // }
+    if (parts.length !== 3) {
+      throw new Error('Invalid token format');
+    }
     const payload = JSON.parse(atob(parts[1]));
-    console.log(payload);
     this.email = payload.email;
     this.role = payload.roles;
     this.token = token;

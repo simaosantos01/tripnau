@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReviewCreateComponent } from './review-create.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
+import { routes } from '../../app.routes';
 
 describe('ReviewCreateComponent', () => {
   let component: ReviewCreateComponent;
@@ -8,7 +12,12 @@ describe('ReviewCreateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReviewCreateComponent]
+      imports: [ReviewCreateComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter(routes),
+      ]
     })
     .compileComponents();
     

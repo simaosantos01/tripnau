@@ -1,27 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderComponent } from './header.component';
-import { provideRouter } from '@angular/router';
-import { routes } from '../../app.routes';
+import { UserBookingsComponent } from './user-bookings.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
+import { routes } from '../../app.routes';
 
-describe('HeaderComponent', () => {
-  let component: HeaderComponent;
-  let fixture: ComponentFixture<HeaderComponent>;
+describe('UserBookingsComponent', () => {
+  let component: UserBookingsComponent;
+  let fixture: ComponentFixture<UserBookingsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeaderComponent],
+      imports: [UserBookingsComponent],
       providers: [
-        provideRouter(routes),
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter(routes)
-      ],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(HeaderComponent);
+        provideRouter(routes),
+      ]
+    })
+    .compileComponents();
+    
+    fixture = TestBed.createComponent(UserBookingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

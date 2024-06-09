@@ -12,9 +12,19 @@ export class UserService {
 
   http = inject(HttpClient)
 
+  currentUser: User | undefined;
+
   constructor() { }
 
   getUserInfoByEmail(email: string): Observable<User> {
-    return this.http.get<User>(environment.apiUrl + ROUTE.USERBYEMAIL + "/" + email);
+    return this.http.get<User>(environment.apiUrl + ROUTE.USER + '/' + email);
   }
+
+  setCurrentUser(user: User) {
+    this.currentUser = user; 
+  }
+
+  getCurrentUser(): User {
+    return this.currentUser!;
+  } 
 }
