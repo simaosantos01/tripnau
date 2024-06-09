@@ -2,13 +2,12 @@
     <div class="card-title">
       <h1>Two-Factor Authentication</h1>
     </div>
-    <form class="form-group" (ngSubmit)="onSubmit()">
+    <form class="form-group" [formGroup]="form" (ngSubmit)="onSubmit()">
       <input 
         type="text" 
         placeholder="Enter 2FA code" 
-        [(ngModel)]="twoFactorCode" 
         name="twoFactorCode" 
-        required 
+        formControlName="twoFactorCode"
       />
       <input 
         type="submit" 
