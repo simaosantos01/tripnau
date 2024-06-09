@@ -10,6 +10,7 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
 import { UserBookingsComponent } from './pages/user-bookings/user-bookings.component';
 import { ReviewCreateComponent } from './pages/review-create/review-create.component';
 import { PaymentSucessComponent } from './pages/payment-sucess/payment-sucess.component';
+import { ResetForgottenPasswordComponent } from './pages/reset-forgotten-password/reset-forgotten-password.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [authGuard([])] },
@@ -18,6 +19,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'loginOTP', component: LoginOTPComponent },
     { path: 'resetPassword', component: ResetPasswordComponent },
+    { path: 'resetForgottenPassword', component: ResetForgottenPasswordComponent},
     { path: 'home', component: HomeComponent, canActivate: [authGuard([])] },
     { path: 'user', component: UserComponent, canActivate: [authGuard([])] },
     { path: 'userBookings', component: UserBookingsComponent, canActivate: [authGuard([])] },

@@ -10,6 +10,7 @@ import { RegisterResponse } from '../model/register-response';
 import { UpdatePasswordRequest } from '../model/update-password-request';
 import { GenerateOTPRequest } from '../model/generate-otp.request';
 import { GenerateOTPResponse } from '../model/generate-otp-response';
+import { ResetForgottenPasswordRequest } from '../model/reset-forgotten-password.request';
 
 @Injectable({
   providedIn: 'root',
@@ -161,5 +162,9 @@ export class AuthService {
           return response.body!;
         })
       );
+  }
+  
+  resetForgottenPassword(resetPasswordData: ResetForgottenPasswordRequest): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + '/auth' + ROUTE.RESETPASSWORD, resetPasswordData);
   }
 }

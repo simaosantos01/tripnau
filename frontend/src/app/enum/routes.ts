@@ -7,7 +7,7 @@ export enum ROUTE {
     USER = '/user',
     UPDATEPASSWORD = '/update-password',
     FORGOTPASSWORD = '/forgot-password',
-    RESTPASSWORD = '/reset-password',
+    RESETPASSWORD = '/reset-password',
     RENTALPROPERTIES = '/rental_property/all',
     RENTALPROPERTYBYID = '/rental_property',
     RENTALPROPERTIESBYUSER = '/rental_property/allByUser',
