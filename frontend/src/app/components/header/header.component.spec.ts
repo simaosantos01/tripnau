@@ -16,11 +16,10 @@ describe('HeaderComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter(routes),
-      ]
-    })
-    .compileComponents();
-    
+        provideRouter(routes)
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
