@@ -73,7 +73,7 @@ export class BookingComponent implements OnInit{
         const bookingRequest: BookPropertyRequest = {
           propertyId: this.form.controls.propertyId.value!,
           intervalTime: interval,
-          successUrl: 'https://localhost:4200/paymentSuccess'
+          successUrl: 'http://localhost:4200/paymentSuccess'
         }
 
         this.bookingService.bookProperty(bookingRequest).subscribe((response) => {

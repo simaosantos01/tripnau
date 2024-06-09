@@ -1,7 +1,7 @@
 package com.desofs.backend.interceptors;
 
 import com.desofs.backend.services.RateService;
-import com.stripe.exception.RateLimitException;
+import com.desofs.backend.exceptions.RateLimitException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -35,17 +35,13 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
             String user = token.getClaim("email");
             int rate = rateService.getUserRate(user);
 
-            if (rate < RATE_LIMIT) {
+            if (rate > RATE_LIMIT) {
                 rateService.increaseRate(user);
                 return true;
             }
 
-            String message = String.format("User %s has exceeded his request rate %d", user, RATE_LIMIT);
-            String param = "rateLimit";
-            String requestId = request.getRequestURI();
-            String code = "429";
-            Integer statusCode = HttpStatus.TOO_MANY_REQUESTS.value();
-            throw new RateLimitException(message, param, requestId, code, statusCode, null);
+            String message = String.format("User %s has exceeded his request rate %d of", user, RATE_LIMIT);
+            throw new RateLimitException(message);
         }
         return true;
     }
