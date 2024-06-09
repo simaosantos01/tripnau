@@ -35,7 +35,7 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
             String user = token.getClaim("email");
             int rate = rateService.getUserRate(user);
 
-            if (rate > RATE_LIMIT) {
+            if (rate < RATE_LIMIT) {
                 rateService.increaseRate(user);
                 return true;
             }
