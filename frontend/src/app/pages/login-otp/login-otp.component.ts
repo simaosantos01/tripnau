@@ -54,7 +54,7 @@ export class LoginOTPComponent {
 
   handleLoginResponse(response: LoginResponse) {
     if (response) {
-      console.log(this.authService.isAuthenticated())
+      console.log(this.authService.isAuthenticated(), this.authService.getToken())
       this.router.navigateByUrl('/home');
     }
   }
