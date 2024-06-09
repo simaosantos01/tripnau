@@ -52,15 +52,9 @@ export class UserBookingsComponent {
   }
 
   cancelBooking(bookingId: string) {
-    var cancelBookingRequest = {
-      accountId: this.userService.getCurrentUser().id,
-      propertyId: this.bookingsByUser.find(booking => booking.id === bookingId)?.propertyId,
-      payment: '',
-      interval: {
-        from: this.bookingsByUser.find(booking => booking.id === bookingId)?.intervalTime.from,
-        to: this.bookingsByUser.find(booking => booking.id === bookingId)?.intervalTime.to
-      }
-    }
+    this.bookingService.cancelBooking(bookingId).subscribe(() => {
+      this.router.navigateByUrl('/user-bookings');
+    });
   }
 
   leaveReview(propertyId: string) {
