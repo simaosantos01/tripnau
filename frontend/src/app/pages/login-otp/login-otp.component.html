@@ -1,1 +1,23 @@
-<p>login-otp works!</p>
+<div class="login-card">
+    <div class="card-title">
+      <h1>Two-Factor Authentication</h1>
+    </div>
+    <form class="form-group" (ngSubmit)="onSubmit()">
+      <input 
+        type="text" 
+        placeholder="Enter 2FA code" 
+        [(ngModel)]="twoFactorCode" 
+        name="twoFactorCode" 
+        required 
+      />
+      <input 
+        type="submit" 
+        value="Submit" 
+        class="submit" 
+      />
+    </form>
+    <div class="card-terms">
+      <span>Please enter the code sent to your device.</span>
+    </div>
+  </div>
+  
