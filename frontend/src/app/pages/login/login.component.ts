@@ -5,10 +5,10 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { LoginRequest } from '../../model/login-request';
-import { LoginResponse } from '../../model/login-response';
 import { AuthService } from '../../services/auth.service';
 import { MessagesService } from '../../services/messages.service';
+import { GenerateOTPResponse } from '../../model/generate-otp-response';
+import { GenerateOTPRequest } from '../../model/generate-otp.request';
 
 /**
  *  by owasp: https://owasp.org/www-community/OWASP_Validation_Regex_Repository 
@@ -67,20 +67,20 @@ export class LoginComponent {
     if (this.validateInputs()) {
       if (this.form.valid) {
         this.form.setErrors({});
-        const credentials: LoginRequest = {
+        const credentials: GenerateOTPRequest = {
           email: this.form.controls.email.value!,
           password: this.form.controls.password.value!
         }
-        this.authService.login(credentials).subscribe({
-          next: (response: LoginResponse) => this.handleLoginResponse(response),
-          error: (error: HttpErrorResponse | HttpResponse<LoginResponse>) => this.handleError(error)
+        this.authService.generateOTP(credentials).subscribe({
+          next: (response: GenerateOTPResponse) => this.handleLoginResponse(response),
+          error: (error: HttpErrorResponse | HttpResponse<GenerateOTPResponse>) => this.handleError(error)
         })
       }
     }
   }
 
-  handleLoginResponse(response: LoginResponse) {
-    if (response.token) {
+  handleLoginResponse(response: GenerateOTPResponse) {
+    if (response) {
       this.router.navigateByUrl('/loginOTP');
     } else {
       this.failedAttempts += 1;

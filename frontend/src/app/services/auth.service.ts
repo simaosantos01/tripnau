@@ -7,44 +7,77 @@ import { LoginRequest } from '../model/login-request';
 import { LoginResponse } from '../model/login-response';
 import { RegisterRequest } from '../model/register-request';
 import { RegisterResponse } from '../model/register-response';
+import { UpdatePasswordRequest } from '../model/update-password-request';
+import { GenerateOTPRequest } from '../model/generate-otp.request';
+import { GenerateOTPResponse } from '../model/generate-otp-response';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   user: string | undefined;
   token: string | undefined;
   role: string | undefined;
   email: string | undefined;
   authenticated = false;
 
-  http = inject(HttpClient)
+  http = inject(HttpClient);
+
+  generateOTP(
+    credentials: GenerateOTPRequest
+  ): Observable<GenerateOTPResponse> {
+    return this.http
+      .post<GenerateOTPResponse>(
+        environment.apiUrl + '/auth' + ROUTE.GENERATEOTP,
+        credentials,
+        { observe: 'response' }
+      )
+      .pipe(
+        map((response: HttpResponse<GenerateOTPResponse>) => {
+          return response.body!;
+        })
+      );
+  }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(environment.apiUrl + '/auth' + ROUTE.LOGIN, credentials, { observe: 'response' }).pipe(
-      map((response: HttpResponse<LoginResponse>) => {
-        if (response.headers.get('Authorization')) {
-          this.setToken(response.headers.get('Authorization')!)
-        }
-        return response.body!;
-      })
-    )
+    return this.http
+      .post<LoginResponse>(
+        environment.apiUrl + '/auth' + ROUTE.LOGIN,
+        credentials,
+        { observe: 'response' }
+      )
+      .pipe(
+        map((response: HttpResponse<LoginResponse>) => {
+          if (response.headers.get('Authorization')) {
+            this.setToken(response.headers.get('Authorization')!);
+          }
+          return response.body!;
+        })
+      );
   }
 
   logout(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(environment.apiUrl + '/auth' + ROUTE.LOGOUT, credentials, { observe: 'response' }).pipe(
-      map((response: HttpResponse<LoginResponse>) => {
-        if (response.headers.get('Authorization')) {
-          this.setToken(response.headers.get('Authorization')!)
-        }
-        return response.body!;
-      })
-    )
+    return this.http
+      .post<LoginResponse>(
+        environment.apiUrl + '/auth' + ROUTE.LOGOUT,
+        credentials,
+        { observe: 'response' }
+      )
+      .pipe(
+        map((response: HttpResponse<LoginResponse>) => {
+          if (response.headers.get('Authorization')) {
+            this.setToken(response.headers.get('Authorization')!);
+          }
+          return response.body!;
+        })
+      );
   }
 
   register(user: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' + ROUTE.REGISTER, user);
+    return this.http.post<RegisterResponse>(
+      environment.apiUrl + '/auth' + ROUTE.REGISTER,
+      user
+    );
   }
 
   getUser() {
@@ -60,11 +93,11 @@ export class AuthService {
   }
 
   setEmail(email: string): void {
-    this.email = email
+    this.email = email;
   }
 
   getToken() {
-    return this.token
+    return this.token;
   }
 
   setToken(token: string) {
@@ -102,7 +135,17 @@ export class AuthService {
     return this.authenticated;
   }
 
-  updatePassword(oldPassword: string, newPassword: string): string {
-    return this.http.post<RegisterResponse>(environment.apiUrl + '/auth' + ROUTE.REGISTER, user);
+  updatePassword(passWordData: UpdatePasswordRequest): any {
+    return this.http
+      .post<boolean>(
+        environment.apiUrl + '/auth' + ROUTE.UPDATEPASSWORD,
+        passWordData,
+        { observe: 'response' }
+      )
+      .pipe(
+        map((response: HttpResponse<boolean>) => {
+          return response.body!;
+        })
+      );
   }
 }
