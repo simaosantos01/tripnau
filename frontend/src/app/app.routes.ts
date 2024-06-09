@@ -6,6 +6,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { BookingComponent } from './pages/booking/booking.component';
 import { UserComponent } from './pages/user/user.component';
 import { LoginOTPComponent } from './pages/login-otp/login-otp.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [authGuard([])] },
@@ -13,6 +14,7 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'loginOTP', component: LoginOTPComponent },
+    { path: 'resetPassword', component: ResetPasswordComponent },
     { path: 'home', component: HomeComponent, canActivate: [authGuard([])] },
     { path: 'user', component: UserComponent, canActivate: [authGuard([])] },
     { path: 'admin', component: HomeComponent, canActivate: [authGuard(['ADMIN'])] },
