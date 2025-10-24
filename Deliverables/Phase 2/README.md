@@ -660,7 +660,7 @@ The logs has the following information:
 
 ### Pipelines 
 
-This section focuses on how to integrate DevSecOps practices into CI/CD pipelines using GitHub Actions. The pipelines focus on planning, building, testing and deploying both frontend and backend applications, with an emphasis on security and quality.
+This section focuses on how to integrate DevSecOps practices into CI/CD pipelines using GitHub Actions. The pipelines include building, testing and deploying both frontend and backend applications, with an emphasis on security and quality.
 
 The pipelines include stages for:
 
